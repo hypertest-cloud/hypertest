@@ -13,7 +13,6 @@
     "@hypertest/hypertest-lambda-runner": "0.x.x"
   },
   "devDependencies": {
-    "@hypertest/hypertest-tsconfig": "0.x.x",
     "typescript": "^5.4.5"
   }
 }

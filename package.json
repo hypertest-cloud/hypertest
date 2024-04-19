@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "author": "Marcin Łesek <hello@hypertest.cloud>",
   "private": "false",
+  "scripts": {
+    "build": "npm run build -w packages"
+  },
   "workspaces": [
     "packages/*"
   ]

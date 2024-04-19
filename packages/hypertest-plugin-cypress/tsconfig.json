@@ -1,5 +1,5 @@
 {
-  "extends": "@hypertest/hypertest-tsconfig",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist"
   }
