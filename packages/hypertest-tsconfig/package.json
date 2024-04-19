@@ -1,0 +1,11 @@
+{
+  "name": "@hypertest/hypertest-tsconfig",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    ".": "./tsconfig.json"
+  },
+  "scripts": {
+    "build": "echo \"No build script\""
+  }
+}

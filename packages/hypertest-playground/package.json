@@ -1,0 +1,19 @@
+{
+  "name": "@hypertest/hypertest-playground",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start:core": "node ./dist/core.js",
+    "start:runner": "node ./dist/runner.js"
+  },
+  "dependencies": {
+    "@hypertest/hypertest-core": "0.x.x",
+    "@hypertest/hypertest-plugin-cypress": "0.x.x",
+    "@hypertest/hypertest-lambda-runner": "0.x.x"
+  },
+  "devDependencies": {
+    "@hypertest/hypertest-tsconfig": "0.x.x",
+    "typescript": "^5.4.5"
+  }
+}
