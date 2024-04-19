@@ -1,5 +1,5 @@
 {
-  "name": "@hypertest/hypertest-lambda-runner",
+  "name": "@hypertest/hypertest-runner-cypress",
   "version": "0.0.1",
   "type": "module",
   "exports": {
