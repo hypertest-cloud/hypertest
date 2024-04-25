@@ -9,9 +9,8 @@ _Revolutionize your testing with our **plug-and-play** TypeScript library. Effor
 
 - `hypertest-core` - library core
 - `hypertest-plugin-cypress` - core plugin for Cypress integration
-- `hypertest-lambda-runner` - lambda test runner
+- `hypertest-runner-cypress` - Cypress test runner
 - `hypertest-playground` - playground
-- `hypertest-tsconfig` - shared `tsconfig.json`
 
 ## :artificial_satellite: Setting up
 
