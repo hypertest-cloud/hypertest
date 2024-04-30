@@ -7,4 +7,4 @@ const hypertest = HypertestCore({
   plugin,
 });
 
-hypertest.run().then(console.log);
+hypertest.run();

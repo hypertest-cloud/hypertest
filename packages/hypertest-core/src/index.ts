@@ -1,7 +1,7 @@
 export interface HypertestPluginReturnType {}
 
 export interface HypertestPlugin {
-  run: () => Promise<HypertestPluginReturnType>;
+  getTestCount: () => Promise<number>;
 }
 
 interface HypertestCore {
@@ -16,9 +16,11 @@ export const HypertestCore: HypertestCoreFactory = (options: {
   plugin: HypertestPlugin;
 }): HypertestCore => {
   console.log(options.plugin);
+
   return {
     run: async () => {
-      console.log(await options.plugin.run());
+      const count = await options.plugin.getTestCount()
+      console.log('Tests count: ', count);
     },
   };
 };
