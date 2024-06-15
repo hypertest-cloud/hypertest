@@ -34,6 +34,10 @@ export const overrideItCallback = (options: CypressPluginOptions) => new Promise
     if (error) {
       reject(`Failed to get e2e file: ${error}`)
     }
+    if (data.includes(HYPERTEST_FILE_MODIFICATION_SEPARATOR)) {
+      console.log('E2e file is already modified')
+      resolve()
+    }
 
     const modifiedData = getModifiedE2EData(data, loggerCustomName)
 
