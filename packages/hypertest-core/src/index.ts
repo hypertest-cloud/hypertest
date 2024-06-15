@@ -20,7 +20,7 @@ export const HypertestCore: HypertestCoreFactory = (options: {
   return {
     run: async () => {
       const count = await options.plugin.getTestCount()
-      console.log('Tests count: ', count);
+      console.log('Counted tests: ', count);
     },
   };
 };
