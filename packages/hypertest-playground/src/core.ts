@@ -1,10 +1,12 @@
 import { HypertestCore } from "@hypertest/hypertest-core";
-import { Plugin } from "@hypertest/hypertest-plugin-cypress";
+import { Plugin as CypressPlugin } from "@hypertest/hypertest-plugin-cypress";
 
-const plugin = Plugin({});
+const plugin = CypressPlugin({
+  projectPath: 'C://Praca//hypertest//packages//hypertest-playground'
+});
 
 const hypertest = HypertestCore({
   plugin,
 });
 
-hypertest.run().then(console.log);
+hypertest.run();

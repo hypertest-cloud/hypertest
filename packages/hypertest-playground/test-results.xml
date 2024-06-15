@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="4.453" tests="9" failures="0">
+  <testsuite name="Root Suite" timestamp="2024-04-30T13:28:53" tests="0" file="cypress\e2e\2-advanced-examples\assertions.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Assertions" timestamp="2024-04-30T13:28:53" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Implicit Assertions" timestamp="2024-04-30T13:28:53" tests="2" time="1.949" failures="0">
+    <testcase name="Assertions Implicit Assertions .should() - make an assertion about the current subject" time="0.345" classname=".should() - make an assertion about the current subject">
+    </testcase>
+    <testcase name="Assertions Implicit Assertions .and() - chain multiple assertions together" time="0.259" classname=".and() - chain multiple assertions together">
+    </testcase>
+  </testsuite>
+  <testsuite name="Explicit Assertions" timestamp="2024-04-30T13:28:54" tests="7" time="2.496" failures="0">
+    <testcase name="Assertions Explicit Assertions expect - make an assertion about a specified subject" time="0.115" classname="expect - make an assertion about a specified subject">
+    </testcase>
+    <testcase name="Assertions Explicit Assertions pass your own callback function to should()" time="0.128" classname="pass your own callback function to should()">
+    </testcase>
+    <testcase name="Assertions Explicit Assertions finds element by class name regex" time="0.135" classname="finds element by class name regex">
+    </testcase>
+    <testcase name="Assertions Explicit Assertions can throw any error" time="0.124" classname="can throw any error">
+    </testcase>
+    <testcase name="Assertions Explicit Assertions matches unknown text between two elements" time="0.129" classname="matches unknown text between two elements">
+    </testcase>
+    <testcase name="Assertions Explicit Assertions assert - assert shape of an object" time="0.119" classname="assert - assert shape of an object">
+    </testcase>
+    <testcase name="Assertions Explicit Assertions retries the should callback until assertions pass" time="1.627" classname="retries the should callback until assertions pass">
+    </testcase>
+  </testsuite>
+</testsuites>
