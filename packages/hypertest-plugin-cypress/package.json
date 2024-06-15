@@ -9,9 +9,11 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@hypertest/hypertest-core": "0.x.x"
+    "@hypertest/hypertest-core": "0.x.x",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@types/uuid": "^9.0.8",
     "typescript": "^5.4.5"
   }
 }
