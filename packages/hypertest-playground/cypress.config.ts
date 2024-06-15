@@ -1,16 +1,10 @@
 import { defineConfig } from "cypress";
 
-export default defineConfig({
+const config = defineConfig({
   e2e: {
-    setupNodeEvents(on, config) {
-      // implement node event listeners here
-      on('task', {
-        log(message) {
-          console.log(message)
-
-          return null
-        },
-      })
-    },
+    setupNodeEvents(on, config) {}
   },
 });
+
+
+export default config
