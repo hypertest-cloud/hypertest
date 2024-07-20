@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start:core": "node ./dist/src/core.js",
-    "start:runner": "node ./dist/src/runner.js"
+    "start:core": "node --env-file=.env ./dist/src/core.js",
+    "start:runner": "node --env-file=.env ./dist/src/runner.js"
   },
   "dependencies": {
     "@hypertest/hypertest-core": "0.x.x",
