@@ -1,1 +1,14 @@
+# System and IDE files
+.DS_Store
+.idea
+
+# Envs
 .env
+
+# Cypress
+cypress/screenshots
+cypress/videos
+cypress/reports
+
+# Project specific
+node_modules
