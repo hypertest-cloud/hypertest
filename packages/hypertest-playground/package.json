@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start:core": "node ./dist/core.js",
-    "start:runner": "node ./dist/runner.js"
+    "start:core": "node --env-file=.env ./dist/src/core.js",
+    "start:runner": "node --env-file=.env ./dist/src/runner.js"
   },
   "dependencies": {
     "@hypertest/hypertest-core": "0.x.x",
@@ -13,6 +13,7 @@
     "@hypertest/hypertest-runner-cypress": "0.x.x"
   },
   "devDependencies": {
+    "cypress": "^13.8.1",
     "typescript": "^5.4.5"
   }
 }
