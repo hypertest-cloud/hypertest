@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { v1 } from 'uuid'
-import { CUSTOM_LOGGER_CONFIG_BEGIN_MARK, CUSTOM_LOGGER_CONFIG_END_MARK, HYPERTEST_FILE_MODIFICATION_SEPARATOR } from './constant.js'
+import { CUSTOM_LOGGER_CONFIG_BEGIN_MARK, CUSTOM_LOGGER_CONFIG_END_MARK, HYPERTEST_FILE_MODIFICATION_SEPARATOR, SKIPPED_TEST_COUNTER_MARK } from './constant.js'
 import { CypressPluginOptions } from './types.js'
 
 const loggerCustomName = `logHypertest${v1().slice(0, 4)}`
@@ -18,7 +18,7 @@ const customIt: CustomIt = (param1) => originalIt(param1, () => {
 //@ts-ignore
 customIt.skip = (param1) => {
   originalIt(param1, () => {
-    cy.task('${loggerName}', 'Hypertest-Skipped-Counter')
+    cy.task('${loggerName}', '${SKIPPED_TEST_COUNTER_MARK}')
   })
 }
 
