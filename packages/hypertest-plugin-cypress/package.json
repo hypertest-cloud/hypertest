@@ -6,7 +6,8 @@
     ".": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "biome lint"
   },
   "dependencies": {
     "@hypertest/hypertest-core": "0.x.x",
