@@ -1,17 +1,22 @@
-import { HypertestCore } from "@hypertest/hypertest-core";
-import { Plugin } from "@hypertest/hypertest-plugin-cypress";
+import { exec } from 'child_process';
+import { overrideItCallback } from "@hypertest/hypertest-runner-cypress";
 
 const projectPath = process.env.TEST_PROJECT_PATH
 if (!projectPath) {
   throw new Error('Variable TEST_PROJECT_PATH is missing.')
 }
 
-const plugin = Plugin({
+overrideItCallback({
   projectPath
-});
+})
 
-const hypertest = HypertestCore({
-  plugin,
-});
+exec('npx cypress run --headless', { cwd: projectPath }, async (error, stdout) => {
+  if (error) {
+    const errorMessage = `Error executing: ${error}`
 
-hypertest.run();
+    console.error(errorMessage);
+    return
+  }
+
+  console.log('stdout:', stdout.toString())
+})
