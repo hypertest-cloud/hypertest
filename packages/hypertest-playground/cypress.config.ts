@@ -1,10 +1,9 @@
-import { defineConfig } from "cypress";
+import { defineConfig } from 'cypress';
 
 const config = defineConfig({
   e2e: {
-    setupNodeEvents(on, config) {}
+    setupNodeEvents(on, config) {},
   },
 });
 
-
-export default config
+export default config;

@@ -1,3 +1,3 @@
 export interface CypressPluginOptions {
-  projectPath: string
+  projectPath: string;
 }

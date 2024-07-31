@@ -7,7 +7,5 @@
     "build": "npm run build -w packages",
     "lint": "npm run lint --ws"
   },
-  "workspaces": [
-    "packages/*"
-  ]
+  "workspaces": ["packages/*"]
 }
