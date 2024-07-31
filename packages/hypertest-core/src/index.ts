@@ -1,4 +1,5 @@
-export interface HypertestPluginReturnType {}
+// biome-ignore lint/complexity/noBannedTypes: <explanation>
+export type HypertestPluginReturnType = {};
 
 export interface HypertestPlugin {
   getTestCount: () => Promise<number>;
@@ -19,7 +20,7 @@ export const HypertestCore: HypertestCoreFactory = (options: {
 
   return {
     run: async () => {
-      const count = await options.plugin.getTestCount()
+      const count = await options.plugin.getTestCount();
       console.log('Counted tests: ', count);
     },
   };

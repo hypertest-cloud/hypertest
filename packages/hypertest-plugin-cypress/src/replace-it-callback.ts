@@ -1,7 +1,7 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import { v1 } from 'uuid'
 import { CUSTOM_LOGGER_CONFIG_BEGIN_MARK, CUSTOM_LOGGER_CONFIG_END_MARK, HYPERTEST_FILE_MODIFICATION_SEPARATOR } from './constant.js'
-import { CypressPluginOptions } from './types.js'
+import type { CypressPluginOptions } from './types.js'
 
 const loggerCustomName = `logHypertest${v1().slice(0, 4)}`
 
