@@ -3,7 +3,7 @@ describe("generated batch 0-100", () => {
     cy.task("order:index:reset");
   });
 
-  for (let i = 0; i < 10; i += 1) {
+  for (let i = 0; i < 100; i += 1) {
     it("single test (0-3s) ", () => {
       // Wait for a random amount of time between 0 and 3 seconds
       cy.waitRandom(0, 3);
