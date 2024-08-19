@@ -7,7 +7,8 @@
     "start:core": "node --env-file=.env ./dist/src/core.js",
     "start:runner": "node --env-file=.env ./dist/src/runner.js",
     "cy:open": "cypress open",
-    "cy:run": "cypress run --headless"
+    "cy:run": "cypress run --headless",
+    "test:run": "node ./dist/scripts/run.js"
   },
   "dependencies": {
     "@hypertest/hypertest-core": "0.x.x",
