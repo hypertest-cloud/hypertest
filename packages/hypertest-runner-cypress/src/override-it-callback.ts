@@ -8,19 +8,21 @@ const loggerCustomName = `logHypertest${v1().slice(0, 4)}`
 const getModifiedE2EData = (data: string, loggerName: string) => `${data}
 ${HYPERTEST_FILE_MODIFICATION_SEPARATOR}
 const originalIt = it;
-type CustomIt = (...args: [string]) => Mocha.Test
+type CustomIt = (param1: string, callback: () => void) => Mocha.Test | void
 
 const testCounter = {
   value: 0
 }
 
-const customIt: CustomIt = (param1, callback) => originalIt(param1, () => {
-  if (process.env.TEST_INDEX === testCounter.value) {
-    callback()
+const customIt: CustomIt = (param1, callback) => {
+  if (process.env.TEST_INDEX && parseInt(process.env.TEST_INDEX) === testCounter.value) {
+    return originalIt(param1, callback)
   }
 
   testCounter.value = testCounter.value + 1;
-})
+};
+
+(customIt as any).skip = () => {}
 
 it = customIt as Mocha.TestFunction`
 
