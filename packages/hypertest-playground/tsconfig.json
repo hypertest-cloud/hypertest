@@ -1,6 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist"
-  }
+    "target": "es2017",
+    "outDir": "./dist",
+    "types": ["node", "cypress"]
+  },
+  "include": ["src", "cypress", "cypress/cypress.d.ts", "scripts"]
 }
