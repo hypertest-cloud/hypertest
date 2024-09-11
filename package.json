@@ -4,9 +4,8 @@
   "author": "Marcin Łesek <hello@hypertest.cloud>",
   "private": "false",
   "scripts": {
-    "build": "npm run build -w packages"
+    "build": "npm run build -w packages",
+    "lint": "npm run lint --workspaces"
   },
-  "workspaces": [
-    "packages/*"
-  ]
+  "workspaces": ["packages/*"]
 }

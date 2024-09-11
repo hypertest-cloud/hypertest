@@ -8,7 +8,8 @@
     "start:runner": "node --env-file=.env ./dist/src/runner.js",
     "cy:open": "cypress open",
     "cy:run": "cypress run --headless",
-    "test:run": "node ./dist/scripts/run.js"
+    "test:run": "node ./dist/scripts/run.js",
+    "lint": "biome lint"
   },
   "dependencies": {
     "@hypertest/hypertest-core": "0.x.x",
@@ -16,6 +17,7 @@
     "@hypertest/hypertest-runner-cypress": "0.x.x"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.8.3",
     "cypress": "^13.8.1",
     "typescript": "^5.4.5"
   }
