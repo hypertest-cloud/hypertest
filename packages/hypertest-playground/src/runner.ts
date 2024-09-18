@@ -10,11 +10,12 @@ overrideItCallback({
   projectPath
 })
 
-exec('npx cypress run --headless', { cwd: projectPath }, async (error, stdout) => {
+exec("$env:TEST_INDEX = '2'; npx cypress run --headless", { cwd: projectPath }, async (error, stdout) => {
   if (error) {
     const errorMessage = `Error executing: ${error}`
 
-    console.error(errorMessage);
+    console.error('errorMessage', errorMessage);
+    console.log('stdout:', stdout.toString())
     return
   }
 

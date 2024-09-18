@@ -15,11 +15,12 @@ const testCounter = {
 }
 
 const customIt: CustomIt = (param1, callback) => {
-  if (process.env.TEST_INDEX && parseInt(process.env.TEST_INDEX) === testCounter.value) {
+  const currentValue = testCounter.value
+  testCounter.value = testCounter.value + 1;
+
+  if (process.env.TEST_INDEX && parseInt(process.env.TEST_INDEX) === currentValue) {
     return originalIt(param1, callback)
   }
-
-  testCounter.value = testCounter.value + 1;
 };
 
 (customIt as any).skip = () => {}

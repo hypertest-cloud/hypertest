@@ -1,3 +1,33 @@
+const hypertestStorage = {
+  testIndex: 1,
+  testsCounter: 0
+}
+
+const originalIt = it;
+
+const customIt = (param1, callback) => {
+  hypertestStorage.testsCounter = hypertestStorage.testsCounter + 1;
+
+  originalIt('HypertestIndexUpdate', async () => {
+    await cy.task('loguj', hypertestStorage.testsCounter - 1)
+    await cy.task('setMyVar', hypertestStorage.testsCounter)
+  })
+
+  if (hypertestStorage.testIndex === hypertestStorage.testsCounter - 1) {
+    return originalIt(param1, callback)
+  }
+};
+
+customIt.skip = () => {}
+it = customIt
+
+originalIt('HypertestFileInit', () => {
+  cy.task('getMyVar').then((myVar) => {
+    cy.task('loguj', 'File initialization value:' + myVar)
+    hypertestStorage.testsCounter = myVar
+  })
+})
+
 /// <reference types="cypress" />
 
 // Welcome to Cypress!
