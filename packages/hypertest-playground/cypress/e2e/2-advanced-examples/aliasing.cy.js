@@ -1,5 +1,5 @@
 const hypertestStorage = {
-  testIndex: 1,
+  testIndex: 6,
   testsCounter: 0
 }
 
