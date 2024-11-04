@@ -39,39 +39,39 @@ import './commands'
 
 // it = customIt as Mocha.TestFunction
 
-import * as fs from 'fs';
-import * as path from 'path';
+// import * as fs from 'fs';
+// import * as path from 'path';
 
-interface HypertestStorage {
-  testIndex: number,
-  testsCounter: number
-}
+// interface HypertestStorage {
+//   testIndex: number,
+//   testsCounter: number
+// }
 
-function readHypertestStorage(): HypertestStorage | null {
-  try {
-    const fullPath = path.resolve('./hypertestStorage.json');
-    console.log('fullPath: ' + fullPath)
-    const fileContent = fs.readFileSync(fullPath, 'utf8');
-    console.log('fileContent: ' + fileContent)
-    return JSON.parse(fileContent);
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
+// function readHypertestStorage(): HypertestStorage | null {
+//   try {
+//     const fullPath = path.resolve('./hypertestStorage.json');
+//     console.log('fullPath: ' + fullPath)
+//     const fileContent = fs.readFileSync(fullPath, 'utf8');
+//     console.log('fileContent: ' + fileContent)
+//     return JSON.parse(fileContent);
+//   } catch (error) {
+//     console.error(error);
+//     return null;
+//   }
+// }
 
-function saveHypertestStorage<T>(object: HypertestStorage): void {
-  try {
-      const jsonString = JSON.stringify(object, null, 2);
-      const fullPath = path.resolve('./cypress/support/hypertestStorage.json');
+// function saveHypertestStorage<T>(object: HypertestStorage): void {
+//   try {
+//       const jsonString = JSON.stringify(object, null, 2);
+//       const fullPath = path.resolve('./cypress/support/hypertestStorage.json');
 
-      fs.writeFileSync(fullPath, jsonString, 'utf8');
+//       fs.writeFileSync(fullPath, jsonString, 'utf8');
 
-    console.log(`Storage saved under ${fullPath}`);
-  } catch (error: any) {
-    console.error(`Error while saving the storage: ${error.message}`);
-  }
-}
+//     console.log(`Storage saved under ${fullPath}`);
+//   } catch (error: any) {
+//     console.error(`Error while saving the storage: ${error.message}`);
+//   }
+// }
 
 // const hypertestStorage = readHypertestStorage();
 
@@ -82,23 +82,47 @@ function saveHypertestStorage<T>(object: HypertestStorage): void {
 //   throw new Error('HERE: fileIndex + 1 === 3')
 // }
 
-// export const hypertestStorage = {
-//   testIndex: 1,
-//   testsCounter: 0
-// }
+const hypertestStorage = {
+  testIndex: 1,
+  testsCounter: 0
+}
 
-// const originalIt = it;
-// type CustomIt = (param1: string, callback: () => void) => Mocha.Test | void
+const originalIt = it;
+type CustomIt = (param1: string, callback: () => void) => Mocha.Suite | void
 
-// const customIt: CustomIt = (param1, callback) => {
-//   const currentValue = hypertestStorage.testsCounter
-//   hypertestStorage.testsCounter = hypertestStorage.testsCounter + 1;
+const customIt: CustomIt = (param1: any, callback: any) => {
+  // fetch('localhost:3006/bump', { method: "POST" })
+  // fetch('http://localhost:3006/', { method: 'GET' }).then(async response => {
+  //   if (!response.ok) {
+  //     throw new Error(`Response status: ${response.status}`);
+  //   }
 
-//   if (hypertestStorage.testIndex === currentValue || param1 === 'hyperTestIt') {
-//     return originalIt(param1, callback)
-//   }
-// };
+  //   hypertestStorage.testsCounter = await response.json();
+  //   // throw new Error(`testsCounter: ${hypertestStorage.testsCounter}`);
+  // }).catch((err) => {
+  //   throw new Error(`Fetch Error ocalhost:3006: ${err.message}`);
+  // })
+  return describe("Conditional Test Suite", () => {
+    let shouldAddTest = false;
+    cy.request("http://localhost:3006/").then((response) => {
+      cy.task('loguj', `response.body: ${response.body}`)
+      shouldAddTest = hypertestStorage.testIndex === response.body;
+    });
 
-// (customIt as any).skip = () => {}
+    // before(function () {
+    //   cy.task('loguj', `before`)
+    //   cy.request("http://localhost:3006/").then((response) => {
+    //     cy.task('loguj', `response.body: ${response.body}`)
+    //     shouldAddTest = hypertestStorage.testIndex === response.body;
+    //   });
+    // });
 
-// it = customIt as Mocha.TestFunction
+    if (shouldAddTest) {
+      return originalIt(param1, callback)
+    }
+  })
+};
+
+(customIt as any).skip = () => {}
+
+it = customIt as any
