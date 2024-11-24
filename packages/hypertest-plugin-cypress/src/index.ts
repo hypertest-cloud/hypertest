@@ -28,5 +28,5 @@ export const Plugin = (options: CypressPluginOptions): HypertestPlugin => ({
   //     resolve(testsCount + skippedTestsCount)
   //   })
   // }),
-  getTestDescription: async () => []
+  getTestDescriptions: async () => []
 });

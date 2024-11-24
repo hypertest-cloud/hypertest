@@ -1,11 +1,12 @@
 export interface HypertestPluginReturnType {}
 
+export interface TestDescription {
+  directoryPath: string
+  contextPath: string
+  testName: string
+}
 export interface HypertestPlugin {
-  getTestDescription: () => Promise<{
-    directoryPath: string
-    contextPath: string
-    testName: string
-  }[]>;
+  getTestDescriptions: () => Promise<TestDescription[]>;
 }
 
 interface HypertestCore {
@@ -23,7 +24,7 @@ export const HypertestCore: HypertestCoreFactory = (options: {
 
   return {
     run: async () => {
-      const testDescriptions = await options.plugin.getTestDescription()
+      const testDescriptions = await options.plugin.getTestDescriptions()
       console.log('[core] testDescriptions: ', testDescriptions)
       for (const testDescription of testDescriptions) {
         // odpalLambdęDla(testDescriptions)
