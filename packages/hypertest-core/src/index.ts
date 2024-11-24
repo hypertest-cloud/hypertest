@@ -1,7 +1,11 @@
 export interface HypertestPluginReturnType {}
 
 export interface HypertestPlugin {
-  getTestCount: () => Promise<number>;
+  getTestDescription: () => Promise<{
+    directoryPath: string
+    contextPath: string
+    testName: string
+  }[]>;
 }
 
 interface HypertestCore {
@@ -19,8 +23,11 @@ export const HypertestCore: HypertestCoreFactory = (options: {
 
   return {
     run: async () => {
-      const count = await options.plugin.getTestCount()
-      console.log('Counted tests: ', count);
+      const testDescriptions = await options.plugin.getTestDescription()
+      console.log('[core] testDescriptions: ', testDescriptions)
+      for (const testDescription of testDescriptions) {
+        // odpalLambdęDla(testDescriptions)
+      }
     },
   };
 };
