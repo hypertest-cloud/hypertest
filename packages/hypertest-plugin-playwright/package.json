@@ -10,7 +10,8 @@
     "lint": "biome lint"
   },
   "dependencies": {
-    "@hypertest/hypertest-core": "0.x.x"
+    "@hypertest/hypertest-core": "0.x.x",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",

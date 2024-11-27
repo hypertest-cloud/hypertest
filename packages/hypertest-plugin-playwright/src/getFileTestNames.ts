@@ -1,9 +1,9 @@
 import { TestDescription } from '@hypertest/hypertest-core';
 import * as fs from 'fs';
 import * as ts from "typescript";
+import { v1 } from 'uuid'
 
-// TODO use uuid
-const SEPARATOR = 'AJWFBasdw'
+const SEPARATOR = v1()
 
 const FILE_HEADER = `
   const currentDescription = []
