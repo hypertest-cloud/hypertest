@@ -1,7 +1,11 @@
-import { TestDescription } from '@hypertest/hypertest-core';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import * as ts from 'typescript';
 import { v1 } from 'uuid';
+
+interface TestDescription {
+  contextPath: string;
+  testName: string;
+}
 
 const SEPARATOR = v1();
 
@@ -25,9 +29,9 @@ const FILE_HEADER = `
   }
 `;
 
-const globalFunctionProxyFactory = (
-  names: Pick<TestDescription, 'testName' | 'contextPath'>[],
-) => {
+const globalFunctionProxyFactory = (names: string[][]) => {
+  const currentDescription: string[] = [];
+
   const proxy = new Proxy(() => {}, {
     apply: () => {
       return;
@@ -44,10 +48,8 @@ const globalFunctionProxyFactory = (
         return console;
       }
       if (prop === 'test') {
-        console.log('test2');
         const fn = (name: string) => {
-          console.log(name);
-          return name;
+          names.push([...currentDescription, name]);
         };
         return new Proxy(fn, {
           get: (target, prop) => {
@@ -55,7 +57,11 @@ const globalFunctionProxyFactory = (
               return undefined;
             }
             if (prop === 'describe') {
-              return;
+              return (name: string, callback: () => void) => {
+                currentDescription.push(name);
+                callback();
+                currentDescription.pop();
+              };
             }
             return proxy;
           },
@@ -74,27 +80,15 @@ const globalFunctionProxyFactory = (
   return proxy;
 };
 
-export const getFileTestNames = async (
-  filePath: string,
-): Promise<Pick<TestDescription, 'testName' | 'contextPath'>[]> => {
+export const getFileTestNames = (filePath: string): TestDescription[] => {
   const fileContent = fs
     .readFileSync(filePath, 'utf8')
     .replace('import', '// import');
 
-  let result = ts.transpileModule(FILE_HEADER + fileContent, {});
+  const result = ts.transpileModule(FILE_HEADER + fileContent, {});
 
-  const names: Pick<TestDescription, 'testName' | 'contextPath'>[] = [];
+  const names: string[][] = [];
   const globalFunctionProxy = globalFunctionProxyFactory(names);
-
-  const originalConsoleLog = console.log;
-  console.log = (message) => {
-    const chain = message.split(SEPARATOR);
-    const testName = chain.pop();
-    names.push({
-      contextPath: chain.join('/'),
-      testName,
-    });
-  };
 
   new Function(
     'with (this.globalFunctionProxy) { eval(this.outputText) }',
@@ -103,7 +97,13 @@ export const getFileTestNames = async (
     outputText: result.outputText,
   });
 
-  console.log = originalConsoleLog;
-
-  return names;
+  return names.map((paths): TestDescription => {
+    const mappedPaths = paths.map((p) => p.replace(/ /g, '\\s'));
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
+    const testName = mappedPaths.pop()!;
+    return {
+      contextPath: paths.join('\\s'),
+      testName,
+    };
+  });
 };
