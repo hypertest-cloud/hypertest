@@ -10,13 +10,13 @@ const PLAYWRIGHT_DIRECTORY = 'tests'
 
 export const Plugin = (options: PlaywrightPluginOptions): HypertestPlugin => ({
   getTestDescriptions: async () => new Promise<TestDescription[]>(async (resolve, reject) => {
-    const specFiles = getSpecFiles(options.projectPath + '/' + PLAYWRIGHT_DIRECTORY);
+    const specFiles = getSpecFiles(PLAYWRIGHT_DIRECTORY);
     console.log('specFiles: ', specFiles)
     const result = await Promise.all(specFiles.map(async (specFile) => {
       const names = await getFileTestNames(specFile)
 
       return names.map((name) => ({
-        directoryPath: specFile,
+        directoryPath: specFile.replace(/\\/g, '\\\\'),
         contextPath: name.contextPath,
         testName: name.testName,
       }))

@@ -102,7 +102,7 @@ export const getFileTestNames = (filePath: string): TestDescription[] => {
     // biome-ignore lint/style/noNonNullAssertion: <explanation>
     const testName = mappedPaths.pop()!;
     return {
-      contextPath: paths.join('\\s'),
+      contextPath: mappedPaths.join('\\s'),
       testName,
     };
   });

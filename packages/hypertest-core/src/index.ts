@@ -25,8 +25,12 @@ export const HypertestCore: HypertestCoreFactory = (options: {
   return {
     run: async () => {
       const testDescriptions = await options.plugin.getTestDescriptions()
-      console.log('[core] testDescriptions: ', testDescriptions)
+      console.log('[core] first test description: ', testDescriptions[0])
+      console.log('[core] second test description: ', testDescriptions[1])
+      console.log('[core] descriptions.length: ', testDescriptions.length)
       for (const testDescription of testDescriptions) {
+        const grep = `^chromium\\s${testDescription.directoryPath.replace('tests\\\\', '')}\\s${testDescription.contextPath}\\s${testDescription.testName}$`.replace(/\./g, '\\.')
+        console.log(grep)
         // odpalLambdęDla(testDescriptions)
       }
     },
