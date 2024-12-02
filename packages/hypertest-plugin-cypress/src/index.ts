@@ -1,12 +1,9 @@
 import {
   HypertestPlugin,
 } from "@hypertest/hypertest-core";
-import { exec } from 'child_process';
-import { overrideItCallback, removeItCallbackOverride } from "./replace-it-callback.js";
-import { SKIPPED_TEST_COUNTER_MARK, TEST_COUNTER_MARK } from "./constant.js";
 import { CypressPluginOptions } from "./types.js";
 
-export const Plugin = (options: CypressPluginOptions): HypertestPlugin => ({
+export const Plugin = (options: CypressPluginOptions): HypertestPlugin<{}> => ({
   // getTestCount: async () => new Promise(async (resolve, reject) => {
   //   await overrideItCallback(options)
   //   const execOptions = {
@@ -28,5 +25,6 @@ export const Plugin = (options: CypressPluginOptions): HypertestPlugin => ({
   //     resolve(testsCount + skippedTestsCount)
   //   })
   // }),
-  getTestDescriptions: async () => []
+  getLambdaContexts: async () => [],
+  getLambda: async () => {}
 });

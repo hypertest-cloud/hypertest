@@ -1,28 +1,27 @@
 import {
-  HypertestPlugin,
-  TestDescription,
+  HypertestPlugin
 } from "@hypertest/hypertest-core";
+import { getGrepString } from "./getGrepString.js";
+import { getSpecFilePaths } from "./getSpecFilePaths.js";
+import { getTestContextPaths } from "./getTestContextPaths.js";
 import { PlaywrightPluginOptions } from "./types.js";
-import { getFileTestNames } from "./getFileTestNames.js";
-import { getSpecFiles } from "./getSpecFiles.js";
 
-const PLAYWRIGHT_DIRECTORY = 'tests'
+// TODO: Import dynamically from `playwright.config.ts`
+const PLAYWRIGHT_DIRECTORY = 'playwright/tests'
+const PLAYWRIGHT_PROJECT_NAME = 'chromium'
 
-export const Plugin = (options: PlaywrightPluginOptions): HypertestPlugin => ({
-  getTestDescriptions: async () => new Promise<TestDescription[]>(async (resolve, reject) => {
-    const specFiles = getSpecFiles(PLAYWRIGHT_DIRECTORY);
-    console.log('specFiles: ', specFiles)
-    const result = await Promise.all(specFiles.map(async (specFile) => {
-      const names = await getFileTestNames(specFile)
+export const Plugin = (options: PlaywrightPluginOptions): HypertestPlugin<{}> => ({
+  getLambdaContexts: async () => new Promise<{}[]>(async (resolve, reject) => {
+    const specFilePaths = getSpecFilePaths(PLAYWRIGHT_DIRECTORY);
+    const result = await Promise.all(specFilePaths.map(async (specFilePath) => {
+      const testContextPaths = await getTestContextPaths(specFilePath)
 
-      return names.map((name) => ({
-        directoryPath: specFile.replace(/\\/g, '\\\\'),
-        contextPath: name.contextPath,
-        testName: name.testName,
+      return testContextPaths.map((testContextPath) => ({
+        grepString: getGrepString(PLAYWRIGHT_DIRECTORY, PLAYWRIGHT_PROJECT_NAME, specFilePath, testContextPath)
       }))
     }))
 
-
     resolve(result.flat())
   }),
+  getLambda: async (): Promise<void> => {},
 });

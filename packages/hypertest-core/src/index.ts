@@ -1,12 +1,8 @@
 export interface HypertestPluginReturnType {}
 
-export interface TestDescription {
-  directoryPath: string
-  contextPath: string
-  testName: string
-}
-export interface HypertestPlugin {
-  getTestDescriptions: () => Promise<TestDescription[]>;
+export interface HypertestPlugin <LambdaContext> {
+  getLambdaContexts: () => Promise<LambdaContext[]>;
+  getLambda: (context: LambdaContext) => Promise<void>
 }
 
 interface HypertestCore {
@@ -14,24 +10,20 @@ interface HypertestCore {
 }
 
 export type HypertestCoreFactory = (options: {
-  plugin: HypertestPlugin;
+  plugin: HypertestPlugin<any>;
 }) => HypertestCore;
 
 export const HypertestCore: HypertestCoreFactory = (options: {
-  plugin: HypertestPlugin;
+  plugin: HypertestPlugin<any>;
 }): HypertestCore => {
-  console.log(options.plugin);
-
   return {
     run: async () => {
-      const testDescriptions = await options.plugin.getTestDescriptions()
-      console.log('[core] first test description: ', testDescriptions[0])
-      console.log('[core] second test description: ', testDescriptions[1])
-      console.log('[core] descriptions.length: ', testDescriptions.length)
-      for (const testDescription of testDescriptions) {
-        const grep = `^chromium\\s${testDescription.directoryPath.replace('tests\\\\', '')}\\s${testDescription.contextPath}\\s${testDescription.testName}$`.replace(/\./g, '\\.')
-        console.log(grep)
-        // odpalLambdęDla(testDescriptions)
+      const lambdaContexts = await options.plugin.getLambdaContexts();
+
+      for (const context of lambdaContexts) {
+        // TODO: Remove console.log
+        console.log(context)
+        console.log(options.plugin.getLambda(context));
       }
     },
   };

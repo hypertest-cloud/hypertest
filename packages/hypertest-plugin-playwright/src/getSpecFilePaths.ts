@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-export function getSpecFiles(dir: string): string[] {
+export function getSpecFilePaths(dir: string): string[] {
   let results: string[] = [];
   const files = fs.readdirSync(dir);
 
@@ -10,7 +10,7 @@ export function getSpecFiles(dir: string): string[] {
     const stat = fs.statSync(fullPath);
 
     if (stat.isDirectory()) {
-      results = results.concat(getSpecFiles(fullPath));
+      results = results.concat(getSpecFilePaths(fullPath));
     } else if (file.endsWith('.spec.ts')) {
       results.push(fullPath);
     }

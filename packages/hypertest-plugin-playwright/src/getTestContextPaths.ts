@@ -80,15 +80,15 @@ const globalFunctionProxyFactory = (names: string[][]) => {
   return proxy;
 };
 
-export const getFileTestNames = (filePath: string): TestDescription[] => {
+export const getTestContextPaths = (filePath: string): string[] => {
   const fileContent = fs
     .readFileSync(filePath, 'utf8')
     .replace('import', '// import');
 
   const result = ts.transpileModule(FILE_HEADER + fileContent, {});
 
-  const names: string[][] = [];
-  const globalFunctionProxy = globalFunctionProxyFactory(names);
+  const contextPaths: string[][] = [];
+  const globalFunctionProxy = globalFunctionProxyFactory(contextPaths);
 
   new Function(
     'with (this.globalFunctionProxy) { eval(this.outputText) }',
@@ -97,13 +97,7 @@ export const getFileTestNames = (filePath: string): TestDescription[] => {
     outputText: result.outputText,
   });
 
-  return names.map((paths): TestDescription => {
-    const mappedPaths = paths.map((p) => p.replace(/ /g, '\\s'));
-    // biome-ignore lint/style/noNonNullAssertion: <explanation>
-    const testName = mappedPaths.pop()!;
-    return {
-      contextPath: mappedPaths.join('\\s'),
-      testName,
-    };
+  return contextPaths.map((paths): string => {
+    return paths.join(' ');
   });
 };
