@@ -1,7 +1,8 @@
 export interface HypertestPluginReturnType {}
 
-export interface HypertestPlugin {
-  getTestCount: () => Promise<number>;
+export interface HypertestPlugin <LambdaContext> {
+  getLambdaContexts: () => Promise<LambdaContext[]>;
+  getLambda: (context: LambdaContext) => Promise<void>
 }
 
 interface HypertestCore {
@@ -9,18 +10,21 @@ interface HypertestCore {
 }
 
 export type HypertestCoreFactory = (options: {
-  plugin: HypertestPlugin;
+  plugin: HypertestPlugin<any>;
 }) => HypertestCore;
 
 export const HypertestCore: HypertestCoreFactory = (options: {
-  plugin: HypertestPlugin;
+  plugin: HypertestPlugin<any>;
 }): HypertestCore => {
-  console.log(options.plugin);
-
   return {
     run: async () => {
-      const count = await options.plugin.getTestCount()
-      console.log('Counted tests: ', count);
+      const lambdaContexts = await options.plugin.getLambdaContexts();
+
+      for (const context of lambdaContexts) {
+        // TODO: Remove console.log
+        console.log(context)
+        // options.plugin.getLambda(context)
+      }
     },
   };
 };

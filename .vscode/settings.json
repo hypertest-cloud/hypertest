@@ -16,5 +16,8 @@
   },
   "[json]": {
     "editor.defaultFormatter": "biomejs.biome"
-  }
+  },
+  "cSpell.words": [
+    "hypertest"
+  ]
 }
