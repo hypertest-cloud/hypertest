@@ -12,7 +12,7 @@ interface PlaywrightLambdaContext {
 
 export const Plugin = (options: PlaywrightPluginOptions): HypertestPlugin<PlaywrightLambdaContext> => ({
   getLambdaContexts: async () => new Promise<PlaywrightLambdaContext[]>(async (resolve, reject) => {
-    const specFilePaths = getSpecFilePaths(options.playwrightConfig.testsDirectory);
+    const specFilePaths = getSpecFilePaths(options.playwrightConfig.testDirectory);
     const fileContexts = await Promise.all(specFilePaths.map(async (specFilePath) => {
       const testContextPaths = await getTestContextPaths(specFilePath)
 

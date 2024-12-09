@@ -4,7 +4,7 @@ import { Plugin as playwrightPlugin } from "@hypertest/hypertest-plugin-playwrig
 const plugin = playwrightPlugin({
   lambdaEnvironment: 'unix',
   playwrightConfig: {
-    testsDirectory: 'playwright/tests',
+    testDirectory: 'playwright/tests',
     projectName: 'chromium',
   }
 });
