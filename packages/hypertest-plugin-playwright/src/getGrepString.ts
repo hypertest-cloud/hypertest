@@ -1,19 +1,26 @@
 import { parseStringToRegexp } from "./parseStringToRegexp.js";
+import { PlaywrightPluginOptions } from "./types.js";
 
-export function getGrepString(playwrightTestDir: string, projectName: string, specFilePath: string, testContextPath: string): string {
-  // Ensure that playwrightTestDir ends with a slash for consistent handling.
-  const normalizedPlaywrightTestDir = playwrightTestDir.endsWith('/') ? playwrightTestDir : `${playwrightTestDir}/`;
+export const getGrepString = (options: PlaywrightPluginOptions, specFilePath: string, testContextPath: string) => {
+  if (options.lambdaEnvironment === 'unix') {
+    // Ensure that playwrightTestDir ends with a slash for consistent handling.
+    const normalizedPlaywrightTestDir = options.playwrightConfig.testsDirectory.endsWith('/')
+    ? options.playwrightConfig.testsDirectory
+    : `${options.playwrightConfig.testsDirectory}/`;
 
-  // Verify if specFilePath starts with playwrightTestDir and remove it.
-  if (specFilePath.startsWith(normalizedPlaywrightTestDir)) {
+    // Verify if specFilePath starts with playwrightTestDir and remove it.
+    if (specFilePath.startsWith(normalizedPlaywrightTestDir)) {
     specFilePath = specFilePath.replace(normalizedPlaywrightTestDir, '');
+    }
+
+    const combinedStr = [
+      parseStringToRegexp(options.playwrightConfig.projectName),
+      parseStringToRegexp(specFilePath),
+      parseStringToRegexp(testContextPath),
+    ].join('\\s');
+
+    return `^${combinedStr}$`
+  } else {
+    throw Error('TODO Implement windows case')
   }
-
-  const combinedStr = [
-    parseStringToRegexp(projectName),
-    parseStringToRegexp(specFilePath),
-    parseStringToRegexp(testContextPath),
-  ].join('\\s');
-
-  return `^${combinedStr}$`
 }

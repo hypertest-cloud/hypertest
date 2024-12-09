@@ -7,7 +7,7 @@ if (!projectPath) {
 }
 
 const plugin = Plugin({
-  projectPath
+  projectPath,
 });
 
 const hypertest = HypertestCore({

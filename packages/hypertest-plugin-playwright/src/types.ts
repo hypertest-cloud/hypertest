@@ -1,3 +1,7 @@
 export interface PlaywrightPluginOptions {
-  projectPath: string
+  lambdaEnvironment: 'unix' // TODO | 'windows'
+  playwrightConfig: {
+    testsDirectory: string
+    projectName: string
+  }
 }
