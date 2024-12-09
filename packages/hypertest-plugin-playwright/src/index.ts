@@ -10,10 +10,14 @@ import { PlaywrightPluginOptions } from "./types.js";
 const PLAYWRIGHT_DIRECTORY = 'playwright/tests'
 const PLAYWRIGHT_PROJECT_NAME = 'chromium'
 
-export const Plugin = (options: PlaywrightPluginOptions): HypertestPlugin<{}> => ({
-  getLambdaContexts: async () => new Promise<{}[]>(async (resolve, reject) => {
+interface PlaywrightLambdaContext {
+  grepString: string
+}
+
+export const Plugin = (options: PlaywrightPluginOptions): HypertestPlugin<PlaywrightLambdaContext> => ({
+  getLambdaContexts: async () => new Promise<PlaywrightLambdaContext[]>(async (resolve, reject) => {
     const specFilePaths = getSpecFilePaths(PLAYWRIGHT_DIRECTORY);
-    const result = await Promise.all(specFilePaths.map(async (specFilePath) => {
+    const fileContexts = await Promise.all(specFilePaths.map(async (specFilePath) => {
       const testContextPaths = await getTestContextPaths(specFilePath)
 
       return testContextPaths.map((testContextPath) => ({
@@ -21,7 +25,7 @@ export const Plugin = (options: PlaywrightPluginOptions): HypertestPlugin<{}> =>
       }))
     }))
 
-    resolve(result.flat())
+    resolve(fileContexts.flat())
   }),
   getLambda: async (): Promise<void> => {},
 });
