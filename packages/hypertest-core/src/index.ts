@@ -1,8 +1,12 @@
-export interface HypertestPluginReturnType {}
-
 export interface HypertestPlugin <LambdaContext> {
   getLambdaContexts: () => Promise<LambdaContext[]>;
   getLambda: (context: LambdaContext) => Promise<void>
+}
+
+export interface HypertestProviderCloud {
+  setImage: () => Promise<void>;
+  spawn: () => Promise<void>;
+  getStatus: (id: string) => Promise<void>
 }
 
 interface HypertestCore {
