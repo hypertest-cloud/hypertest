@@ -24,14 +24,19 @@ export const HypertestProviderCloudAWS = (settings: HypertestProviderCloudAWSSet
         FunctionName: FUNC_NAME,
         Payload: PAYLOAD,
       });
-      const { Payload, LogResult } = await lambdaClient.send(command);
+      const { StatusCode, Payload, LogResult } = await lambdaClient.send(command);
 
-      if (!Payload || !LogResult) {
-        throw new Error('Lambda Payload or LogResult is missing.');
+      if (StatusCode !== 200) {
+        throw new Error(`Lambda invocation failed with status ${StatusCode}`);
       }
 
-      const logs = Buffer.from(LogResult, "base64").toString();
-      const result = Buffer.from(Payload).toString();
+      const logs = LogResult
+        ? Buffer.from(LogResult, 'base64').toString('utf-8')
+        : '';
+
+      const result = Payload
+        ? Buffer.from(Payload).toString('utf-8')
+        : '';
 
       console.log('lambda spawn logs: ', logs)
       console.log('lambda result: ', result)
