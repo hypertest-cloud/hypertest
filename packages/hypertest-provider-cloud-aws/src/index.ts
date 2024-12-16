@@ -1,5 +1,5 @@
 import { InvokeCommand, LambdaClient } from "@aws-sdk/client-lambda";
-import { ECRClient } from "@aws-sdk/client-ecr";
+
 import { fromEnv } from "@aws-sdk/credential-providers";
 import { HypertestProviderCloud } from "@hypertest/hypertest-core";
 import { lambda } from "./lambda.js";
@@ -8,16 +8,11 @@ interface HypertestProviderCloudAWS extends HypertestProviderCloud { }
 
 interface HypertestProviderCloudAWSSettings {}
 
-const AWS_REGION = 'us-east-1';
-const FUNC_NAME = 'my_func_name'
-const PAYLOAD = 'console.log("hello world")'
+const AWS_REGION = "eu-central-1"; // Replace with your AWS region
+const FUNC_NAME = "hypertestDevHelloWorld"; // Replace with your Lambda function name
 
 export const HypertestProviderCloudAWS = (settings: HypertestProviderCloudAWSSettings): HypertestProviderCloudAWS => {
   const lambdaClient = new LambdaClient({
-    credentials: fromEnv(),
-    region: AWS_REGION,
-  });
-  const ecrClient = new ECRClient({
     credentials: fromEnv(),
     region: AWS_REGION,
   });
@@ -27,13 +22,17 @@ export const HypertestProviderCloudAWS = (settings: HypertestProviderCloudAWSSet
     spawn: async () => {
       const command = new InvokeCommand({
         FunctionName: FUNC_NAME,
-        Payload: PAYLOAD,
+        Payload: JSON.stringify({
+          region: AWS_REGION,
+        }),
       });
       const { StatusCode, Payload, LogResult } = await lambdaClient.send(command);
 
       if (StatusCode !== 200) {
         throw new Error(`Lambda invocation failed with status ${StatusCode}`);
       }
+
+      console.log('StatusCode: ', StatusCode?.toString())
 
       const logs = LogResult
         ? Buffer.from(LogResult, 'base64').toString('utf-8')
