@@ -16,8 +16,8 @@ export const HypertestProviderCloudAWS = <T>(settings: HypertestProviderCloudAWS
   });
 
   return {
-    pushImage: async () => '',
-    invoke: async () => {
+    pushImage: async (image) => '',
+    invoke: async (imageReference, context) => {
       const command = new InvokeCommand({
         FunctionName: FUNC_NAME,
         Payload: JSON.stringify({
