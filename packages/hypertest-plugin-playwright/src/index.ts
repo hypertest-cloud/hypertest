@@ -23,5 +23,5 @@ export const Plugin = (options: PlaywrightPluginOptions): HypertestPlugin<Playwr
 
     resolve(fileContexts.flat())
   }),
-  getLambda: async (): Promise<void> => {},
+  buildImage: async () => {},
 });

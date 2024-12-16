@@ -26,5 +26,5 @@ export const Plugin = (options: CypressPluginOptions): HypertestPlugin<{}> => ({
   //   })
   // }),
   getLambdaContexts: async () => [],
-  getLambda: async () => {}
+  buildImage: async () => {}
 });

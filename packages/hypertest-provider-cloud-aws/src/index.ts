@@ -4,22 +4,20 @@ import { fromEnv } from "@aws-sdk/credential-providers";
 import { HypertestProviderCloud } from "@hypertest/hypertest-core";
 import { lambda } from "./lambda.js";
 
-interface HypertestProviderCloudAWS extends HypertestProviderCloud { }
-
 interface HypertestProviderCloudAWSSettings {}
 
 const AWS_REGION = "eu-central-1"; // Replace with your AWS region
 const FUNC_NAME = "hypertestDevHelloWorld"; // Replace with your Lambda function name
 
-export const HypertestProviderCloudAWS = (settings: HypertestProviderCloudAWSSettings): HypertestProviderCloudAWS => {
+export const HypertestProviderCloudAWS = <T>(settings: HypertestProviderCloudAWSSettings): HypertestProviderCloud<T> => {
   const lambdaClient = new LambdaClient({
     credentials: fromEnv(),
     region: AWS_REGION,
   });
 
   return {
-    setImage: async () => {},
-    spawn: async () => {
+    pushImage: async () => '',
+    invoke: async () => {
       const command = new InvokeCommand({
         FunctionName: FUNC_NAME,
         Payload: JSON.stringify({
