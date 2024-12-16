@@ -26,7 +26,7 @@ export const HypertestCore: HypertestCoreFactory = (options: {
 
       for (const context of lambdaContexts) {
         // TODO: Remove console.log
-        console.log(context)
+        // console.log(context)
         // options.plugin.getLambda(context)
       }
     },
