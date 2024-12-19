@@ -1,16 +1,21 @@
 import { HypertestCore } from "@hypertest/hypertest-core";
 import { Plugin as playwrightPlugin } from "@hypertest/hypertest-plugin-playwright";
+import { HypertestProviderCloudAWS } from '@hypertest/hypertest-provider-cloud-aws'
 
-const plugin = playwrightPlugin({
-  lambdaEnvironment: 'unix',
-  playwrightConfig: {
-    testDirectory: 'playwright/tests',
-    projectName: 'chromium',
-  }
-});
+const cloudProvider = HypertestProviderCloudAWS({})
+cloudProvider.invoke('temp image reference', {})
 
-const hypertest = HypertestCore({
-  plugin,
-});
+// const plugin = playwrightPlugin({
+//   lambdaEnvironment: 'unix',
+//   playwrightConfig: {
+//     testDirectory: 'playwright/tests',
+//     projectName: 'chromium',
+//   }
+// });
 
-hypertest.run();
+// const hypertest = HypertestCore({
+//   plugin,
+//   cloudProvider
+// });
+
+// hypertest.run();
