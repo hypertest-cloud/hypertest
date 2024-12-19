@@ -1,13 +1,13 @@
-interface DockerImage <LambdaContext> {}
+interface DockerImage {}
 
-export interface HypertestPlugin <LambdaContext> {
-  getLambdaContexts: () => Promise<LambdaContext[]>;
-  buildImage: () => DockerImage<LambdaContext>
+export interface HypertestPlugin <CloudFunctionContext> {
+  getCloudFunctionContexts: () => Promise<CloudFunctionContext[]>;
+  buildImage: () => DockerImage
 }
 
-export interface HypertestProviderCloud <LambdaContext>{
-  pushImage: (image: DockerImage<LambdaContext>) => Promise<string>;
-  invoke: (imageReference: string, context: LambdaContext) => Promise<void>;
+export interface HypertestProviderCloud <CloudFunctionContext> {
+  pushImage: (image: DockerImage) => Promise<string>;
+  invoke: (imageReference: string, context: CloudFunctionContext) => Promise<void>;
   getStatus: (id: string) => Promise<void>
 }
 
@@ -15,23 +15,18 @@ interface HypertestCore {
   run: () => Promise<void>;
 }
 
-export type HypertestCoreFactory = <LambdaContext>(options: {
-  plugin: HypertestPlugin<LambdaContext>;
-  cloudProvider: HypertestProviderCloud<LambdaContext>
-}) => HypertestCore;
-
-export const HypertestCore: HypertestCoreFactory = <LambdaContext>(options: {
-  plugin: HypertestPlugin<LambdaContext>;
-  cloudProvider: HypertestProviderCloud<LambdaContext>
+export const HypertestCore = <Context>(options: {
+  plugin: HypertestPlugin<Context>;
+  cloudProvider: HypertestProviderCloud<Context>
 }): HypertestCore => {
   return {
     run: async () => {
-      const lambdaContexts = await options.plugin.getLambdaContexts();
+      const contexts = await options.plugin.getCloudFunctionContexts();
 
       const image = await options.plugin.buildImage();
       const imageReference = await options.cloudProvider.pushImage(image)
 
-      for (const context of lambdaContexts) {
+      for (const context of contexts) {
         options.cloudProvider.invoke(imageReference, context)
       }
     },

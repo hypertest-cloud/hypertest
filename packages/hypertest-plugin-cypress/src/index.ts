@@ -25,6 +25,6 @@ export const Plugin = (options: CypressPluginOptions): HypertestPlugin<{}> => ({
   //     resolve(testsCount + skippedTestsCount)
   //   })
   // }),
-  getLambdaContexts: async () => [],
+  getCloudFunctionContexts: async () => [],
   buildImage: async () => {}
 });
