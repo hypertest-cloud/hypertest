@@ -15,6 +15,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@aws-sdk/client-ecr": "^3.731.1",
     "@aws-sdk/client-lambda": "^3.709.0",
     "@aws-sdk/credential-providers": "^3.709.0",
     "@types/aws-lambda": "^8.10.146"

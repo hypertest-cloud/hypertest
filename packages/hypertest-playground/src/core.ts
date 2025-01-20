@@ -4,9 +4,11 @@ import { HypertestProviderCloudAWS } from '@hypertest/hypertest-provider-cloud-a
 import { PlaywrightLambdaContext } from "../../hypertest-plugin-playwright/dist/types.js";
 
 const cloudProvider = HypertestProviderCloudAWS<PlaywrightLambdaContext>({})
-cloudProvider.invoke('temp image reference', {
-  grepString: ''
-})
+// cloudProvider.invoke('temp image reference', {
+//   grepString: ''
+// })
+console.log('Testing hypertest/dev:latest')
+cloudProvider.pushImage('hypertest/dev:latest')
 
 // const plugin = playwrightPlugin({
 //   lambdaEnvironment: 'unix',
