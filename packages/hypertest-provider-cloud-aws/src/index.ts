@@ -45,13 +45,9 @@ export const HypertestProviderCloudAWS = <T>(settings: HypertestProviderCloudAWS
         console.log("Logging in to ECR...");
         execSync(`docker login -u ${username} -p ${password} ${proxyEndpoint}`, { stdio: "inherit" });
 
-        // Tag image
-        console.log("Tagging the image...");
-        execSync(`docker login -u ${username} -p ${password} ${proxyEndpoint}`, { stdio: "inherit" });
-
         // Push the Docker image to ECR
         console.log("Pushing Docker image to ECR...");
-        execSync(`docker tag hypertest/dev:latest 302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/dev:latest`, { stdio: "inherit" });
+        execSync(`docker push ${imageName}`, { stdio: "inherit" });
 
         console.log(`Docker image pushed successfully to ${imageName}`);
       } catch (error) {
