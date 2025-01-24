@@ -17,7 +17,7 @@ export const HypertestProviderCloudAWS = <T>(settings: HypertestProviderCloudAWS
   });
 
   return {
-    pushImage: async (imageName) => {
+    pushImage: async ({ name: imageName }) => {
       const ecrClient = new ECRClient({
         credentials: lambdaClient.config.credentials,
         region: lambdaClient.config.region,

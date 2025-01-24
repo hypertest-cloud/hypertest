@@ -26,5 +26,5 @@ export const Plugin = (options: CypressPluginOptions): HypertestPlugin<{}> => ({
   //   })
   // }),
   getCloudFunctionContexts: async () => [],
-  buildImage: async () => {}
+  buildImage: async () => ({ name: ' '})
 });

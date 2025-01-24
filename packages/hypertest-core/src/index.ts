@@ -1,8 +1,10 @@
-interface DockerImage {}
+interface DockerImage {
+  name: string
+}
 
 export interface HypertestPlugin <CloudFunctionContext> {
   getCloudFunctionContexts: () => Promise<CloudFunctionContext[]>;
-  buildImage: () => DockerImage
+  buildImage: () => Promise<DockerImage>
 }
 
 export interface HypertestProviderCloud <CloudFunctionContext> {
