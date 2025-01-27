@@ -1,23 +1,26 @@
 import { HypertestCore } from "@hypertest/hypertest-core";
 import { Plugin as playwrightPlugin } from "@hypertest/hypertest-plugin-playwright";
 import { HypertestProviderCloudAWS } from '@hypertest/hypertest-provider-cloud-aws'
-import { PlaywrightLambdaContext } from "../../hypertest-plugin-playwright/dist/types.js";
+import { PlaywrightCloudFunctionContext } from "../../hypertest-plugin-playwright/dist/types.js";
 
-const cloudProvider = HypertestProviderCloudAWS<PlaywrightLambdaContext>({})
+const cloudProvider = HypertestProviderCloudAWS<PlaywrightCloudFunctionContext>({})
 // cloudProvider.invoke('temp image reference', {
 //   grepString: ''
 // })
-console.log('Testing hypertest/dev:latest PUSH')
-cloudProvider.pushImage('302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/dev2:latest')
+console.log('Testing  plugin.buildImage')
 
-// const plugin = playwrightPlugin({
-//   lambdaEnvironment: 'unix',
-//   playwrightConfig: {
-//     testDirectory: 'playwright/tests',
-//     projectName: 'chromium',
-//   },
-//   cloudProvider,
-// });
+const plugin = playwrightPlugin({
+  lambdaEnvironment: 'unix',
+  playwrightConfig: {
+    testDirectory: 'playwright/tests',
+    projectName: 'chromium',
+  },
+  cloudProvider,
+});
+
+const image = await plugin.buildImage();
+cloudProvider.pushImage(image)
+
 
 // const hypertest = HypertestCore({
 //   plugin,

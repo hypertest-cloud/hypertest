@@ -1,3 +1,4 @@
+import { execSync, ExecSyncOptionsWithBufferEncoding } from "child_process";
 import {
   HypertestPlugin
 } from "@hypertest/hypertest-core";
@@ -19,5 +20,26 @@ export const Plugin = (options: PlaywrightPluginOptions): HypertestPlugin<Playwr
 
     resolve(fileContexts.flat())
   }),
-  buildImage: async () => {},
+  buildImage: async () => {
+    try {
+      const execOptions: ExecSyncOptionsWithBufferEncoding = {
+        stdio: "inherit",
+        // TODO
+        cwd: "C:\\Praca\\hypertest"
+      }
+
+      execSync(`docker build -t hypertest-image .`, execOptions);
+
+      execSync(
+        `docker tag hypertest-image:latest 302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/dev2:latest`,
+        execOptions
+      );
+    } catch (error) {
+      console.error("Error while building Docker image:", error);
+    }
+
+    return {
+      name: '302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/dev2:latest'
+    }
+  },
 });
