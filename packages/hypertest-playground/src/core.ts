@@ -19,7 +19,9 @@ const plugin = playwrightPlugin({
 });
 
 const image = await plugin.buildImage();
-cloudProvider.pushImage(image)
+// const contexts = await plugin.getCloudFunctionContexts();
+// console.log('contexts:', contexts)
+// cloudProvider.pushImage(image)
 
 
 // const hypertest = HypertestCore({
