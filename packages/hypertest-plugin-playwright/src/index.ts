@@ -1,7 +1,7 @@
-import { execSync, ExecSyncOptionsWithBufferEncoding } from "child_process";
 import {
   HypertestPlugin
 } from "@hypertest/hypertest-core";
+import { execSync, ExecSyncOptionsWithBufferEncoding } from "child_process";
 import { getGrepString } from "./getGrepString.js";
 import { getSpecFilePaths } from "./getSpecFilePaths.js";
 import { getTestContextPaths } from "./getTestContextPaths.js";
@@ -10,6 +10,7 @@ import { PlaywrightCloudFunctionContext, PlaywrightPluginOptions } from "./types
 export const Plugin = (options: PlaywrightPluginOptions): HypertestPlugin<PlaywrightCloudFunctionContext> => ({
   getCloudFunctionContexts: async () => new Promise<PlaywrightCloudFunctionContext[]>(async (resolve, reject) => {
     const specFilePaths = getSpecFilePaths(options.playwrightConfig.testDirectory);
+
     const fileContexts = await Promise.all(specFilePaths.map(async (specFilePath) => {
       const testContextPaths = await getTestContextPaths(specFilePath)
 
@@ -25,10 +26,10 @@ export const Plugin = (options: PlaywrightPluginOptions): HypertestPlugin<Playwr
       const execOptions: ExecSyncOptionsWithBufferEncoding = {
         stdio: "inherit",
         // TODO
-        cwd: "C:\\Praca\\hypertest"
+        cwd: "/Users/marcinlesek/Projects/hypertest"
       }
 
-      execSync(`docker build -t hypertest-image .`, execOptions);
+      execSync(`docker build --platform linux/amd64 -t hypertest-image .`, execOptions);
 
       execSync(
         `docker tag hypertest-image:latest 302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/dev2:latest`,

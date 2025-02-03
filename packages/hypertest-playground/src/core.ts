@@ -1,6 +1,5 @@
-import { HypertestCore } from "@hypertest/hypertest-core";
 import { Plugin as playwrightPlugin } from "@hypertest/hypertest-plugin-playwright";
-import { HypertestProviderCloudAWS } from '@hypertest/hypertest-provider-cloud-aws'
+import { HypertestProviderCloudAWS } from '@hypertest/hypertest-provider-cloud-aws';
 import { PlaywrightCloudFunctionContext } from "../../hypertest-plugin-playwright/dist/types.js";
 
 const cloudProvider = HypertestProviderCloudAWS<PlaywrightCloudFunctionContext>({})
@@ -20,8 +19,7 @@ const plugin = playwrightPlugin({
 
 const image = await plugin.buildImage();
 // const contexts = await plugin.getCloudFunctionContexts();
-// console.log('contexts:', contexts)
-// cloudProvider.pushImage(image)
+cloudProvider.pushImage(image)
 
 
 // const hypertest = HypertestCore({
