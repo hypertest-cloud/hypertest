@@ -1,9 +1,8 @@
-import { InvokeCommand, LambdaClient } from "@aws-sdk/client-lambda";
-import { fromEnv } from "@aws-sdk/credential-providers";
 import { ECRClient, GetAuthorizationTokenCommand } from "@aws-sdk/client-ecr";
+import { LambdaClient } from "@aws-sdk/client-lambda";
+import { fromEnv } from "@aws-sdk/credential-providers";
 import { HypertestProviderCloud } from "@hypertest/hypertest-core";
 import { execSync } from "child_process";
-import { lambda } from "./lambda.js";
 
 interface HypertestProviderCloudAWSSettings {}
 
@@ -58,30 +57,31 @@ export const HypertestProviderCloudAWS = <T>(settings: HypertestProviderCloudAWS
       return ''
     },
     invoke: async (imageReference, context) => {
-      const command = new InvokeCommand({
-        FunctionName: FUNC_NAME,
-        Payload: JSON.stringify({
-          region: AWS_REGION,
-        }),
-      });
-      const { StatusCode, Payload, LogResult } = await lambdaClient.send(command);
+      // TODO: Implement
+      // const command = new InvokeCommand({
+      //   FunctionName: FUNC_NAME,
+      //   Payload: JSON.stringify({
+      //     region: AWS_REGION,
+      //   }),
+      // });
+      // const { StatusCode, Payload, LogResult } = await lambdaClient.send(command);
 
-      if (StatusCode !== 200) {
-        throw new Error(`Lambda invocation failed with status ${StatusCode}`);
-      }
+      // if (StatusCode !== 200) {
+      //   throw new Error(`Lambda invocation failed with status ${StatusCode}`);
+      // }
 
-      console.log('StatusCode: ', StatusCode?.toString())
+      // console.log('StatusCode: ', StatusCode?.toString())
 
-      const logs = LogResult
-        ? Buffer.from(LogResult, 'base64').toString('utf-8')
-        : '';
+      // const logs = LogResult
+      //   ? Buffer.from(LogResult, 'base64').toString('utf-8')
+      //   : '';
 
-      const result = Payload
-        ? Buffer.from(Payload).toString('utf-8')
-        : '';
+      // const result = Payload
+      //   ? Buffer.from(Payload).toString('utf-8')
+      //   : '';
 
-      console.log('lambda spawn logs: ', logs)
-      console.log('lambda result: ', result)
+      // console.log('lambda spawn logs: ', logs)
+      // console.log('lambda result: ', result)
     },
     getStatus: async (id: string) => {},
   }
