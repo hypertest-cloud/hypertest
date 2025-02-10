@@ -25,7 +25,7 @@ export const Plugin = (options: PlaywrightPluginOptions): HypertestPlugin<Playwr
     try {
       const execOptions: ExecSyncOptionsWithBufferEncoding = {
         stdio: "inherit",
-        // TODO
+        // TODO: Handle project root path dynamically
         cwd: "/Users/marcinlesek/Projects/hypertest"
       }
 
