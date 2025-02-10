@@ -15,7 +15,8 @@
     "@hypertest/hypertest-core": "0.x.x",
     "@hypertest/hypertest-plugin-cypress": "0.x.x",
     "@hypertest/hypertest-plugin-playwright": "0.x.x",
-    "@hypertest/hypertest-runner-cypress": "0.x.x"
+    "@hypertest/hypertest-runner-cypress": "0.x.x",
+    "@hypertest/hypertest-runner-playwright": "0.x.x"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
