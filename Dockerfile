@@ -1,14 +1,5 @@
 FROM node:slim
 
-# Install Google Chrome
-RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg \
-    && wget --quiet --output-document=- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg \
-    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
-    && apt-get update && apt-get install -y google-chrome-stable --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
-
 # Set working directory
 WORKDIR /workspace
 
@@ -28,4 +19,11 @@ RUN npm run build
 # RUN npm i @hypertest/hypertest-runner-playwright
 
 WORKDIR /workspace
+
+# Install Chromium with dependencies
+# TODO: Install Chrome with dependencies directly in image without playwright commands
+# which is a temporary solution
+# https://github.com/microsoft/playwright-dotnet/issues/2058
+RUN npx playwright install --with-deps chromium
+
 CMD ["node", "node_modules/@hypertest/hypertest-runner-playwright/dist/index.js"]
