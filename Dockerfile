@@ -24,6 +24,6 @@ WORKDIR /workspace
 # TODO: Install Chrome with dependencies directly in image without playwright commands
 # which is a temporary solution
 # https://github.com/microsoft/playwright-dotnet/issues/2058
-RUN npx playwright install --with-deps chromium
+RUN PLAYWRIGHT_BROWSERS_PATH=/workspace/pw-browsers npx playwright install --with-deps chromium
 
 CMD ["node", "node_modules/@hypertest/hypertest-runner-playwright/dist/index.js"]
