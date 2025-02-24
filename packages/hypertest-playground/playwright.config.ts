@@ -24,7 +24,7 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   // TODO: Verify how we can set this variable in Lambda
   // This handles `playwright-results` directory
-  reporter: [['html', { outputFolder: '/tmp/playwright-results' }]],
+  reporter: [['json', { outputFile: '/tmp/playwright-results.json' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
