@@ -103,4 +103,4 @@ const contexts = [
 console.log("Hello from playwright runner!");
 
 // TODO:
-execSync(`npx playwright test --grep "${contexts[0].grepString}"`, { stdio: "inherit", cwd: "/workspace/packages/hypertest-playground" });
+execSync(`PLAYWRIGHT_BROWSERS_PATH=/workspace/pw-browsers npx playwright test --grep "${contexts[0].grepString}"`, { stdio: "inherit", cwd: "/workspace/packages/hypertest-playground" });
