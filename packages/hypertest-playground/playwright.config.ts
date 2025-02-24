@@ -22,7 +22,9 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  // TODO: Verify how we can set this variable in Lambda
+  // This handles `playwright-results` directory
+  reporter: [['html', { outputFolder: '/tmp/playwright-results' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -31,14 +33,15 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
+  // TODO: Verify how we can set this variable in Lambda
+  // This handles `test-results` directory
+  outputDir: '/tmp/playwright-results',
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-      // TODO: Verify how we can set this variable in Lambda
-      outputDir: '/tmp/playwright-results'
     },
 
     // {
