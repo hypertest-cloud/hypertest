@@ -1,4 +1,6 @@
+import { APIGatewayProxyEvent, APIGatewayProxyResult, Context, Handler } from 'aws-lambda';
 import { execSync } from "child_process";
+
 
 const contexts = [
   {
@@ -100,7 +102,18 @@ const contexts = [
   }
 ]
 
-console.log("Hello from playwright runner!");
+// console.log("Hello from playwright runner!");
 
 // TODO:
-execSync(`PLAYWRIGHT_BROWSERS_PATH=/workspace/pw-browsers npx playwright test --grep "${contexts[0].grepString}"`, { stdio: "inherit", cwd: "/workspace/packages/hypertest-playground" });
+// execSync(`PLAYWRIGHT_BROWSERS_PATH=/workspace/pw-browsers npx playwright test --grep "${contexts[0].grepString}"`, { stdio: "inherit", cwd: "/workspace/packages/hypertest-playground" });
+
+export const handler: Handler = async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
+  console.log("Hello from playwright runner inside handler!");
+
+  execSync(`PLAYWRIGHT_BROWSERS_PATH=/workspace/pw-browsers npx playwright test --grep "${contexts[0].grepString}"`, { stdio: "inherit", cwd: "/workspace/packages/hypertest-playground" });
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: 'Success' })
+  };
+};
