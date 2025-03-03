@@ -16,6 +16,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@sparticuz/chromium": "^132.0.0",
     "aws-lambda": "^1.0.7"
   }
 }

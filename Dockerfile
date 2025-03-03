@@ -44,8 +44,8 @@ WORKDIR /workspace/packages/hypertest-playground
 
 # ENTRYPOINT ["/usr/local/bin/npx", "aws-lambda-ric"]
 
-# CMD ["node_modules/@hypertest/hypertest-runner-playwright/dist/index.handler"]
+CMD ["node", "node_modules/@hypertest/hypertest-runner-playwright/dist/index.js"]
 
-ENTRYPOINT [ "npx", "playwright" ]
+# ENTRYPOINT [ "npx", "playwright" ]
 
-CMD [ "test" ]
+# CMD [ "test" ]
