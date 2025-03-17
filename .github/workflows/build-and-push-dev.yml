@@ -3,7 +3,7 @@ name: Build and push to dev
 on:
   push:
     branches:
-      - wip-lambda-pw
+      - 29-aws-invoke-lambda-for-tests
   workflow_dispatch:
 
 env:
