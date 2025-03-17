@@ -1,51 +1,56 @@
-FROM mcr.microsoft.com/playwright:v1.49.0
-# FROM node:20
+FROM node:20-bookworm
 
-# RUN apt-get update && apt-get install -y \
-#     g++ \
-#     make \
-#     cmake \
-#     unzip \
-#     libcurl4-openssl-dev \
-#     autoconf \
-#     libtool
+ARG FUNCTION_DIR="/workspace"
 
+# Copy function code
+RUN mkdir -p ${FUNCTION_DIR}
+WORKDIR ${FUNCTION_DIR}
+
+# Install build dependencies
+RUN apt-get update && \
+    apt-get install -y \
+    g++ make cmake unzip libcurl4-openssl-dev poppler-utils \
+	build-essential autoconf automake libtool m4 python3 libssl-dev
+
+RUN npm install -g aws-lambda-ric
+
+# Fixes browser binaries not being found
+ENV PLAYWRIGHT_BROWSERS_PATH=0
+# ENV PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1
+
+# Install Node.js dependencies
+COPY package.json ${FUNCTION_DIR}
+
+RUN npm update & npm install
+
+RUN npm install @playwright/test
+RUN npm install playwright
+# As per the Playwright documentation, we need to install the browsers
+RUN npm install playwright-core
+RUN npm install @sparticuz/chromium
+
+# RUN npx -y playwright install --with-deps --force --no-shell chromium
+
+# Required for Node runtimes which use npm@8.6.0+ because
+# by default npm writes logs under /home/.npm and Lambda fs is read-only
 ENV NPM_CONFIG_CACHE=/tmp/.npm
 
-# # To cache the npm install step
-# RUN npm install -g aws-lambda-ric
+# Do this last so code changes don't cause a full rebuild
+COPY index.js ${FUNCTION_DIR}
+COPY playwright.config.ts ${FUNCTION_DIR}
+COPY playwright ${FUNCTION_DIR}/playwright
+RUN ls
+RUN cat package.json
+ENV DEBUG=pw:browser,pw:protocol
 
-# Set working directory
-WORKDIR /workspace
+RUN apt-get install -y fontconfig
+ENV FONTCONFIG_PATH=/tmp/fonts
+ENV FONTCONFIG_FILE=/tmp/fonts/fonts.conf
 
-# Copy package files
-COPY . ./
+RUN npm i fs-extra
 
-# TODO: By default we will work in playground lvl dir, now it is not possible because our sub packages are not exposed by npm registry.
-WORKDIR /workspace/packages/hypertest-playground
-RUN npm i
-
-# TODO: Later when we go live this will be fetched from npm registry
-WORKDIR /workspace/packages/hypertest-runner-playwright
-RUN npm i
-RUN npm run build
-
-# Later, when we go live
-# RUN npm i @hypertest/hypertest-runner-playwright
-
-# WORKDIR /workspace
-WORKDIR /workspace/packages/hypertest-playground
-
-# Install Chromium with dependencies
-# TODO: Install Chrome with dependencies directly in image without playwright commands
-# which is a temporary solution
-# https://github.com/microsoft/playwright-dotnet/issues/2058
-# RUN PLAYWRIGHT_BROWSERS_PATH=/workspace/pw-browsers npx playwright install --with-deps chromium
-
-# ENTRYPOINT ["/usr/local/bin/npx", "aws-lambda-ric"]
-
-CMD ["node", "node_modules/@hypertest/hypertest-runner-playwright/dist/index.js"]
-
-# ENTRYPOINT [ "npx", "playwright" ]
-
-# CMD [ "test" ]
+# Set runtime interface client as default command for the container runtime
+# and for some reason /usr/local/bin/npx is a symbolic link to /usr/local/lib/node_modules/npm/bin/npx-cli.js
+ENTRYPOINT ["/usr/local/lib/node_modules/npm/bin/npx-cli.js", "aws-lambda-ric"]
+# Pass the name of the function handler as an argument to the runtime
+CMD ["index.handler"]
