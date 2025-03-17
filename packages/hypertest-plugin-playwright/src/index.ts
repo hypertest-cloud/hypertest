@@ -29,18 +29,24 @@ export const Plugin = (options: PlaywrightPluginOptions): HypertestPlugin<Playwr
         cwd: "/Users/marcinlesek/Projects/hypertest"
       }
 
-      execSync(`docker build --platform linux/amd64 -t hypertest-image .`, execOptions);
-
+      const tag = process.env.ARM ? 'arm64': 'amd64'
+      const cmd = `docker build ${process.env.ARM ? '--platform linux/arm64 ' : '--platform linux/amd64 '}-t hypertest-image:${tag} .`
+      console.log(cmd)
+      execSync(cmd, execOptions);
+      if (process.env.DRY_RUN !== undefined) {
+        process.exit(1)
+      }
       execSync(
-        `docker tag hypertest-image:latest 302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/dev2:latest`,
+        `docker tag hypertest-image:${tag} 302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/dev2:${tag}`,
         execOptions
       );
+
+      return {
+        name: `302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/dev2:${tag}`
+      }
     } catch (error) {
       console.error("Error while building Docker image:", error);
-    }
-
-    return {
-      name: '302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/dev2:latest'
+      process.exit(1)
     }
   },
 });
