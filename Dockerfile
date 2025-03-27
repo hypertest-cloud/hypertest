@@ -26,14 +26,15 @@ RUN npm run build -w packages/hypertest-runner-playwright
 
 FROM node:20-bookworm
 ARG FUNCTION_DIR
-# RUN apt-get update && \
-#     apt-get install -y \
-#     g++ make cmake unzip libcurl4-openssl-dev poppler-utils \
-#     build-essential autoconf automake libtool m4 python3 libssl-dev
 
-# RUN npm install -g aws-lambda-ric
+RUN apt-get update && \
+    apt-get install -y \
+    g++ make cmake unzip libcurl4-openssl-dev poppler-utils \
+    build-essential autoconf automake libtool m4 python3 libssl-dev
+
+RUN npm install -g aws-lambda-ric
 
 COPY --from=hypertest-runner-build ${FUNCTION_DIR} ${FUNCTION_DIR}
 
-# ENTRYPOINT ["/usr/local/lib/node_modules/npm/bin/npx-cli.js", "aws-lambda-ric"]
-# CMD ["index.handler"]
+ENTRYPOINT ["/usr/local/lib/node_modules/npm/bin/npx-cli.js", "aws-lambda-ric"]
+CMD ["${FUNCTION_DIR}/packages/hypertest-runner-playwright/dist/index.handler"]
