@@ -82,7 +82,7 @@ export default defineConfig({
   // //   reuseExistingServer: !process.env.CI,
   // // },
 
-  testDir: '/function/playwright/tests',
+  testDir: './playwright/tests',
   fullyParallel: false,
   forbidOnly: true,
   retries: 0,

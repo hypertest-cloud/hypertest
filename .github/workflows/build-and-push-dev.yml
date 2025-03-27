@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  ECR_REPOSITORY: "hypertest/dev2"
+  ECR_REPOSITORY: "hypertest/hypertest-playwright"
 
 jobs:
   build-and-deploy:
