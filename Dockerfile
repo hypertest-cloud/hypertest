@@ -37,4 +37,4 @@ RUN npm install -g aws-lambda-ric
 COPY --from=hypertest-runner-build ${FUNCTION_DIR} ${FUNCTION_DIR}
 
 ENTRYPOINT ["/usr/local/lib/node_modules/npm/bin/npx-cli.js", "aws-lambda-ric"]
-CMD ["${FUNCTION_DIR}/packages/hypertest-runner-playwright/dist/index.handler"]
+CMD ["${FUNCTION_DIR}/packages/hypertest-runner-playwright.handler"]
