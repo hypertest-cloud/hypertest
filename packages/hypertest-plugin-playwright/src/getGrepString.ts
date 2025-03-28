@@ -1,26 +1,27 @@
-import { parseStringToRegexp } from "./parseStringToRegexp.js";
-import { PlaywrightPluginOptions } from "./types.js";
+import { parseStringToRegexp } from './parseStringToRegexp.js';
 
-export const getGrepString = (options: PlaywrightPluginOptions, specFilePath: string, testContextPath: string) => {
-  if (options.lambdaEnvironment === 'unix') {
-    // Ensure that playwrightTestDir ends with a slash for consistent handling.
-    const normalizedPlaywrightTestDir = options.playwrightConfig.testDirectory.endsWith('/')
-    ? options.playwrightConfig.testDirectory
-    : `${options.playwrightConfig.testDirectory}/`;
-
-    // Verify if specFilePath starts with playwrightTestDir and remove it.
-    if (specFilePath.startsWith(normalizedPlaywrightTestDir)) {
-    specFilePath = specFilePath.replace(normalizedPlaywrightTestDir, '');
-    }
-
-    const combinedStr = [
-      parseStringToRegexp(options.playwrightConfig.projectName),
-      parseStringToRegexp(specFilePath),
-      parseStringToRegexp(testContextPath),
-    ].join('\\s');
-
-    return `^${combinedStr}$`
-  } else {
-    throw Error('TODO Implement windows case')
+export const getGrepString = (
+  projectName: string,
+  testDirectory: string,
+  specFilePath: string,
+  testContextPath: string,
+) => {
+  if (!testDirectory.endsWith('/')) {
+    // biome-ignore lint/style/noParameterAssign: <explanation>
+    testDirectory = `${testDirectory}/`;
   }
-}
+
+  // Verify if specFilePath starts with playwrightTestDir and remove it.
+  if (specFilePath.startsWith(testDirectory)) {
+    // biome-ignore lint/style/noParameterAssign: <explanation>
+    specFilePath = specFilePath.replace(testDirectory, '');
+  }
+
+  const combinedStr = [
+    parseStringToRegexp(projectName),
+    parseStringToRegexp(specFilePath),
+    parseStringToRegexp(testContextPath),
+  ].join('\\s');
+
+  return `^${combinedStr}$`;
+};

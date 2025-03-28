@@ -1,13 +1,15 @@
-import { HypertestProviderCloud } from "@hypertest/hypertest-core"
+import type {
+  HypertestConfig,
+  HypertestProviderCloud,
+} from '@hypertest/hypertest-core';
 
 export interface PlaywrightCloudFunctionContext {
-  grepString: string
+  grepString: string;
 }
+
 export interface PlaywrightPluginOptions {
-  lambdaEnvironment: 'unix' // TODO | 'windows'
-  playwrightConfig: {
-    testDirectory: string
-    projectName: string
-  },
-  cloudProvider: HypertestProviderCloud<PlaywrightCloudFunctionContext>
+  config: HypertestConfig;
+  dryRun?: boolean;
+  baseImage?: string;
+  cloudProvider: HypertestProviderCloud<PlaywrightCloudFunctionContext>;
 }

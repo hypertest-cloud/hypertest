@@ -1,3 +1,4 @@
+// @ts-check
 import { defineConfig, devices } from '@playwright/test';
 
 /**
@@ -11,6 +12,8 @@ import { defineConfig, devices } from '@playwright/test';
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+
+// biome-ignore lint/style/noDefaultExport: <explanation>
 export default defineConfig({
   // testDir: './playwright/tests',
   // /* Run tests in files in parallel */
