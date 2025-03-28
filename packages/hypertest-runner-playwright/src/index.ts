@@ -27,7 +27,7 @@ console.log(userConfig);
 export default userConfig;
 `;
 
-async function main() {
+async function main(grep?: string) {
   const opts = {
     args: chromium.args,
     executablePath: await chromium.executablePath(),
@@ -38,19 +38,21 @@ async function main() {
 
   // const cmd = './node_modules/.bin/playwright test -c /tmp/_playwright.config.ts';
   console.log(process.cwd());
-  const cmd = 'npx playwright test -c /tmp/_playwright.config.ts';
+  const cmd = grep
+    ? `npx playwright test -c /tmp/_playwright.config.ts --grep "${grep}"`
+    : 'npx playwright test -c /tmp/_playwright.config.ts';
   execSync(cmd, {
     stdio: 'inherit',
     cwd: process.cwd(),
   });
 }
 
-const handler = async (event: APIGatewayEvent, context: Context) => {
+const handler = async (event: { grep: string }, context: Context) => {
   console.log(event, context);
   console.log('Hello Im lambda handler', process.env);
 
   try {
-    await main();
+    await main(event.grep);
   } catch (err) {
     console.error(err);
 
