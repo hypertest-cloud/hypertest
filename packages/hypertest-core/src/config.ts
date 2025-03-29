@@ -13,6 +13,10 @@ export const loadConfig = async (): Promise<HypertestConfig> => {
     })
     .parseAsync(config);
 
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  return (await ConfigSchema.passthrough().parseAsync(module.default)) as any;
+  const parsedConfig = await ConfigSchema.parseAsync(module.default);
+
+  await parsedConfig.plugins.testPlugin.validate();
+  await parsedConfig.plugins.cloudPlugin.validate();
+
+  return parsedConfig;
 };

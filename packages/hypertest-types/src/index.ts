@@ -1,51 +1,62 @@
 import { z } from 'zod';
 
-export type HypertestProviderCloudAwsConfig = z.infer<
-  typeof HypertestProviderCloudAwsConfigSchema
->;
-
 export type CommandOptions = {
   dryRun?: boolean;
 };
 
-export type TestPlugin = {
+export type PluginBase = {
   name: string;
-  handler: (
-    config: HypertestConfig,
-    cloudProvider: HypertestProviderCloud<{
-      grepString: string;
-    }>,
-    opts: CommandOptions,
-  ) => HypertestPlugin<{
+  validate: () => Promise<void>;
+};
+
+export type TestPluginHandler = (
+  config: HypertestConfig,
+  cloudProvider: HypertestProviderCloud<{
     grepString: string;
-  }>;
+  }>,
+  opts: CommandOptions,
+) => HypertestPlugin<{
+  grepString: string;
+}>;
+
+export type TestPlugin = PluginBase & {
+  handler: TestPluginHandler;
 };
 
-export type CloudPlugin = {
-  name: string;
-  handler: (
-    config: HypertestConfig,
-    opts: CommandOptions,
-  ) => HypertestProviderCloud<{
-    grepString: string;
-  }>;
+export type CloudPluginHandler = (
+  config: HypertestConfig,
+  opts: CommandOptions,
+) => HypertestProviderCloud<{
+  grepString: string;
+}>;
+
+export type CloudPlugin = PluginBase & {
+  handler: CloudPluginHandler;
 };
 
-export type HypertestConfig = z.infer<typeof ConfigSchema> & {
-  plugins: {
-    testPlugin: TestPlugin;
-    cloudPlugin: CloudPlugin;
-  };
-};
+export type HypertestConfig = z.infer<typeof ConfigSchema>;
 
-export const HypertestProviderCloudAwsConfigSchema = z.object({
-  type: z.literal('aws'),
-  ecrRegistry: z.string(),
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+const FunctionSchema = <T extends (...args: any[]) => any>() =>
+  z.function() as unknown as z.ZodType<T>;
+
+const PluginSchema = z.object({
+  name: z.string(),
+  version: z.string(),
+  validate: z.function(),
 });
 
 export const ConfigSchema = z.object({
   imageName: z.string(),
   localImageName: z.string().optional(),
+  plugins: z.object({
+    testPlugin: PluginSchema.extend({
+      handler: FunctionSchema<TestPluginHandler>(),
+    }),
+    cloudPlugin: PluginSchema.extend({
+      handler: FunctionSchema<CloudPluginHandler>(),
+    }),
+  }),
 });
 
 interface DockerImage {

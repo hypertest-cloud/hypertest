@@ -5,9 +5,9 @@ import type {
   CloudPlugin,
   HypertestConfig,
   HypertestProviderCloud,
-  HypertestProviderCloudAwsConfig,
 } from '@hypertest/hypertest-types';
 import { execSync } from 'node:child_process';
+import { z } from 'zod';
 
 // biome-ignore lint/style/useNamingConvention: <explanation>
 
@@ -153,10 +153,21 @@ export const HypertestProviderCloudAWS = <T>(
   };
 };
 
+export const HypertestProviderCloudAwsConfigSchema = z.object({
+  ecrRegistry: z.string(),
+});
+
+type HypertestProviderCloudAwsConfig = z.infer<
+  typeof HypertestProviderCloudAwsConfigSchema
+>;
+
 export const plugin = (
   options: HypertestProviderCloudAwsConfig,
 ): CloudPlugin => ({
   name: '',
+  validate: async () => {
+    await HypertestProviderCloudAwsConfigSchema.parseAsync(options);
+  },
   handler: (config) => {
     return HypertestProviderCloudAWS(options, config);
   },

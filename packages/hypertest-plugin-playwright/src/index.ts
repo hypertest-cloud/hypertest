@@ -14,6 +14,7 @@ import type {
 } from './types.js';
 import { runCommand } from './runCommand.js';
 import type { PlaywrightTestConfig } from '@playwright/test';
+import { z } from 'zod';
 
 const DEFAULT_BASE_IMAGE =
   '302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/hypertest-playwright:latest';
@@ -131,10 +132,17 @@ export const Plugin = (options: {
   };
 };
 
-export const plugin = ({
-  baseImage = DEFAULT_BASE_IMAGE,
-}: { baseImage?: string }): TestPlugin => ({
+const OptionsSchema = z.object({
+  baseImage: z.string().optional(),
+});
+
+type Options = z.infer<typeof OptionsSchema>;
+
+export const plugin = (options: Options): TestPlugin => ({
   name: '@hypertest/hypertest-plugin-playwright',
+  validate: async () => {
+    await OptionsSchema.parseAsync(options);
+  },
   handler: (
     config: HypertestConfig,
     cloudProvider: HypertestProviderCloud<PlaywrightCloudFunctionContext>,
@@ -143,9 +151,7 @@ export const plugin = ({
     Plugin({
       config,
       cloudProvider,
-      options: {
-        baseImage,
-      },
+      options,
       dryRun,
     }),
 });

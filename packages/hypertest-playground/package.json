@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "echo noop",
     "start:core": "hypertest deploy",
     "lint": "biome lint"
   },

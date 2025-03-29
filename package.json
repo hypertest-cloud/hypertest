@@ -5,7 +5,7 @@
   "private": "false",
   "scripts": {
     "docker": "npm run build && docker build . -t hypertest-playwright",
-    "build": "npm run build -w packages",
+    "build": "npm run build -w packages --if-present",
     "lint": "npm run lint --workspaces"
   },
   "workspaces": ["packages/*"]
