@@ -3,6 +3,7 @@ import type {
   HypertestConfig,
   HypertestPlugin,
   HypertestProviderCloud,
+  ResolvedHypertestConfig,
   TestPlugin,
 } from '@hypertest/hypertest-types';
 import { getGrepString } from './getGrepString.js';
@@ -56,7 +57,6 @@ export const Plugin = (options: {
   options: PlaywrightPluginOptions;
   config: HypertestConfig;
   dryRun?: boolean;
-  cloudProvider: HypertestProviderCloud<PlaywrightCloudFunctionContext>;
 }): HypertestPlugin<PlaywrightCloudFunctionContext> => {
   return {
     getCloudFunctionContexts: async () => {
@@ -88,42 +88,27 @@ export const Plugin = (options: {
       const { config: pwConfig, playwrightConfigFilepath } =
         await getPlaywrightConfig();
       const testDir = getTestDir(pwConfig);
+      const { localImageName } = options.config;
 
-      const getLocalImageName = () =>
-        `hypertest-image/${options.config.localImageName ?? options.config.imageName}`;
+      try {
+        const dockerfileFilepath = path.resolve(
+          import.meta.dirname,
+          '../Dockerfile',
+        );
+        console.log(dockerfileFilepath);
 
-      const dockerfileFilepath = path.resolve(
-        import.meta.dirname,
-        '../Dockerfile',
-      );
-      console.log(dockerfileFilepath);
-      const getDockerBuildCommand = () => {
-        return `
+        const dockerBuildCommand = `
           docker build -f ${dockerfileFilepath} \
             --platform linux/amd64 \
-            -t ${getLocalImageName()} \
+            -t ${localImageName} \
             --build-arg BASE_IMAGE=${options.options.baseImage} \
             --build-arg TEST_DIR=${testDir} \
             --build-arg PLAYWRIGHT_CONFIG_FILEPATH=${playwrightConfigFilepath} \
             .
         `;
-      };
 
-      try {
-        const cmd = getDockerBuildCommand();
-        console.log(`\nRunning: ${cmd}\n`);
-
-        if (options.dryRun) {
-          process.exit();
-        }
-        runCommand(cmd);
-
-        const targetName = options.cloudProvider.getTargetImageName();
-        runCommand(`docker tag ${getLocalImageName()} ${targetName}`);
-
-        return {
-          name: targetName,
-        };
+        console.log(`\nRunning: ${dockerBuildCommand}\n`);
+        runCommand(dockerBuildCommand);
       } catch (error) {
         console.error('Error while building Docker image:', error);
         process.exit(1);
@@ -144,14 +129,9 @@ export const plugin = (options: Options): TestPlugin => ({
   validate: async () => {
     await OptionsSchema.parseAsync(options);
   },
-  handler: (
-    config: HypertestConfig,
-    cloudProvider: HypertestProviderCloud<PlaywrightCloudFunctionContext>,
-    { dryRun },
-  ) =>
+  handler: (config: ResolvedHypertestConfig, { dryRun }) =>
     Plugin({
       config,
-      cloudProvider,
       options,
       dryRun,
     }),

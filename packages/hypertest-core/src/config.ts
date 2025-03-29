@@ -1,8 +1,11 @@
-import { ConfigSchema, type HypertestConfig } from '@hypertest/hypertest-types';
+import {
+  ConfigSchema,
+  type ResolvedHypertestConfig,
+} from '@hypertest/hypertest-types';
 import { z } from 'zod';
 
 export const getConfigFilepath = () => `${process.cwd()}/hypertest.config.js`;
-export const loadConfig = async (): Promise<HypertestConfig> => {
+export const loadConfig = async (): Promise<ResolvedHypertestConfig> => {
   const config: unknown = await import(getConfigFilepath());
 
   const module = await z

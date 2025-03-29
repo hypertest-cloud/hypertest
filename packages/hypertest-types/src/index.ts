@@ -10,10 +10,7 @@ export type PluginBase = {
 };
 
 export type TestPluginHandler = (
-  config: HypertestConfig,
-  cloudProvider: HypertestProviderCloud<{
-    grepString: string;
-  }>,
+  config: ResolvedHypertestConfig,
   opts: CommandOptions,
 ) => HypertestPlugin<{
   grepString: string;
@@ -22,7 +19,7 @@ export type TestPluginHandler = (
 export type TestPlugin = z.infer<typeof TestPluginSchema>;
 
 export type CloudPluginHandler = (
-  config: HypertestConfig,
+  config: ResolvedHypertestConfig,
   opts: CommandOptions,
 ) => HypertestProviderCloud<{
   grepString: string;
@@ -30,7 +27,8 @@ export type CloudPluginHandler = (
 
 export type CloudPlugin = z.infer<typeof CloudPluginSchema>;
 
-export type HypertestConfig = z.infer<typeof ConfigSchema>;
+export type ResolvedHypertestConfig = z.output<typeof ConfigSchema>;
+export type HypertestConfig = z.input<typeof ConfigSchema>;
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const FunctionSchema = <T extends (...args: any[]) => any>() =>
@@ -50,31 +48,34 @@ const CloudPluginSchema = PluginSchema.extend({
   handler: FunctionSchema<CloudPluginHandler>(),
 });
 
-export const ConfigSchema = z.object({
-  imageName: z.string(),
-  localImageName: z.string().optional(),
-  plugins: z.object({
-    testPlugin: TestPluginSchema,
-    cloudPlugin: CloudPluginSchema,
-  }),
-});
-
-interface DockerImage {
-  name: string;
-}
+export const ConfigSchema = z
+  .object({
+    imageName: z.string(),
+    localImageName: z.string().optional(),
+    plugins: z.object({
+      testPlugin: TestPluginSchema,
+      cloudPlugin: CloudPluginSchema,
+    }),
+  })
+  .transform((config) => {
+    return {
+      ...config,
+      localImageName:
+        config.localImageName ?? `hypertest-image/${config.imageName}`,
+    };
+  });
 
 export interface HypertestPlugin<CloudFunctionContext> {
   getCloudFunctionContexts: () => Promise<CloudFunctionContext[]>;
-  buildImage: () => Promise<DockerImage>;
+  buildImage: () => Promise<void>;
 }
 
 export interface HypertestProviderCloud<CloudFunctionContext> {
   pullBaseImage: () => Promise<void>;
-  pushImage: (image: DockerImage) => Promise<string>;
+  pushImage: () => Promise<void>;
   invoke: (
     imageReference: string,
     context: CloudFunctionContext,
   ) => Promise<void>;
   getStatus: (id: string) => Promise<void>;
-  getTargetImageName: () => string;
 }

@@ -18,7 +18,6 @@ export default defineConfig({
         '302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/hypertest-playwright:latest',
     }),
     cloudPlugin: cloudPlugin({
-      type: 'aws',
       ecrRegistry: '302735620058.dkr.ecr.eu-central-1.amazonaws.com',
     }),
   },

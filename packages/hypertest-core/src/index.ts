@@ -30,7 +30,7 @@ export const setupHypertest = async ({ dryRun }: CommandOptions) => {
   // });
 
   const cloudProvider = config.plugins.cloudPlugin.handler(config, { dryRun });
-  const plugin = config.plugins.testPlugin.handler(config, cloudProvider, {
+  const plugin = config.plugins.testPlugin.handler(config, {
     dryRun,
   });
 
@@ -53,10 +53,8 @@ export const HypertestCore = <Context>(options: {
     },
     deploy: async () => {
       await options.cloudProvider.pullBaseImage();
-      const image = await options.plugin.buildImage();
-      const imageReference = await options.cloudProvider.pushImage(image);
-
-      console.log({ imageReference });
+      await options.plugin.buildImage();
+      await options.cloudProvider.pushImage();
     },
   };
 };
