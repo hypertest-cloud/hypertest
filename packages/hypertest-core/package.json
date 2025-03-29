@@ -9,6 +9,7 @@
     "hypertest": "./dist/cli.js"
   },
   "scripts": {
+    "prepare": "npm run build",
     "build": "tsc",
     "start": "node ./src/index.js",
     "lint": "biome lint"
