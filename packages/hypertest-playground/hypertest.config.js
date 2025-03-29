@@ -1,6 +1,6 @@
 // @ts-check
 import { defineConfig } from '@hypertest/hypertest-core';
-import { plugin } from '@hypertest/hypertest-plugin-playwright';
+import { plugin as testPlugin } from '@hypertest/hypertest-plugin-playwright';
 import { plugin as cloudPlugin } from '@hypertest/hypertest-provider-cloud-aws';
 
 /**
@@ -12,12 +12,11 @@ const config = {};
 export default defineConfig({
   imageName: 'hypertest/dev2',
   localImageName: 'local-test-image/tests',
-  cloudProvider: {
-    type: 'aws',
-    ecrRegistry: '302735620058.dkr.ecr.eu-central-1.amazonaws.com',
-  },
   plugins: {
-    testPlugin: plugin({}),
+    testPlugin: testPlugin({
+      baseImage:
+        '302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/hypertest-playwright:latest',
+    }),
     cloudPlugin: cloudPlugin({
       type: 'aws',
       ecrRegistry: '302735620058.dkr.ecr.eu-central-1.amazonaws.com',

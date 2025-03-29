@@ -46,7 +46,6 @@ export const HypertestProviderCloudAwsConfigSchema = z.object({
 export const ConfigSchema = z.object({
   imageName: z.string(),
   localImageName: z.string().optional(),
-  cloudProvider: HypertestProviderCloudAwsConfigSchema,
 });
 
 interface DockerImage {

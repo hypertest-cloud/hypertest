@@ -3,12 +3,8 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "echo noop",
     "start:core": "hypertest deploy",
-    "start:runner": "node --env-file=.env ./dist/src/runner.js",
-    "cy:open": "cypress open",
-    "cy:run": "cypress run --headless",
-    "test:run": "node ./dist/scripts/run.js",
     "lint": "biome lint"
   },
   "dependencies": {
