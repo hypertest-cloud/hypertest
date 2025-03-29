@@ -165,6 +165,7 @@ export const plugin = (
   options: HypertestProviderCloudAwsConfig,
 ): CloudPlugin => ({
   name: '',
+  version: '0.0.1',
   validate: async () => {
     await HypertestProviderCloudAwsConfigSchema.parseAsync(options);
   },

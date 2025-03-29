@@ -140,6 +140,7 @@ type Options = z.infer<typeof OptionsSchema>;
 
 export const plugin = (options: Options): TestPlugin => ({
   name: '@hypertest/hypertest-plugin-playwright',
+  version: '0.0.1',
   validate: async () => {
     await OptionsSchema.parseAsync(options);
   },

@@ -19,9 +19,7 @@ export type TestPluginHandler = (
   grepString: string;
 }>;
 
-export type TestPlugin = PluginBase & {
-  handler: TestPluginHandler;
-};
+export type TestPlugin = z.infer<typeof TestPluginSchema>;
 
 export type CloudPluginHandler = (
   config: HypertestConfig,
@@ -30,9 +28,7 @@ export type CloudPluginHandler = (
   grepString: string;
 }>;
 
-export type CloudPlugin = PluginBase & {
-  handler: CloudPluginHandler;
-};
+export type CloudPlugin = z.infer<typeof CloudPluginSchema>;
 
 export type HypertestConfig = z.infer<typeof ConfigSchema>;
 
@@ -46,16 +42,20 @@ const PluginSchema = z.object({
   validate: z.function(),
 });
 
+const TestPluginSchema = PluginSchema.extend({
+  handler: FunctionSchema<TestPluginHandler>(),
+});
+
+const CloudPluginSchema = PluginSchema.extend({
+  handler: FunctionSchema<CloudPluginHandler>(),
+});
+
 export const ConfigSchema = z.object({
   imageName: z.string(),
   localImageName: z.string().optional(),
   plugins: z.object({
-    testPlugin: PluginSchema.extend({
-      handler: FunctionSchema<TestPluginHandler>(),
-    }),
-    cloudPlugin: PluginSchema.extend({
-      handler: FunctionSchema<CloudPluginHandler>(),
-    }),
+    testPlugin: TestPluginSchema,
+    cloudPlugin: CloudPluginSchema,
   }),
 });
 
