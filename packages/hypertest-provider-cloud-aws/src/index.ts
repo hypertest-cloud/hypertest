@@ -3,21 +3,11 @@ import { LambdaClient } from '@aws-sdk/client-lambda';
 import { fromEnv } from '@aws-sdk/credential-providers';
 import type {
   CloudPlugin,
-  HypertestConfig,
   HypertestProviderCloud,
   ResolvedHypertestConfig,
 } from '@hypertest/hypertest-types';
-import { execSync } from 'node:child_process';
 import { z } from 'zod';
 import { runCommand } from './runCommand.js';
-
-// biome-ignore lint/style/useNamingConvention: <explanation>
-
-const AWS_REGION = 'eu-central-1'; // Replace with your AWS region
-const FUNC_NAME = 'hypertestDevHelloWorld'; // Replace with your Lambda function name
-
-const BASE_IMAGE_NAME =
-  '302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/hypertest-playwright:latest';
 
 const getEcrAuth = async (ecrClient: ECRClient) => {
   const command = new GetAuthorizationTokenCommand({});
@@ -52,7 +42,7 @@ export const HypertestProviderCloudAWS = <T>(
 ): HypertestProviderCloud<T> => {
   const lambdaClient = new LambdaClient({
     credentials: fromEnv(),
-    region: AWS_REGION,
+    region: settings.region,
   });
   const ecrClient = new ECRClient({
     credentials: lambdaClient.config.credentials,
@@ -76,7 +66,15 @@ export const HypertestProviderCloudAWS = <T>(
 
         // Push the Docker image to ECR
         console.log('Pulling base docker lambda runner image to local repo...');
-        runCommand(`docker pull ${BASE_IMAGE_NAME}`);
+        runCommand(`docker pull ${settings.baseImage}`);
+
+        // Push the Docker image to ECR
+        console.log(
+          'Tagging local image with hypertest-local/hypertest-playwright...',
+        );
+        runCommand(
+          `docker tag ${settings.baseImage} hypertest-local/hypertest-playwright`,
+        );
       } catch (error) {
         console.error('Error pushing Docker image to ECR:', error);
         process.exit(1);
@@ -133,6 +131,8 @@ export const HypertestProviderCloudAWS = <T>(
 };
 
 export const HypertestProviderCloudAwsConfigSchema = z.object({
+  baseImage: z.string(),
+  region: z.string(),
   ecrRegistry: z.string(),
 });
 

@@ -13,11 +13,11 @@ export default defineConfig({
   imageName: 'hypertest/dev2',
   localImageName: 'local-test-image/tests',
   plugins: {
-    testPlugin: testPlugin({
+    testPlugin: testPlugin({}),
+    cloudPlugin: cloudPlugin({
       baseImage:
         '302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/hypertest-playwright:latest',
-    }),
-    cloudPlugin: cloudPlugin({
+      region: 'eu-central-1',
       ecrRegistry: '302735620058.dkr.ecr.eu-central-1.amazonaws.com',
     }),
   },

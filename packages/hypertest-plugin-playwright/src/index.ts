@@ -2,7 +2,6 @@ import path from 'node:path';
 import type {
   HypertestConfig,
   HypertestPlugin,
-  HypertestProviderCloud,
   ResolvedHypertestConfig,
   TestPlugin,
 } from '@hypertest/hypertest-types';
@@ -16,9 +15,6 @@ import type {
 import { runCommand } from './runCommand.js';
 import type { PlaywrightTestConfig } from '@playwright/test';
 import { z } from 'zod';
-
-const DEFAULT_BASE_IMAGE =
-  '302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/hypertest-playwright:latest';
 
 const getPlaywrightConfig = async (): Promise<{
   playwrightConfigFilepath: string;
@@ -101,7 +97,7 @@ export const Plugin = (options: {
           docker build -f ${dockerfileFilepath} \
             --platform linux/amd64 \
             -t ${localImageName} \
-            --build-arg BASE_IMAGE=${options.options.baseImage} \
+            --build-arg BASE_IMAGE=hypertest-local/hypertest-playwright \
             --build-arg TEST_DIR=${testDir} \
             --build-arg PLAYWRIGHT_CONFIG_FILEPATH=${playwrightConfigFilepath} \
             .
