@@ -57,6 +57,9 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Link core binary
+        run: npm link -w packages/hypertest-core
       
       - name: Deploy
         id: deploy
