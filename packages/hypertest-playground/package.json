@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start:core": "node --env-file=.env ./dist/src/core.js",
+    "start:core": "hypertest deploy",
     "start:runner": "node --env-file=.env ./dist/src/runner.js",
     "cy:open": "cypress open",
     "cy:run": "cypress run --headless",

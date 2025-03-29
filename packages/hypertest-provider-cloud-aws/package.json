@@ -15,6 +15,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@hypertest/hypertest-types": "0.x.x",
     "@aws-sdk/client-ecr": "^3.731.1",
     "@aws-sdk/client-lambda": "^3.709.0",
     "@aws-sdk/credential-providers": "^3.709.0",

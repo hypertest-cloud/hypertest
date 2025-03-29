@@ -1,5 +1,10 @@
 import path from 'node:path';
-import type { HypertestPlugin } from '@hypertest/hypertest-core';
+import type {
+  HypertestConfig,
+  HypertestPlugin,
+  HypertestProviderCloud,
+  TestPlugin,
+} from '@hypertest/hypertest-types';
 import { getGrepString } from './getGrepString.js';
 import { getSpecFilePaths } from './getSpecFilePaths.js';
 import { getTestContextPaths } from './getTestContextPaths.js';
@@ -17,11 +22,13 @@ const getPlaywrightConfig = async (): Promise<{
   playwrightConfigFilepath: string;
   config: PlaywrightTestConfig;
 }> => {
-  const configFilepath = `${process.cwd()}/playwright.config.js`;
+  const configFilepath = './playwright.config.js';
   console.log('Loading PW config from:', configFilepath);
   return {
     playwrightConfigFilepath: configFilepath,
-    config: await import(configFilepath).then((mod) => mod.default),
+    config: await import(path.resolve(process.cwd(), configFilepath)).then(
+      (mod) => mod.default,
+    ),
   };
 };
 
@@ -44,16 +51,20 @@ const getTestDir = (config: PlaywrightTestConfig) => {
   return testDir;
 };
 
-export const Plugin = ({
-  baseImage = DEFAULT_BASE_IMAGE,
-  ...options
-}: PlaywrightPluginOptions): HypertestPlugin<PlaywrightCloudFunctionContext> => {
+export const Plugin = (options: {
+  options: PlaywrightPluginOptions;
+  config: HypertestConfig;
+  dryRun?: boolean;
+  cloudProvider: HypertestProviderCloud<PlaywrightCloudFunctionContext>;
+}): HypertestPlugin<PlaywrightCloudFunctionContext> => {
   return {
     getCloudFunctionContexts: async () => {
       const { config: pwConfig } = await getPlaywrightConfig();
       const testDir = getTestDir(pwConfig);
+      console.log(testDir);
 
       const specFilePaths = getSpecFilePaths(testDir);
+      console.log(specFilePaths);
 
       const fileContexts = await Promise.all(
         specFilePaths.map(async (specFilePath) => {
@@ -90,7 +101,7 @@ export const Plugin = ({
           docker build -f ${dockerfileFilepath} \
             --platform linux/amd64 \
             -t ${getLocalImageName()} \
-            --build-arg BASE_IMAGE=${baseImage} \
+            --build-arg BASE_IMAGE=${options.options.baseImage} \
             --build-arg TEST_DIR=${testDir} \
             --build-arg PLAYWRIGHT_CONFIG_FILEPATH=${playwrightConfigFilepath} \
             .
@@ -101,10 +112,10 @@ export const Plugin = ({
         const cmd = getDockerBuildCommand();
         console.log(`\nRunning: ${cmd}\n`);
 
-        runCommand(cmd);
         if (options.dryRun) {
           process.exit();
         }
+        runCommand(cmd);
 
         const targetName = options.cloudProvider.getTargetImageName();
         runCommand(`docker tag ${getLocalImageName()} ${targetName}`);
@@ -119,3 +130,22 @@ export const Plugin = ({
     },
   };
 };
+
+export const plugin = ({
+  baseImage = DEFAULT_BASE_IMAGE,
+}: { baseImage?: string }): TestPlugin => ({
+  name: '@hypertest/hypertest-plugin-playwright',
+  handler: (
+    config: HypertestConfig,
+    cloudProvider: HypertestProviderCloud<PlaywrightCloudFunctionContext>,
+    { dryRun },
+  ) =>
+    Plugin({
+      config,
+      cloudProvider,
+      options: {
+        baseImage,
+      },
+      dryRun,
+    }),
+});

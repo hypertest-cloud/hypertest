@@ -2,10 +2,11 @@ import { ECRClient, GetAuthorizationTokenCommand } from '@aws-sdk/client-ecr';
 import { LambdaClient } from '@aws-sdk/client-lambda';
 import { fromEnv } from '@aws-sdk/credential-providers';
 import type {
+  CloudPlugin,
   HypertestConfig,
   HypertestProviderCloud,
   HypertestProviderCloudAwsConfig,
-} from '@hypertest/hypertest-core';
+} from '@hypertest/hypertest-types';
 import { execSync } from 'node:child_process';
 
 // biome-ignore lint/style/useNamingConvention: <explanation>
@@ -151,3 +152,12 @@ export const HypertestProviderCloudAWS = <T>(
     getStatus: async (id: string) => {},
   };
 };
+
+export const plugin = (
+  options: HypertestProviderCloudAwsConfig,
+): CloudPlugin => ({
+  name: '',
+  handler: (config) => {
+    return HypertestProviderCloudAWS(options, config);
+  },
+});

@@ -1,12 +1,9 @@
 {
-  "name": "@hypertest/hypertest-core",
+  "name": "@hypertest/hypertest-types",
   "version": "0.0.1",
   "type": "module",
   "exports": {
     ".": "./dist/index.js"
-  },
-  "bin": {
-    "hypertest": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsc",
@@ -18,11 +15,6 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@commander-js/extra-typings": "^13.1.0",
-    "@hypertest/hypertest-plugin-playwright": "0.x.x",
-    "@hypertest/hypertest-types": "0.x.x",
-    "commander": "^13.1.0",
-    "dotenv": "^16.4.7",
     "zod": "^3.24.2"
   }
 }
