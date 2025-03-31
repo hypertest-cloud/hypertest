@@ -104,25 +104,14 @@ export const HypertestProviderCloudAWS = <T>(
         process.exit(1);
       }
     },
-    invoke: async (imageReference, context) => {
-      // TODO: Implement
+    invoke: async (context) => {
       const command = new InvokeCommand({
         FunctionName: settings.functionName,
         InvocationType: 'RequestResponse',
         Payload: JSON.stringify(context),
       });
-      const { StatusCode, Payload, LogResult } =
-        await lambdaClient.send(command);
-      // if (StatusCode !== 202) {
-      //   throw new Error(`Lambda invocation failed with status ${StatusCode}`);
-      // }
-      console.log('StatusCode: ', StatusCode?.toString());
-      const logs = LogResult
-        ? Buffer.from(LogResult, 'base64').toString('utf-8')
-        : '';
+      const { Payload } = await lambdaClient.send(command);
       const result = Payload ? Buffer.from(Payload).toString('utf-8') : '';
-      console.log('lambda spawn logs: ', logs);
-      console.log('lambda result: ', result);
 
       return result;
     },

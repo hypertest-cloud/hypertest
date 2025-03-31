@@ -73,8 +73,5 @@ export interface HypertestPlugin<CloudFunctionContext> {
 export interface HypertestProviderCloud<CloudFunctionContext> {
   pullBaseImage: () => Promise<void>;
   pushImage: () => Promise<void>;
-  invoke: (
-    imageReference: string,
-    context: CloudFunctionContext,
-  ) => Promise<string>;
+  invoke: (context: CloudFunctionContext) => Promise<string>;
 }
