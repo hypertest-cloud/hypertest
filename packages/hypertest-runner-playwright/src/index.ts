@@ -1,9 +1,9 @@
 process.env.HOME = '/tmp';
 
-import { execSync } from 'node:child_process';
 import chromium from '@sparticuz/chromium';
+import type { Context } from 'aws-lambda';
+import { execSync } from 'node:child_process';
 import fs from 'node:fs/promises';
-import type { APIGatewayEvent, Context } from 'aws-lambda';
 
 const printConfigTemplate = (json: Record<string, unknown>) => `
 import path from 'node:path';
@@ -22,6 +22,7 @@ userConfig.projects?.forEach((p) => {
   };
 });
 userConfig.testDir = path.resolve('/tests', userConfig.testDir);
+userConfig.reporter = [['json', { outputFile: '/tmp/playwright-results.json' }]];
 console.log(userConfig);
 
 export default userConfig;
@@ -45,14 +46,22 @@ async function main(grep?: string) {
     stdio: 'inherit',
     cwd: process.cwd(),
   });
+
+  const report = JSON.parse(
+    await fs.readFile('/tmp/playwright-results.json', 'utf8'),
+  );
+
+  return {
+    tests: report.results.summary.tests,
+    passed: report.results.summary.passed,
+  };
 }
 
 const handler = async (event: { grep: string }, context: Context) => {
   console.log(event, context);
-  console.log('Hello Im lambda handler', process.env);
 
   try {
-    await main(event.grep);
+    return await main(event.grep);
   } catch (err) {
     console.error(err);
 
@@ -67,10 +76,6 @@ const handler = async (event: { grep: string }, context: Context) => {
       status: 'unknown-error',
     };
   }
-
-  return {
-    status: 'ok',
-  };
 };
 
 export { handler };
