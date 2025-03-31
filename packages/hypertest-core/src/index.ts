@@ -16,19 +16,6 @@ export const defineConfig = (config: HypertestConfig) => config;
 export const setupHypertest = async ({ dryRun }: CommandOptions) => {
   const config = await loadConfig();
 
-  // const { HypertestProviderCloudAWS } = await import(
-  //   '@hypertest/hypertest-provider-cloud-aws'
-  // );
-  // const cloudProvider = HypertestProviderCloudAWS(config.cloudProvider, config);
-
-  // const { Plugin } = await import('@hypertest/hypertest-plugin-playwright');
-  // const plugin = Plugin({
-  //   options: {},
-  //   config,
-  //   dryRun: process.env.DRY_RUN !== undefined,
-  //   cloudProvider,
-  // });
-
   const cloudProvider = config.plugins.cloudPlugin.handler(config, { dryRun });
   const plugin = config.plugins.testPlugin.handler(config, {
     dryRun,

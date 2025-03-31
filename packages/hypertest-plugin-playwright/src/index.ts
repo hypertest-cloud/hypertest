@@ -70,6 +70,7 @@ export const Plugin = (options: {
           return testContextPaths.map((testContextPath) => ({
             grepString: getGrepString(
               getProjectName(pwConfig),
+              // TODO: Probably remove this argument to fix grep paths?
               testDir,
               specFilePath,
               testContextPath,

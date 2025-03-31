@@ -45,8 +45,8 @@ export const HypertestProviderCloudAWS = <T>(
     region: settings.region,
   });
   const ecrClient = new ECRClient({
-    credentials: lambdaClient.config.credentials,
-    region: lambdaClient.config.region,
+    credentials: fromEnv(),
+    region: settings.region,
   });
 
   const getTargetImageName = () => {
