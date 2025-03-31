@@ -38,7 +38,7 @@ export const HypertestCore = <Context>(options: {
       const results = await Promise.all(
         contexts.map(async (context) => ({
           ...context,
-          result: await options.cloudProvider.invoke('', context),
+          result: await options.cloudProvider.invoke(context),
         })),
       );
 
