@@ -35,11 +35,14 @@ export const HypertestCore = <Context>(options: {
     invoke: async () => {
       const contexts = await options.plugin.getCloudFunctionContexts();
 
-      // for (const context of contexts) {
-      //   options.cloudProvider.invoke('', context);
-      // }
+      const results = await Promise.all(
+        contexts.map(async (context) => ({
+          ...context,
+          result: await options.cloudProvider.invoke('', context),
+        })),
+      );
 
-      await options.cloudProvider.invoke('', contexts[0]);
+      console.log(results);
     },
     deploy: async () => {
       await options.cloudProvider.pullBaseImage();

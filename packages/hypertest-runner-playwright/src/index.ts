@@ -55,6 +55,7 @@ async function main(grep?: string) {
   return {
     expected: report.stats.expected,
     unexpected: report.stats.unexpected,
+    test: report.suites[0].title,
   };
 }
 

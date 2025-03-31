@@ -76,6 +76,5 @@ export interface HypertestProviderCloud<CloudFunctionContext> {
   invoke: (
     imageReference: string,
     context: CloudFunctionContext,
-  ) => Promise<void>;
-  getStatus: (id: string) => Promise<void>;
+  ) => Promise<string>;
 }

@@ -123,8 +123,9 @@ export const HypertestProviderCloudAWS = <T>(
       const result = Payload ? Buffer.from(Payload).toString('utf-8') : '';
       console.log('lambda spawn logs: ', logs);
       console.log('lambda result: ', result);
+
+      return result;
     },
-    getStatus: async (id: string) => {},
   };
 };
 
