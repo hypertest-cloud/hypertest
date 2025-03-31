@@ -43,10 +43,13 @@ async function main(grep?: string) {
   const cmd = grep
     ? `npx playwright test -c /tmp/_playwright.config.ts --grep "${grep}"`
     : 'npx playwright test -c /tmp/_playwright.config.ts';
-  execSync(cmd, {
-    stdio: 'inherit',
-    cwd: process.cwd(),
-  });
+
+  try {
+    execSync(cmd, {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
+  } catch (error) {}
 
   const report = JSON.parse(
     await fs.readFile('/tmp/playwright-results.json', 'utf8'),
@@ -55,7 +58,7 @@ async function main(grep?: string) {
   return {
     expected: report.stats.expected,
     unexpected: report.stats.unexpected,
-    test: report.suites[0].title,
+    test: report.suites[0].suites[0].title,
   };
 }
 
