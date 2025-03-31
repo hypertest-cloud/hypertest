@@ -23,6 +23,7 @@ userConfig.projects?.forEach((p) => {
 });
 userConfig.testDir = path.resolve('/tests', userConfig.testDir);
 userConfig.reporter = [['json', { outputFile: '/tmp/playwright-results.json' }]];
+userConfig.workers = 1;
 console.log(userConfig);
 
 export default userConfig;
@@ -52,8 +53,8 @@ async function main(grep?: string) {
   );
 
   return {
-    tests: report.results.summary.tests,
-    passed: report.results.summary.passed,
+    expected: report.stats.expected,
+    unexpected: report.stats.unexpected,
   };
 }
 

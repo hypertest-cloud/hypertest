@@ -13,7 +13,7 @@ export type TestPluginHandler = (
   config: ResolvedHypertestConfig,
   opts: CommandOptions,
 ) => HypertestPlugin<{
-  grepString: string;
+  grep: string;
 }>;
 
 export type TestPlugin = z.infer<typeof TestPluginSchema>;
@@ -22,7 +22,7 @@ export type CloudPluginHandler = (
   config: ResolvedHypertestConfig,
   opts: CommandOptions,
 ) => HypertestProviderCloud<{
-  grepString: string;
+  grep: string;
 }>;
 
 export type CloudPlugin = z.infer<typeof CloudPluginSchema>;

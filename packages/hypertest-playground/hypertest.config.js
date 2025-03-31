@@ -14,6 +14,7 @@ export default defineConfig({
         '302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/hypertest-playwright:latest',
       region: 'eu-central-1',
       ecrRegistry: '302735620058.dkr.ecr.eu-central-1.amazonaws.com',
+      functionName: 'hypertestDevHelloWorld2',
     }),
   },
 });

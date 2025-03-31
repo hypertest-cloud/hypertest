@@ -1,20 +1,20 @@
-import path from 'node:path';
 import type {
   HypertestConfig,
   HypertestPlugin,
   ResolvedHypertestConfig,
   TestPlugin,
 } from '@hypertest/hypertest-types';
+import type { PlaywrightTestConfig } from '@playwright/test';
+import path from 'node:path';
+import { z } from 'zod';
 import { getGrepString } from './getGrepString.js';
 import { getSpecFilePaths } from './getSpecFilePaths.js';
 import { getTestContextPaths } from './getTestContextPaths.js';
+import { runCommand } from './runCommand.js';
 import type {
   PlaywrightCloudFunctionContext,
   PlaywrightPluginOptions,
 } from './types.js';
-import { runCommand } from './runCommand.js';
-import type { PlaywrightTestConfig } from '@playwright/test';
-import { z } from 'zod';
 
 const getPlaywrightConfig = async (): Promise<{
   playwrightConfigFilepath: string;
@@ -68,9 +68,8 @@ export const Plugin = (options: {
           const testContextPaths = await getTestContextPaths(specFilePath);
 
           return testContextPaths.map((testContextPath) => ({
-            grepString: getGrepString(
+            grep: getGrepString(
               getProjectName(pwConfig),
-              // TODO: Probably remove this argument to fix grep paths?
               testDir,
               specFilePath,
               testContextPath,

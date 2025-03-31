@@ -1,5 +1,5 @@
 export interface PlaywrightCloudFunctionContext {
-  grepString: string;
+  grep: string;
 }
 
 export interface PlaywrightPluginOptions {
