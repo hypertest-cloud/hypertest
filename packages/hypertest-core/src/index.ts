@@ -1,10 +1,10 @@
-import { loadConfig } from './config.js';
 import type {
-  HypertestProviderCloud,
-  HypertestPlugin,
-  HypertestConfig,
   CommandOptions,
+  HypertestConfig,
+  HypertestPlugin,
+  HypertestProviderCloud,
 } from '@hypertest/hypertest-types';
+import { loadConfig } from './config.js';
 
 interface HypertestCore {
   deploy: () => Promise<void>;
@@ -34,6 +34,7 @@ export const HypertestCore = <Context>(options: {
   return {
     invoke: async () => {
       const contexts = await options.plugin.getCloudFunctionContexts();
+
       for (const context of contexts) {
         options.cloudProvider.invoke('', context);
       }

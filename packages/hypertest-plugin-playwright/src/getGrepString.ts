@@ -1,4 +1,5 @@
-import { parseStringToRegexp } from './parseStringToRegexp.js';
+import escapeStringRegexp from 'escape-string-regexp';
+import path from 'node:path';
 
 export const getGrepString = (
   projectName: string,
@@ -6,22 +7,13 @@ export const getGrepString = (
   specFilePath: string,
   testContextPath: string,
 ) => {
-  if (!testDirectory.endsWith('/')) {
-    // biome-ignore lint/style/noParameterAssign: <explanation>
-    testDirectory = `${testDirectory}/`;
-  }
-
-  // Verify if specFilePath starts with playwrightTestDir and remove it.
-  if (specFilePath.startsWith(testDirectory)) {
-    // biome-ignore lint/style/noParameterAssign: <explanation>
-    specFilePath = specFilePath.replace(testDirectory, '');
-  }
-
   const combinedStr = [
-    parseStringToRegexp(projectName),
-    parseStringToRegexp(specFilePath),
-    parseStringToRegexp(testContextPath),
-  ].join('\\s');
+    projectName,
+    path.relative(testDirectory, specFilePath),
+    testContextPath,
+  ]
+    .map(escapeStringRegexp)
+    .join(' ');
 
   return `^${combinedStr}$`;
 };
