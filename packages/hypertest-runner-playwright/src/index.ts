@@ -4,8 +4,12 @@ import chromium from '@sparticuz/chromium';
 import type { Context } from 'aws-lambda';
 import { execSync } from 'node:child_process';
 import fs from 'node:fs/promises';
+import { v4 as uuidv4 } from 'uuid';
 
-const printConfigTemplate = (json: Record<string, unknown>) => `
+const printConfigTemplate = (
+  json: Record<string, unknown>,
+  reportUuid: string,
+) => `
 import path from 'node:path';
 import userConfig from '/tests/playwright.config.js';
 
@@ -22,7 +26,7 @@ userConfig.projects?.forEach((p) => {
   };
 });
 userConfig.testDir = path.resolve('/tests', userConfig.testDir);
-userConfig.reporter = [['json', { outputFile: '/tmp/playwright-results.json' }]];
+userConfig.reporter = [['json', { outputFile: '/tmp/playwright-results-${reportUuid}.json' }]];
 userConfig.workers = 1;
 console.log(userConfig);
 
@@ -36,7 +40,12 @@ async function main(grep?: string) {
     headless: true,
   };
 
-  await fs.writeFile('/tmp/_playwright.config.ts', printConfigTemplate(opts));
+  const reportUuid = uuidv4();
+
+  await fs.writeFile(
+    '/tmp/_playwright.config.ts',
+    printConfigTemplate(opts, reportUuid),
+  );
 
   // const cmd = './node_modules/.bin/playwright test -c /tmp/_playwright.config.ts';
   console.log(process.cwd());
@@ -52,13 +61,13 @@ async function main(grep?: string) {
   } catch (error) {}
 
   const report = JSON.parse(
-    await fs.readFile('/tmp/playwright-results.json', 'utf8'),
+    await fs.readFile(`/tmp/playwright-results-${reportUuid}.json`, 'utf8'),
   );
 
   return {
     expected: report.stats.expected,
     unexpected: report.stats.unexpected,
-    test: report.suites[0].suites[0].title,
+    grep,
   };
 }
 
