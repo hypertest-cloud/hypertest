@@ -57,6 +57,7 @@ export const Plugin = (options: {
   return {
     getCloudFunctionContexts: async () => {
       const { config: pwConfig } = await getPlaywrightConfig();
+      const projectName = getProjectName(pwConfig);
       const testDir = getTestDir(pwConfig);
       console.log(testDir);
 
@@ -69,7 +70,7 @@ export const Plugin = (options: {
 
           return testContextPaths.map((testContextPath) => ({
             grep: getGrepString(
-              getProjectName(pwConfig),
+              projectName,
               testDir,
               specFilePath,
               testContextPath,
