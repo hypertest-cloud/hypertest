@@ -13,9 +13,7 @@ COPY \
 COPY \
     ./packages/hypertest-runner-playwright/ \
     ./packages/hypertest-runner-playwright/
-# COPY \
-#     ./packages/hypertest-runner-playwright/src/ \
-#     ./src/
+
 RUN ls -la
 
 RUN npm ci
