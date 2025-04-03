@@ -1,29 +1,38 @@
-FROM node:slim
+ARG BASE_ALPINE_IMAGE=node:22-alpine
+ARG FUNCTION_DIR="/function"
 
-# Set working directory
-WORKDIR /workspace
+FROM ${BASE_ALPINE_IMAGE} as hypertest-runner-build
+ARG FUNCTION_DIR
+WORKDIR ${FUNCTION_DIR}
 
-# Copy package files
-COPY . ./
+COPY \
+    ./package.json \
+    ./package-lock.json \
+    ./tsconfig.json \
+    ./
+COPY \
+    ./packages/hypertest-runner-playwright/ \
+    ./packages/hypertest-runner-playwright/
 
-# TODO: By default we will work in playground lvl dir, now it is not possible because our sub packages are not exposed by npm registry.
-WORKDIR /workspace/packages/hypertest-playground
-RUN npm i
+RUN ls -la
 
-# TODO: Later when we go live this will be fetched from npm registry
-WORKDIR /workspace/packages/hypertest-runner-playwright
-RUN npm i
-RUN npm run build
+RUN npm ci
+RUN npm run build -w packages/hypertest-runner-playwright
 
-# Later, when we go live
-# RUN npm i @hypertest/hypertest-runner-playwright
+# magic....
 
-WORKDIR /workspace
 
-# Install Chromium with dependencies
-# TODO: Install Chrome with dependencies directly in image without playwright commands
-# which is a temporary solution
-# https://github.com/microsoft/playwright-dotnet/issues/2058
-RUN npx playwright install --with-deps chromium
+FROM node:20-bookworm
+ARG FUNCTION_DIR
 
-CMD ["node", "node_modules/@hypertest/hypertest-runner-playwright/dist/index.js"]
+RUN apt-get update && \
+    apt-get install -y \
+    g++ make cmake unzip libcurl4-openssl-dev poppler-utils \
+    build-essential autoconf automake libtool m4 python3 libssl-dev
+
+RUN npm install -g aws-lambda-ric
+
+COPY --from=hypertest-runner-build ${FUNCTION_DIR} ${FUNCTION_DIR}
+
+ENTRYPOINT ["/usr/local/lib/node_modules/npm/bin/npx-cli.js", "aws-lambda-ric"]
+CMD ["/function/packages/hypertest-runner-playwright/dist/index.handler"]

@@ -1,106 +1,95 @@
-import { execSync } from "child_process";
+process.env.HOME = '/tmp';
 
-const contexts = [
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sdesc\\stest2$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sNew\\sTodo\\sshould\\sallow\\sme\\sto\\sadd\\stodo\\sitems$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sNew\\sTodo\\sNested\\sdescribe\\sSuper\\snested\\stest$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sNew\\sTodo\\sshould\\sclear\\stext\\sinput\\sfield\\swhen\\san\\sitem\\sis\\sadded$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sNew\\sTodo\\sshould\\sappend\\snew\\sitems\\sto\\sthe\\sbottom\\sof\\sthe\\slist$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sMark\\sall\\sas\\scompleted\\sshould\\sallow\\sme\\sto\\smark\\sall\\sitems\\sas\\scompleted$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sMark\\sall\\sas\\scompleted\\sshould\\sallow\\sme\\sto\\sclear\\sthe\\scomplete\\sstate\\sof\\sall\\sitems$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sMark\\sall\\sas\\scompleted\\scomplete\\sall\\scheckbox\\sshould\\supdate\\sstate\\swhen\\sitems\\sare\\scompleted\\s/\\scleared$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sItem\\sshould\\sallow\\sme\\sto\\smark\\sitems\\sas\\scomplete$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sItem\\sshould\\sallow\\sme\\sto\\sun-mark\\sitems\\sas\\scomplete$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sItem\\sshould\\sallow\\sme\\sto\\sedit\\san\\sitem$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sEditing\\sshould\\shide\\sother\\scontrols\\swhen\\sediting$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sEditing\\sshould\\ssave\\sedits\\son\\sblur$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sEditing\\sshould\\strim\\sentered\\stext$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sEditing\\sshould\\sremove\\sthe\\sitem\\sif\\san\\sempty\\stext\\sstring\\swas\\sentered$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sEditing\\sshould\\scancel\\sedits\\son\\sescape$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sCounter\\sshould\\sdisplay\\sthe\\scurrent\\snumber\\sof\\stodo\\sitems$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sClear\\scompleted\\sbutton\\sshould\\sdisplay\\sthe\\scorrect\\stext$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sClear\\scompleted\\sbutton\\sshould\\sremove\\scompleted\\sitems\\swhen\\sclicked$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sClear\\scompleted\\sbutton\\sshould\\sbe\\shidden\\swhen\\sthere\\sare\\sno\\sitems\\sthat\\sare\\scompleted$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sPersistence\\sshould\\spersist\\sits\\sdata$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sRouting\\sshould\\sallow\\sme\\sto\\sdisplay\\sactive\\sitems$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sRouting\\sshould\\srespect\\sthe\\sback\\sbutton$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sRouting\\sshould\\sallow\\sme\\sto\\sdisplay\\scompleted\\sitems$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sRouting\\sshould\\sallow\\sme\\sto\\sdisplay\\sall\\sitems$'
-  },
-  {
-    grepString: '^chromium\\sdemo-todo-app\\.spec\\.ts\\sRouting\\sshould\\shighlight\\sthe\\scurrently\\sapplied\\sfilter$'
-  },
-  { grepString: '^chromium\\sexample\\.spec\\.ts\\shas\\stitle$' },
-  {
-    grepString: '^chromium\\sexample\\.spec\\.ts\\sget\\sstarted\\slink$'
-  },
-  {
-    grepString: '^chromium\\sfoo/bar/sometest\\.spec\\.ts\\ssuper\\snested\\sdesc\\ssuper\\snested\\stest2$'
-  },
-  {
-    grepString: '^chromium\\sfoo/bar/sometest\\.spec\\.ts\\ssuper\\snested\\sdesc\\sfor\\ssome1$'
-  },
-  {
-    grepString: '^chromium\\sfoo/bar/sometest\\.spec\\.ts\\ssuper\\snested\\sdesc\\sfor\\ssome2$'
-  },
-  {
-    grepString: '^chromium\\sfoo/bar/sometest\\.spec\\.ts\\ssuper\\snested\\sdesc\\sforEach\\ssome1$'
-  },
-  {
-    grepString: '^chromium\\sfoo/bar/sometest\\.spec\\.ts\\ssuper\\snested\\sdesc\\sforEach\\ssome2$'
+import chromium from '@sparticuz/chromium';
+import type { Context } from 'aws-lambda';
+import { execSync } from 'node:child_process';
+import fs from 'node:fs/promises';
+import { v4 as uuidv4 } from 'uuid';
+
+const printConfigTemplate = (
+  json: Record<string, unknown>,
+  reportUuid: string,
+) => `
+import path from 'node:path';
+import userConfig from '/tests/playwright.config.js';
+
+userConfig.projects?.forEach((p) => {
+  if (!p.use) {
+    p.use = {};
   }
-]
+  if (!p.use.launchOptions) {
+    p.use.launchOptions = {};
+  }
+  p.use.launchOptions = {
+    ...p.use.launchOptions,
+    ...${JSON.stringify(json, null, 2)}
+  };
+});
+userConfig.testDir = path.resolve('/tests', userConfig.testDir);
+userConfig.reporter = [['json', { outputFile: '/tmp/playwright-results-${reportUuid}.json' }]];
+userConfig.workers = 1;
+console.log(userConfig);
 
-console.log("Hello from playwright runner!");
+export default userConfig;
+`;
 
-// TODO:
-execSync(`npx playwright test --grep "${contexts[0].grepString}"`, { stdio: "inherit", cwd: "/workspace/packages/hypertest-playground" });
+async function main(grep?: string) {
+  const opts = {
+    args: chromium.args,
+    executablePath: await chromium.executablePath(),
+    headless: true,
+  };
+
+  const reportUuid = uuidv4();
+
+  await fs.writeFile(
+    '/tmp/_playwright.config.ts',
+    printConfigTemplate(opts, reportUuid),
+  );
+
+  // const cmd = './node_modules/.bin/playwright test -c /tmp/_playwright.config.ts';
+  console.log(process.cwd());
+  const cmd = grep
+    ? `npx playwright test -c /tmp/_playwright.config.ts --grep "${grep}"`
+    : 'npx playwright test -c /tmp/_playwright.config.ts';
+
+  try {
+    execSync(cmd, {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
+  } catch (error) {}
+
+  const report = JSON.parse(
+    await fs.readFile(`/tmp/playwright-results-${reportUuid}.json`, 'utf8'),
+  );
+
+  return {
+    expected: report.stats.expected,
+    unexpected: report.stats.unexpected,
+    grep,
+  };
+}
+
+const handler = async (event: { grep: string }, context: Context) => {
+  console.log(event, context);
+
+  try {
+    return await main(event.grep);
+  } catch (err) {
+    console.error(err);
+
+    if (err instanceof Error) {
+      return {
+        status: 'error',
+        message: err.message,
+        stack: err.stack,
+      };
+    }
+    return {
+      status: 'unknown-error',
+    };
+  }
+};
+
+export { handler };

@@ -1,36 +1,53 @@
-interface DockerImage {
-  name: string
-}
-
-export interface HypertestPlugin <CloudFunctionContext> {
-  getCloudFunctionContexts: () => Promise<CloudFunctionContext[]>;
-  buildImage: () => Promise<DockerImage>
-}
-
-export interface HypertestProviderCloud <CloudFunctionContext> {
-  pushImage: (image: DockerImage) => Promise<string>;
-  invoke: (imageReference: string, context: CloudFunctionContext) => Promise<void>;
-  getStatus: (id: string) => Promise<void>
-}
+import type {
+  CommandOptions,
+  HypertestConfig,
+  HypertestPlugin,
+  HypertestProviderCloud,
+} from '@hypertest/hypertest-types';
+import { loadConfig } from './config.js';
 
 interface HypertestCore {
-  run: () => Promise<void>;
+  deploy: () => Promise<void>;
+  invoke: () => Promise<void>;
 }
+
+export const defineConfig = (config: HypertestConfig) => config;
+
+export const setupHypertest = async ({ dryRun }: CommandOptions) => {
+  const config = await loadConfig();
+
+  const cloudProvider = config.plugins.cloudPlugin.handler(config, { dryRun });
+  const plugin = config.plugins.testPlugin.handler(config, {
+    dryRun,
+  });
+
+  return HypertestCore({
+    cloudProvider,
+    plugin,
+  });
+};
 
 export const HypertestCore = <Context>(options: {
   plugin: HypertestPlugin<Context>;
-  cloudProvider: HypertestProviderCloud<Context>
+  cloudProvider: HypertestProviderCloud<Context>;
 }): HypertestCore => {
   return {
-    run: async () => {
+    invoke: async () => {
       const contexts = await options.plugin.getCloudFunctionContexts();
 
-      const image = await options.plugin.buildImage();
-      const imageReference = await options.cloudProvider.pushImage(image)
+      const results = await Promise.all(
+        contexts.map(async (context) => ({
+          ...context,
+          result: await options.cloudProvider.invoke(context),
+        })),
+      );
 
-      for (const context of contexts) {
-        options.cloudProvider.invoke(imageReference, context)
-      }
+      console.log(results);
+    },
+    deploy: async () => {
+      await options.cloudProvider.pullBaseImage();
+      await options.plugin.buildImage();
+      await options.cloudProvider.pushImage();
     },
   };
 };

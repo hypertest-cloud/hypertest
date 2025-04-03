@@ -7,11 +7,18 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node ./src/index.js",
+    "start": "node ./dist/bin.js",
     "lint": "biome lint"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
+    "@types/aws-lambda": "^8.10.147",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@sparticuz/chromium": "^132.0.0",
+    "@types/node": "^22.13.14",
+    "aws-lambda": "^1.0.7",
+    "uuid": "^11.1.0"
   }
 }

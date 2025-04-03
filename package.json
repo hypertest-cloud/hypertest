@@ -4,8 +4,9 @@
   "author": "Marcin Łesek <hello@hypertest.cloud>",
   "private": "false",
   "scripts": {
-    "build": "npm run build -w packages",
+    "docker": "npm run build && docker build . -t hypertest-playwright",
+    "build": "npm run build -w packages --if-present",
     "lint": "npm run lint --workspaces"
   },
-  "workspaces": ["packages/*"]
+  "workspaces": ["packages/hypertest-types", "packages/*"]
 }

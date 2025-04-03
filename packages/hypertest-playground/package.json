@@ -3,26 +3,18 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "start:core": "node --env-file=.env ./dist/src/core.js",
-    "start:runner": "node --env-file=.env ./dist/src/runner.js",
-    "cy:open": "cypress open",
-    "cy:run": "cypress run --headless",
-    "test:run": "node ./dist/scripts/run.js",
+    "start:core": "hypertest deploy",
     "lint": "biome lint"
   },
   "dependencies": {
     "@hypertest/hypertest-core": "0.x.x",
-    "@hypertest/hypertest-plugin-cypress": "0.x.x",
     "@hypertest/hypertest-plugin-playwright": "0.x.x",
-    "@hypertest/hypertest-runner-cypress": "0.x.x",
     "@hypertest/hypertest-runner-playwright": "0.x.x"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
     "@playwright/test": "^1.49.0",
     "@types/node": "^22.9.3",
-    "cypress": "^13.8.1",
     "typescript": "^5.7.2"
   }
 }

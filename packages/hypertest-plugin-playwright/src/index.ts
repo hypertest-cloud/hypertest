@@ -1,46 +1,135 @@
-import {
-  HypertestPlugin
-} from "@hypertest/hypertest-core";
-import { execSync, ExecSyncOptionsWithBufferEncoding } from "child_process";
-import { getGrepString } from "./getGrepString.js";
-import { getSpecFilePaths } from "./getSpecFilePaths.js";
-import { getTestContextPaths } from "./getTestContextPaths.js";
-import { PlaywrightCloudFunctionContext, PlaywrightPluginOptions } from "./types.js";
+import type {
+  HypertestConfig,
+  HypertestPlugin,
+  ResolvedHypertestConfig,
+  TestPlugin,
+} from '@hypertest/hypertest-types';
+import type { PlaywrightTestConfig } from '@playwright/test';
+import path from 'node:path';
+import { z } from 'zod';
+import { getGrepString } from './getGrepString.js';
+import { getSpecFilePaths } from './getSpecFilePaths.js';
+import { getTestContextPaths } from './getTestContextPaths.js';
+import { runCommand } from './runCommand.js';
+import type {
+  PlaywrightCloudFunctionContext,
+  PlaywrightPluginOptions,
+} from './types.js';
 
-export const Plugin = (options: PlaywrightPluginOptions): HypertestPlugin<PlaywrightCloudFunctionContext> => ({
-  getCloudFunctionContexts: async () => new Promise<PlaywrightCloudFunctionContext[]>(async (resolve, reject) => {
-    const specFilePaths = getSpecFilePaths(options.playwrightConfig.testDirectory);
+const getPlaywrightConfig = async (): Promise<{
+  playwrightConfigFilepath: string;
+  config: PlaywrightTestConfig;
+}> => {
+  const configFilepath = './playwright.config.js';
+  console.log('Loading PW config from:', configFilepath);
+  return {
+    playwrightConfigFilepath: configFilepath,
+    config: await import(path.resolve(process.cwd(), configFilepath)).then(
+      (mod) => mod.default,
+    ),
+  };
+};
 
-    const fileContexts = await Promise.all(specFilePaths.map(async (specFilePath) => {
-      const testContextPaths = await getTestContextPaths(specFilePath)
+const getProjectName = (config: PlaywrightTestConfig) => {
+  const project = config.projects?.at(0);
+  if (!project) {
+    throw new Error('Playwright config has no project at index 0');
+  }
+  if (!project.name) {
+    throw new Error(`Project name is required, got: ${project.name}`);
+  }
+  return project.name;
+};
 
-      return testContextPaths.map((testContextPath) => ({
-        grepString: getGrepString(options, specFilePath, testContextPath)
-      }))
-    }))
+const getTestDir = (config: PlaywrightTestConfig) => {
+  const testDir = config.testDir;
+  if (!testDir) {
+    throw new Error(`Test dir is required, got: ${testDir}`);
+  }
+  return testDir;
+};
 
-    resolve(fileContexts.flat())
-  }),
-  buildImage: async () => {
-    try {
-      const execOptions: ExecSyncOptionsWithBufferEncoding = {
-        stdio: "inherit",
-        // TODO: Handle project root path dynamically
-        cwd: "/Users/marcinlesek/Projects/hypertest"
-      }
+export const Plugin = (options: {
+  options: PlaywrightPluginOptions;
+  config: HypertestConfig;
+  dryRun?: boolean;
+}): HypertestPlugin<PlaywrightCloudFunctionContext> => {
+  return {
+    getCloudFunctionContexts: async () => {
+      const { config: pwConfig } = await getPlaywrightConfig();
+      const projectName = getProjectName(pwConfig);
+      const testDir = getTestDir(pwConfig);
+      console.log(testDir);
 
-      execSync(`docker build --platform linux/amd64 -t hypertest-image .`, execOptions);
+      const specFilePaths = getSpecFilePaths(testDir);
+      console.log(specFilePaths);
 
-      execSync(
-        `docker tag hypertest-image:latest 302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/dev2:latest`,
-        execOptions
+      const fileContexts = await Promise.all(
+        specFilePaths.map(async (specFilePath) => {
+          const testContextPaths = await getTestContextPaths(specFilePath);
+
+          return testContextPaths.map((testContextPath) => ({
+            grep: getGrepString(
+              projectName,
+              testDir,
+              specFilePath,
+              testContextPath,
+            ),
+          }));
+        }),
       );
-    } catch (error) {
-      console.error("Error while building Docker image:", error);
-    }
 
-    return {
-      name: '302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/dev2:latest'
-    }
+      return fileContexts.flat();
+    },
+    buildImage: async () => {
+      const { config: pwConfig, playwrightConfigFilepath } =
+        await getPlaywrightConfig();
+      const testDir = getTestDir(pwConfig);
+      const { localImageName } = options.config;
+
+      try {
+        const dockerfileFilepath = path.resolve(
+          import.meta.dirname,
+          '../Dockerfile',
+        );
+        console.log(dockerfileFilepath);
+
+        const dockerBuildCommand = `
+          docker build -f ${dockerfileFilepath} \
+            --platform linux/amd64 \
+            -t ${localImageName} \
+            --build-arg BASE_IMAGE=hypertest-local/hypertest-playwright \
+            --build-arg TEST_DIR=${testDir} \
+            --build-arg PLAYWRIGHT_CONFIG_FILEPATH=${playwrightConfigFilepath} \
+            .
+        `;
+
+        console.log(`\nRunning: ${dockerBuildCommand}\n`);
+        runCommand(dockerBuildCommand);
+      } catch (error) {
+        console.error('Error while building Docker image:', error);
+        process.exit(1);
+      }
+    },
+  };
+};
+
+const OptionsSchema = z.object({
+  baseImage: z.string().optional(),
+});
+
+type Options = z.infer<typeof OptionsSchema>;
+
+export const plugin = (options: Options): TestPlugin => ({
+  name: '@hypertest/hypertest-plugin-playwright',
+  version: '0.0.1',
+  validate: async () => {
+    await OptionsSchema.parseAsync(options);
   },
+  handler: (config: ResolvedHypertestConfig, { dryRun }) =>
+    Plugin({
+      config,
+      options,
+      dryRun,
+    }),
 });
