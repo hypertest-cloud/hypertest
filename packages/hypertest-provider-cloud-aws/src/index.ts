@@ -127,8 +127,9 @@ const HypertestProviderCloudAWS = <T>(
       try {
         const response = await lambdaClient.send(command);
 
-        console.log(`Lambda called ${settings.functionName} has been updated`);
-        console.log(`Status: ${response.LastUpdateStatus}`);
+        console.log(
+          `Lambda ${settings.functionName} image update has been started, status: ${response.LastUpdateStatus}`,
+        );
       } catch (error) {
         console.error('Error updating lambda by new image', error);
         process.exit(1);
