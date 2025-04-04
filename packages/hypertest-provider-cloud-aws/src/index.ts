@@ -36,7 +36,7 @@ const getEcrAuth = async (ecrClient: ECRClient) => {
 };
 
 // biome-ignore lint/style/useNamingConvention: <explanation>
-export const HypertestProviderCloudAWS = <T>(
+const HypertestProviderCloudAWS = <T>(
   settings: HypertestProviderCloudAwsConfig,
   config: ResolvedHypertestConfig,
 ): HypertestProviderCloud<T> => {
@@ -115,9 +115,7 @@ export const HypertestProviderCloudAWS = <T>(
 
       return result;
     },
-    createLambda: async () => {},
     updateLambdaImage: async () => {},
-    removeLambda: async () => {},
   };
 };
 
