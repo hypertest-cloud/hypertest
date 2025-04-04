@@ -48,6 +48,7 @@ export const HypertestCore = <Context>(options: {
       await options.cloudProvider.pullBaseImage();
       await options.plugin.buildImage();
       await options.cloudProvider.pushImage();
+      await options.cloudProvider.updateLambdaImage();
     },
   };
 };
