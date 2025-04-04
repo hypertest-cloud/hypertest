@@ -74,4 +74,7 @@ export interface HypertestProviderCloud<CloudFunctionContext> {
   pullBaseImage: () => Promise<void>;
   pushImage: () => Promise<void>;
   invoke: (context: CloudFunctionContext) => Promise<string>;
+  createLambda: () => Promise<void>;
+  updateLambdaImage: () => Promise<void>;
+  removeLambda: () => Promise<void>;
 }

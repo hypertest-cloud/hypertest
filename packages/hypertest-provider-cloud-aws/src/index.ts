@@ -115,6 +115,9 @@ export const HypertestProviderCloudAWS = <T>(
 
       return result;
     },
+    createLambda: async () => {},
+    updateLambdaImage: async () => {},
+    removeLambda: async () => {},
   };
 };
 
