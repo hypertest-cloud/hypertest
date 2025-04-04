@@ -5,16 +5,16 @@ import { plugin as cloudPlugin } from '@hypertest/hypertest-provider-cloud-aws';
 
 // biome-ignore lint/style/noDefaultExport: <explanation>
 export default defineConfig({
-  imageName: 'hypertest/dev2',
-  localImageName: 'local-test-image/tests',
+  imageName: 'hypertest/playground-playwright',
+  localImageName: 'hypertest-local/playground-playwright',
   plugins: {
     testPlugin: testPlugin({}),
     cloudPlugin: cloudPlugin({
       baseImage:
-        '302735620058.dkr.ecr.eu-central-1.amazonaws.com/hypertest/hypertest-playwright:latest',
+        '491085409730.dkr.ecr.eu-central-1.amazonaws.com/hypertest/base-playwright:latest',
       region: 'eu-central-1',
-      ecrRegistry: '302735620058.dkr.ecr.eu-central-1.amazonaws.com',
-      functionName: 'hypertestDevHelloWorld2',
+      ecrRegistry: '491085409730.dkr.ecr.eu-central-1.amazonaws.com',
+      functionName: 'hypertest-playground-playwright',
     }),
   },
 });
