@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
-export type CommandOptions = {
+export interface CommandOptions {
   dryRun?: boolean;
-};
+}
 
-export type PluginBase = {
+export interface PluginBase {
   name: string;
   validate: () => Promise<void>;
-};
+}
 
 export type TestPluginHandler = (
   config: ResolvedHypertestConfig,
