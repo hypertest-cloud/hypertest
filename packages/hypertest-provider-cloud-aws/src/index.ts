@@ -1,5 +1,9 @@
 import { ECRClient, GetAuthorizationTokenCommand } from '@aws-sdk/client-ecr';
-import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda';
+import {
+  InvokeCommand,
+  LambdaClient,
+  UpdateFunctionCodeCommand,
+} from '@aws-sdk/client-lambda';
 import { fromEnv } from '@aws-sdk/credential-providers';
 import type {
   CloudPlugin,
@@ -115,7 +119,21 @@ const HypertestProviderCloudAWS = <T>(
 
       return result;
     },
-    updateLambdaImage: async () => {},
+    updateLambdaImage: async () => {
+      const command = new UpdateFunctionCodeCommand({
+        FunctionName: settings.functionName,
+        ImageUri: getTargetImageName(),
+      });
+      try {
+        const response = await lambdaClient.send(command);
+
+        console.log(`Lambda called ${settings.functionName} has been updated`);
+        console.log(`Status: ${response.LastUpdateStatus}`);
+      } catch (error) {
+        console.error('Error updating lambda by new image', error);
+        process.exit(1);
+      }
+    },
   };
 };
 
