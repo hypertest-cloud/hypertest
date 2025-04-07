@@ -6,7 +6,8 @@ import { plugin as cloudPlugin } from '@hypertest/hypertest-provider-cloud-aws';
 // biome-ignore lint/style/noDefaultExport: <explanation>
 export default defineConfig({
   imageName: 'hypertest/playground-playwright',
-  localImageName: 'hypertest-local/playground-playwright',
+  localImageName: 'hypertest/playground-playwright',
+  localBaseImageName: 'hypertest/local-base-playwright',
   plugins: {
     testPlugin: testPlugin({}),
     cloudPlugin: cloudPlugin({

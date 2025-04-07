@@ -52,6 +52,7 @@ export const ConfigSchema = z
   .object({
     imageName: z.string(),
     localImageName: z.string().optional(),
+    localBaseImageName: z.string().optional(),
     plugins: z.object({
       testPlugin: TestPluginSchema,
       cloudPlugin: CloudPluginSchema,
@@ -60,8 +61,8 @@ export const ConfigSchema = z
   .transform((config) => {
     return {
       ...config,
-      localImageName:
-        config.localImageName ?? `hypertest-image/${config.imageName}`,
+      localImageName: config.localImageName ?? config.imageName,
+      localBaseImageName: config.localBaseImageName ?? 'hypertest/local-base-playwright',
     };
   });
 
