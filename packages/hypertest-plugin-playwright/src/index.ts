@@ -85,7 +85,7 @@ export const Plugin = (options: {
       const { config: pwConfig, playwrightConfigFilepath } =
         await getPlaywrightConfig();
       const testDir = getTestDir(pwConfig);
-      const { localImageName } = options.config;
+      const { localImageName, localBaseImageName } = options.config;
 
       try {
         const dockerfileFilepath = path.resolve(
@@ -98,7 +98,7 @@ export const Plugin = (options: {
           docker build -f ${dockerfileFilepath} \
             --platform linux/amd64 \
             -t ${localImageName} \
-            --build-arg BASE_IMAGE=${localImageName} \
+            --build-arg BASE_IMAGE=${localBaseImageName} \
             --build-arg TEST_DIR=${testDir} \
             --build-arg PLAYWRIGHT_CONFIG_FILEPATH=${playwrightConfigFilepath} \
             .
