@@ -98,7 +98,7 @@ export const Plugin = (options: {
           docker build -f ${dockerfileFilepath} \
             --platform linux/amd64 \
             -t ${localImageName} \
-            --build-arg BASE_IMAGE=hypertest-local/playground-playwright \
+            --build-arg BASE_IMAGE=${localImageName} \
             --build-arg TEST_DIR=${testDir} \
             --build-arg PLAYWRIGHT_CONFIG_FILEPATH=${playwrightConfigFilepath} \
             .
