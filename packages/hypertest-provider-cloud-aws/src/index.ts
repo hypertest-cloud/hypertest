@@ -74,10 +74,10 @@ const HypertestProviderCloudAWS = <T>(
 
         // Push the Docker image to ECR
         console.log(
-          'Tagging local image with hypertest-local/playground-playwright...',
+          `Tagging local image with ${config.localBaseImageName} ...`,
         );
         runCommand(
-          `docker tag ${settings.baseImage} hypertest-local/playground-playwright`,
+          `docker tag ${settings.baseImage} ${config.localBaseImageName}`,
         );
       } catch (error) {
         console.error('Error pushing Docker image to ECR:', error);
