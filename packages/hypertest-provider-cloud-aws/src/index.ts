@@ -1,5 +1,9 @@
 import { ECRClient, GetAuthorizationTokenCommand } from '@aws-sdk/client-ecr';
-import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda';
+import {
+  InvokeCommand,
+  LambdaClient,
+  UpdateFunctionCodeCommand,
+} from '@aws-sdk/client-lambda';
 import { fromEnv } from '@aws-sdk/credential-providers';
 import type {
   CloudPlugin,
@@ -36,7 +40,7 @@ const getEcrAuth = async (ecrClient: ECRClient) => {
 };
 
 // biome-ignore lint/style/useNamingConvention: <explanation>
-export const HypertestProviderCloudAWS = <T>(
+const HypertestProviderCloudAWS = <T>(
   settings: HypertestProviderCloudAwsConfig,
   config: ResolvedHypertestConfig,
 ): HypertestProviderCloud<T> => {
@@ -70,10 +74,10 @@ export const HypertestProviderCloudAWS = <T>(
 
         // Push the Docker image to ECR
         console.log(
-          'Tagging local image with hypertest-local/hypertest-playwright...',
+          `Tagging local image with ${config.localBaseImageName} ...`,
         );
         runCommand(
-          `docker tag ${settings.baseImage} hypertest-local/hypertest-playwright`,
+          `docker tag ${settings.baseImage} ${config.localBaseImageName}`,
         );
       } catch (error) {
         console.error('Error pushing Docker image to ECR:', error);
@@ -114,6 +118,22 @@ export const HypertestProviderCloudAWS = <T>(
       const result = Payload ? Buffer.from(Payload).toString('utf-8') : '';
 
       return result;
+    },
+    updateLambdaImage: async () => {
+      const command = new UpdateFunctionCodeCommand({
+        FunctionName: settings.functionName,
+        ImageUri: getTargetImageName(),
+      });
+      try {
+        const response = await lambdaClient.send(command);
+
+        console.log(
+          `Lambda ${settings.functionName} image update has been started, status: ${response.LastUpdateStatus}`,
+        );
+      } catch (error) {
+        console.error('Error updating lambda by new image', error);
+        process.exit(1);
+      }
     },
   };
 };

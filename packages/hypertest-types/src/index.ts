@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
-export type CommandOptions = {
+export interface CommandOptions {
   dryRun?: boolean;
-};
+}
 
-export type PluginBase = {
+export interface PluginBase {
   name: string;
   validate: () => Promise<void>;
-};
+}
 
 export type TestPluginHandler = (
   config: ResolvedHypertestConfig,
@@ -52,6 +52,7 @@ export const ConfigSchema = z
   .object({
     imageName: z.string(),
     localImageName: z.string().optional(),
+    localBaseImageName: z.string().optional(),
     plugins: z.object({
       testPlugin: TestPluginSchema,
       cloudPlugin: CloudPluginSchema,
@@ -60,8 +61,8 @@ export const ConfigSchema = z
   .transform((config) => {
     return {
       ...config,
-      localImageName:
-        config.localImageName ?? `hypertest-image/${config.imageName}`,
+      localImageName: config.localImageName ?? config.imageName,
+      localBaseImageName: config.localBaseImageName ?? 'hypertest/local-base-playwright',
     };
   });
 
@@ -74,4 +75,5 @@ export interface HypertestProviderCloud<CloudFunctionContext> {
   pullBaseImage: () => Promise<void>;
   pushImage: () => Promise<void>;
   invoke: (context: CloudFunctionContext) => Promise<string>;
+  updateLambdaImage: () => Promise<void>;
 }
