@@ -18,7 +18,6 @@
   "dependencies": {
     "@sparticuz/chromium": "^132.0.0",
     "@types/node": "^22.13.14",
-    "aws-lambda": "^1.0.7",
-    "uuid": "^11.1.0"
+    "aws-lambda": "^1.0.7"
   }
 }

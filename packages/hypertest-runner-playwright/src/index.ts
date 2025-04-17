@@ -4,7 +4,6 @@ import chromium from '@sparticuz/chromium';
 import type { Context } from 'aws-lambda';
 import { execSync } from 'node:child_process';
 import fs from 'node:fs/promises';
-import { v4 as uuidv4 } from 'uuid';
 
 const printConfigTemplate = (
   json: Record<string, unknown>,
@@ -33,18 +32,16 @@ console.log(userConfig);
 export default userConfig;
 `;
 
-async function main(grep?: string) {
+async function main(uuid: string, grep?: string) {
   const opts = {
     args: chromium.args,
     executablePath: await chromium.executablePath(),
     headless: true,
   };
 
-  const reportUuid = uuidv4();
-
   await fs.writeFile(
     '/tmp/_playwright.config.ts',
-    printConfigTemplate(opts, reportUuid),
+    printConfigTemplate(opts, uuid),
   );
 
   // const cmd = './node_modules/.bin/playwright test -c /tmp/_playwright.config.ts';
@@ -61,7 +58,7 @@ async function main(grep?: string) {
   } catch (error) {}
 
   const report = JSON.parse(
-    await fs.readFile(`/tmp/playwright-results-${reportUuid}.json`, 'utf8'),
+    await fs.readFile(`/tmp/playwright-results-${uuid}.json`, 'utf8'),
   );
 
   return {
@@ -71,11 +68,14 @@ async function main(grep?: string) {
   };
 }
 
-const handler = async (event: { grep: string }, context: Context) => {
+const handler = async (
+  event: { grep?: string; uuid: string },
+  context: Context,
+) => {
   console.log(event, context);
 
   try {
-    return await main(event.grep);
+    return await main(event.uuid, event.grep);
   } catch (err) {
     console.error(err);
 

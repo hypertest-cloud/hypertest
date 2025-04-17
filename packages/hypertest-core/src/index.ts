@@ -38,6 +38,7 @@ export const HypertestCore = <Context>(options: {
       const results = await Promise.all(
         contexts.map(async (context) => ({
           ...context,
+          uuid: crypto.randomUUID(),
           result: await options.cloudProvider.invoke(context),
         })),
       );
