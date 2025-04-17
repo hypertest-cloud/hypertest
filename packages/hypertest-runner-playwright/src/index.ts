@@ -7,7 +7,7 @@ import fs from 'node:fs/promises';
 
 const printConfigTemplate = (
   json: Record<string, unknown>,
-  reportUuid: string,
+  outputDir: string,
 ) => `
 import path from 'node:path';
 import userConfig from '/tests/playwright.config.js';
@@ -25,7 +25,8 @@ userConfig.projects?.forEach((p) => {
   };
 });
 userConfig.testDir = path.resolve('/tests', userConfig.testDir);
-userConfig.reporter = [['json', { outputFile: '/tmp/playwright-results-${reportUuid}.json' }]];
+userConfig.reporter = [['json', { outputFile: '${outputDir}/playwright-results.json' }]];
+userConfig.outputDir = '${outputDir}'
 userConfig.workers = 1;
 console.log(userConfig);
 
@@ -33,6 +34,10 @@ export default userConfig;
 `;
 
 async function main(uuid: string, grep?: string) {
+  const outputDir = `/tmp/${uuid}`;
+
+  await fs.mkdir(outputDir);
+
   const opts = {
     args: chromium.args,
     executablePath: await chromium.executablePath(),
@@ -40,15 +45,15 @@ async function main(uuid: string, grep?: string) {
   };
 
   await fs.writeFile(
-    '/tmp/_playwright.config.ts',
-    printConfigTemplate(opts, uuid),
+    `${outputDir}/_playwright.config.ts`,
+    printConfigTemplate(opts, outputDir),
   );
 
   // const cmd = './node_modules/.bin/playwright test -c /tmp/_playwright.config.ts';
   console.log(process.cwd());
   const cmd = grep
-    ? `npx playwright test -c /tmp/_playwright.config.ts --grep "${grep}"`
-    : 'npx playwright test -c /tmp/_playwright.config.ts';
+    ? `npx playwright test -c ${outputDir}/_playwright.config.ts --grep "${grep}"`
+    : `npx playwright test -c ${outputDir}/_playwright.config.ts`;
 
   try {
     execSync(cmd, {
@@ -58,7 +63,7 @@ async function main(uuid: string, grep?: string) {
   } catch (error) {}
 
   const report = JSON.parse(
-    await fs.readFile(`/tmp/playwright-results-${uuid}.json`, 'utf8'),
+    await fs.readFile(`${outputDir}/playwright-results.json`, 'utf8'),
   );
 
   return {
