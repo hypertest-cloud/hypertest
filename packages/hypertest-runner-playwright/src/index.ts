@@ -36,7 +36,7 @@ export default userConfig;
 async function main(uuid: string, grep?: string) {
   const outputDir = `/tmp/${uuid}`;
 
-  await fs.mkdir(outputDir);
+  await fs.mkdir(outputDir, { recursive: true });
 
   const opts = {
     args: chromium.args,
