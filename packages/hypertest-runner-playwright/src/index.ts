@@ -70,6 +70,10 @@ async function main(uuid: string, grep?: string) {
       stdio: 'inherit',
       cwd: process.cwd(),
     });
+  } catch (error) {
+    console.log('main test run error:', error);
+  }
+  try {
     execSync('ls -la /tmp', {
       stdio: 'inherit',
       cwd: process.cwd(),
