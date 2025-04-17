@@ -54,6 +54,11 @@ async function main(uuid: string, grep?: string) {
     cwd: process.cwd(),
   });
 
+  execSync(`cd ${outputDir}; pwd`, {
+    stdio: 'inherit',
+    cwd: process.cwd(),
+  });
+
   // const cmd = './node_modules/.bin/playwright test -c /tmp/_playwright.config.ts';
   console.log(process.cwd());
   const cmd = grep
