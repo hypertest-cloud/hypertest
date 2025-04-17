@@ -60,6 +60,24 @@ async function main(uuid: string, grep?: string) {
       stdio: 'inherit',
       cwd: process.cwd(),
     });
+    execSync('ls -la /tmp', {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
+  } catch (error) {}
+
+  try {
+    execSync(`ls -la /tmp/${uuid}`, {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
+  } catch (error) {}
+
+  try {
+    execSync(`ls -la /tmp/${uuid}/my-artifacts/screenshots/`, {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
   } catch (error) {}
 
   const report = JSON.parse(
