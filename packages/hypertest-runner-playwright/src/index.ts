@@ -49,6 +49,11 @@ async function main(uuid: string, grep?: string) {
     printConfigTemplate(opts, outputDir),
   );
 
+  execSync(`ls -la /tmp/${uuid}`, {
+    stdio: 'inherit',
+    cwd: process.cwd(),
+  });
+
   // const cmd = './node_modules/.bin/playwright test -c /tmp/_playwright.config.ts';
   console.log(process.cwd());
   const cmd = grep
