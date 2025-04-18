@@ -94,6 +94,7 @@ async function main(uuid: string, bucketName: string, grep?: string) {
   return {
     expected: report.stats.expected,
     unexpected: report.stats.unexpected,
+    uuid,
     grep,
   };
 }

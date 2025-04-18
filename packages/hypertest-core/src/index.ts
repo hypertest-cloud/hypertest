@@ -47,7 +47,9 @@ export const HypertestCore = <Context>(options: {
 
           return {
             ingestedContext,
-            result: await options.cloudProvider.invoke(ingestedContext),
+            result: JSON.parse(
+              await options.cloudProvider.invoke(ingestedContext),
+            ),
           };
         }),
       );
