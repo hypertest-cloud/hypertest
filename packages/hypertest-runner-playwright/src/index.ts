@@ -50,17 +50,6 @@ async function main(uuid: string, grep?: string) {
     printConfigTemplate(opts, testOutputDir),
   );
 
-  execSync(`ls -la /tmp/${uuid}`, {
-    stdio: 'inherit',
-    cwd: process.cwd(),
-  });
-
-  execSync(`cd ${testOutputDir}; pwd`, {
-    stdio: 'inherit',
-    cwd: process.cwd(),
-  });
-
-  // const cmd = './node_modules/.bin/playwright test -c /tmp/_playwright.config.ts';
   console.log(process.cwd());
   const cmd = grep
     ? `npx playwright test -c ${testRunDir}/_playwright.config.ts --grep "${grep}"`
@@ -74,22 +63,18 @@ async function main(uuid: string, grep?: string) {
   } catch (error) {
     console.log('main test run error:', error);
   }
+
+  console.log(`ls -la /tmp/${uuid}/output`);
   try {
-    execSync('ls -la /tmp', {
+    execSync(`ls -la /tmp/${uuid}/output`, {
       stdio: 'inherit',
       cwd: process.cwd(),
     });
   } catch (error) {}
 
+  console.log(`ls -la /tmp/${uuid}/output/screenshots`);
   try {
-    execSync(`ls -la /tmp/${uuid}`, {
-      stdio: 'inherit',
-      cwd: process.cwd(),
-    });
-  } catch (error) {}
-
-  try {
-    execSync(`ls -la /tmp/${uuid}/my-artifacts/screenshots/`, {
+    execSync(`ls -la /tmp/${uuid}/output/screenshots`, {
       stdio: 'inherit',
       cwd: process.cwd(),
     });

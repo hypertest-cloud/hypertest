@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('https://demo.playwright.dev/todomvc');
@@ -210,9 +210,9 @@ test.describe('Item', () => {
     ]);
     await checkTodosInLocalStorage(page, 'buy some sausages');
     await page.screenshot({
-      path: 'my-artifacts/screenshots/testInfotitle.png',
+      path: 'output/screenshots/testInfoTitle.png',
     });
-    await page.screenshot({ path: 'testInfotitleSolo.png' });
+    await page.screenshot({ path: 'testInfoTitleSolo.png' });
   });
 });
 
