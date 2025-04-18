@@ -16,6 +16,7 @@ export default defineConfig({
       region: 'eu-central-1',
       ecrRegistry: '491085409730.dkr.ecr.eu-central-1.amazonaws.com',
       functionName: 'hypertest-playground-playwright',
+      bucketName: 'hypertest-playground-playwright-artifacts',
     }),
   },
 });

@@ -4,6 +4,7 @@ import chromium from '@sparticuz/chromium';
 import type { Context } from 'aws-lambda';
 import { execSync } from 'node:child_process';
 import fs from 'node:fs/promises';
+import { uploadToS3 } from './uploadToS3.js';
 
 const printConfigTemplate = (
   json: Record<string, unknown>,
@@ -33,7 +34,7 @@ console.log(userConfig);
 export default userConfig;
 `;
 
-async function main(uuid: string, grep?: string) {
+async function main(uuid: string, bucketName: string, grep?: string) {
   const testRunDir = `/tmp/${uuid}`;
   const testOutputDir = `${testRunDir}/output`;
 
@@ -64,6 +65,7 @@ async function main(uuid: string, grep?: string) {
     console.log('main test run error:', error);
   }
 
+  // TODO: Remove all console logs and execSync's with debugs
   console.log(`ls -la /tmp/${uuid}/output`);
   try {
     execSync(`ls -la /tmp/${uuid}/output`, {
@@ -80,6 +82,11 @@ async function main(uuid: string, grep?: string) {
     });
   } catch (error) {}
 
+  const uploadResult = await uploadToS3(bucketName, testOutputDir, uuid);
+  if (!uploadResult.success) {
+    throw new Error('Failed to upload test results to S3.');
+  }
+
   const report = JSON.parse(
     await fs.readFile(`${testOutputDir}/playwright-results.json`, 'utf8'),
   );
@@ -92,13 +99,13 @@ async function main(uuid: string, grep?: string) {
 }
 
 const handler = async (
-  event: { grep?: string; uuid: string },
+  event: { uuid: string; bucketName: string; grep?: string },
   context: Context,
 ) => {
   console.log(event, context);
 
   try {
-    return await main(event.uuid, event.grep);
+    return await main(event.uuid, event.bucketName, event.grep);
   } catch (err) {
     console.error(err);
 

@@ -209,6 +209,8 @@ test.describe('Item', () => {
       TODO_ITEMS[2],
     ]);
     await checkTodosInLocalStorage(page, 'buy some sausages');
+
+    // TODO: Testing screenshots, remove later
     await page.screenshot({
       path: 'output/screenshots/testInfoTitle.png',
     });
