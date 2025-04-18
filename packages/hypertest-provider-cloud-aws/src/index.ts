@@ -109,10 +109,14 @@ const HypertestProviderCloudAWS = <T>(
       }
     },
     invoke: async (context) => {
+      const ingestedContext = {
+        ...context,
+        bucketName: settings.bucketName,
+      };
       const command = new InvokeCommand({
         FunctionName: settings.functionName,
         InvocationType: 'RequestResponse',
-        Payload: JSON.stringify(context),
+        Payload: JSON.stringify(ingestedContext),
       });
       const { Payload } = await lambdaClient.send(command);
       const result = Payload ? Buffer.from(Payload).toString('utf-8') : '';
@@ -143,6 +147,7 @@ export const HypertestProviderCloudAwsConfigSchema = z.object({
   region: z.string(),
   ecrRegistry: z.string(),
   functionName: z.string(),
+  bucketName: z.string(),
 });
 
 type HypertestProviderCloudAwsConfig = z.infer<

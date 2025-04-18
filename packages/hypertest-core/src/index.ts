@@ -8,7 +8,7 @@ import { loadConfig } from './config.js';
 
 interface HypertestCore {
   deploy: () => Promise<void>;
-  invoke: () => Promise<void>;
+  invoke: (grep?: string) => Promise<void>;
 }
 
 export const defineConfig = (config: HypertestConfig) => config;
@@ -32,14 +32,26 @@ export const HypertestCore = <Context>(options: {
   cloudProvider: HypertestProviderCloud<Context>;
 }): HypertestCore => {
   return {
-    invoke: async () => {
-      const contexts = await options.plugin.getCloudFunctionContexts();
+    invoke: async (grep?: string) => {
+      const contexts = grep
+        ? ([{ grep }] as Context[])
+        : await options.plugin.getCloudFunctionContexts();
 
       const results = await Promise.all(
-        contexts.map(async (context) => ({
-          ...context,
-          result: await options.cloudProvider.invoke(context),
-        })),
+        contexts.map(async (context) => {
+          const uuid = crypto.randomUUID();
+          const ingestedContext = {
+            ...context,
+            uuid,
+          };
+
+          return {
+            ingestedContext,
+            result: JSON.parse(
+              await options.cloudProvider.invoke(ingestedContext),
+            ),
+          };
+        }),
       );
 
       console.log(results);

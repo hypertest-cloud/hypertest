@@ -3,7 +3,7 @@ name: Build and push to dev
 on:
   push:
     branches:
-      - 35-aws-deploy-lambda-with-image-from-registry
+      - 37-lambda-runner-save-test-artifacts-to-s3
   workflow_dispatch:
 
 env:
