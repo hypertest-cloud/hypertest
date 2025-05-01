@@ -1,54 +1,66 @@
 import type {
+  CloudFunctionProviderPlugin,
   CommandOptions,
   HypertestConfig,
-  HypertestPlugin,
-  HypertestProviderCloud,
+  ResolvedHypertestConfig,
+  TestRunnerPlugin,
 } from '@hypertest/hypertest-types';
 import { loadConfig } from './config.js';
+import { promiseMap } from './utils.js';
 
 interface HypertestCore {
   deploy: () => Promise<void>;
   invoke: () => Promise<void>;
 }
 
-export const defineConfig = (config: HypertestConfig) => config;
+export const defineConfig = <T>(config: HypertestConfig<T>) => config;
 
 export const setupHypertest = async ({ dryRun }: CommandOptions) => {
-  const config = await loadConfig();
+  const { config, ...providers } = await loadConfig();
 
-  const cloudProvider = config.plugins.cloudPlugin.handler(config, { dryRun });
-  const plugin = config.plugins.testPlugin.handler(config, {
+  const cloudFunctionProvider = providers.cloudFunctionProvider.handler(
+    config,
+    {
+      dryRun,
+    },
+  );
+  const testRunner = providers.testRunner.handler(config, {
     dryRun,
   });
 
   return HypertestCore({
-    cloudProvider,
-    plugin,
+    config,
+    cloudFunctionProvider,
+    testRunner,
   });
 };
 
-export const HypertestCore = <Context>(options: {
-  plugin: HypertestPlugin<Context>;
-  cloudProvider: HypertestProviderCloud<Context>;
+export const HypertestCore = <InvokePayloadContext>(options: {
+  config: ResolvedHypertestConfig;
+  testRunner: TestRunnerPlugin<InvokePayloadContext>;
+  cloudFunctionProvider: CloudFunctionProviderPlugin;
 }): HypertestCore => {
   return {
     invoke: async () => {
-      const contexts = await options.plugin.getCloudFunctionContexts();
+      const functionInvokePayloads =
+        await options.testRunner.getCloudFunctionContexts();
 
-      const results = await Promise.all(
-        contexts.map(async (context) => ({
-          ...context,
-          result: await options.cloudProvider.invoke(context),
-        })),
+      const results = await promiseMap(
+        functionInvokePayloads,
+        async (payload) => ({
+          ...payload,
+          result: await options.cloudFunctionProvider.invoke(payload),
+        }),
+        { concurrency: options.config.concurrency },
       );
 
       console.log(results);
     },
     deploy: async () => {
-      await options.cloudProvider.pullBaseImage();
-      await options.plugin.buildImage();
-      await options.cloudProvider.pushImage();
-      await options.cloudProvider.updateLambdaImage();
+      await options.cloudFunctionProvider.pullBaseImage();
+      await options.testRunner.buildImage();
+      await options.cloudFunctionProvider.pushImage();
+      await options.cloudFunctionProvider.updateLambdaImage();
     },
   };
 };
