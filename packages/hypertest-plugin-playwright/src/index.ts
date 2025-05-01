@@ -1,11 +1,13 @@
+import path from 'node:path';
+import { Dockerfile } from '@hypertest/hypertest-playwright-container';
 import type {
   ResolvedHypertestConfig,
   TestRunnerPlugin,
   TestRunnerPluginDefinition,
 } from '@hypertest/hypertest-types';
 import type { PlaywrightTestConfig } from '@playwright/test';
-import path from 'node:path';
 import { z } from 'zod';
+import { runDockerBuild } from './docker-build.js';
 import { getGrepString } from './getGrepString.js';
 import { getSpecFilePaths } from './getSpecFilePaths.js';
 import { getTestContextPaths } from './getTestContextPaths.js';
@@ -13,8 +15,6 @@ import type {
   PlaywrightCloudFunctionContext,
   PlaywrightPluginOptions,
 } from './types.js';
-import { Dockerfile } from '@hypertest/hypertest-playwright-container';
-import { runDockerBuild } from './docker-build.js';
 
 const getPlaywrightConfig = async (): Promise<{
   playwrightConfigFilepath: string;

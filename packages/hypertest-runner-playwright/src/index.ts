@@ -1,9 +1,9 @@
 process.env.HOME = '/tmp';
 
-import chromium from '@sparticuz/chromium';
-import type { Context } from 'aws-lambda';
 import { execSync } from 'node:child_process';
 import fs from 'node:fs/promises';
+import chromium from '@sparticuz/chromium';
+import type { Context } from 'aws-lambda';
 import { v4 as uuidv4 } from 'uuid';
 
 const printConfigTemplate = (

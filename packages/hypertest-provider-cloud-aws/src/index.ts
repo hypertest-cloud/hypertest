@@ -6,9 +6,9 @@ import {
 } from '@aws-sdk/client-lambda';
 import { fromEnv } from '@aws-sdk/credential-providers';
 import type {
-  ResolvedHypertestConfig,
-  CloudFunctionProviderPluginDefinition,
   CloudFunctionProviderPlugin,
+  CloudFunctionProviderPluginDefinition,
+  ResolvedHypertestConfig,
 } from '@hypertest/hypertest-types';
 import { z } from 'zod';
 import { runCommand } from './runCommand.js';

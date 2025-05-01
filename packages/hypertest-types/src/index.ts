@@ -1,7 +1,7 @@
 import type { z } from 'zod';
 import type { CloudFunctionProviderPluginDefinition } from './cloud-function-provider.js';
-import type { TestRunnerPluginDefinition } from './test-runner-plugin.js';
 import type { ConfigSchema } from './config-schema.js';
+import type { TestRunnerPluginDefinition } from './test-runner-plugin.js';
 
 export type HypertestConfigInput = z.input<typeof ConfigSchema>;
 export type HypertestConfigOutput = z.output<typeof ConfigSchema>;
