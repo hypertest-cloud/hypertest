@@ -44,3 +44,5 @@ export * from './cloud-function-provider.js';
 export * from './test-runner-plugin.js';
 // biome-ignore lint/performance/noReExportAll: <explanation>
 export * from './config-schema.js';
+// biome-ignore lint/performance/noReExportAll: <explanation>
+export * from './docker.js';

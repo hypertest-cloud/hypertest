@@ -1,22 +1,36 @@
 import { execa } from 'execa';
+import type {
+  AnyDockerfile,
+  BuildArgsOf,
+  Dockerfile,
+  EnvOf,
+} from '@hypertest/hypertest-types';
 
-export interface DockerBuildOptions {
-  dockerfile: string;
+export type DockerBuildOptions<
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/style/useNamingConvention: <explanation>
+  // biome-ignore lint/complexity/noBannedTypes: <explanation>
+  TDockerfile extends AnyDockerfile,
+> = {
+  dockerfile: TDockerfile;
   contextDir: string;
   imageTag?: string;
   platform?: 'linux/amd64';
-  buildArgs?: Record<string, string>;
-  env?: Record<string, string>;
-}
+  buildArgs: BuildArgsOf<TDockerfile>;
+  env: EnvOf<TDockerfile>;
+};
 
-export async function runDockerBuild({
+export async function runDockerBuild<
+  // biome-ignore lint/style/useNamingConvention: <explanation>
+  TDockerfile extends AnyDockerfile,
+>({
   dockerfile,
   contextDir,
   imageTag,
   platform,
   buildArgs = {},
   env = {},
-}: DockerBuildOptions): Promise<void> {
+}: DockerBuildOptions<TDockerfile>): Promise<void> {
   const args = [
     'build',
     ['-f', '-'],

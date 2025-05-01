@@ -101,6 +101,7 @@ export const PlaywrightRunnerPlugin = (options: {
             // biome-ignore lint/style/useNamingConvention: <explanation>
             PLAYWRIGHT_CONFIG_FILEPATH: playwrightConfigFilepath,
           },
+          env: {},
         });
       } catch (error) {
         console.error('Error while building Docker image:', error);
