@@ -7,7 +7,7 @@ import type {
 } from '@hypertest/hypertest-types';
 import type { PlaywrightTestConfig } from '@playwright/test';
 import { z } from 'zod';
-import { runDockerBuild } from './docker-build.js';
+import { buildDockerImage } from './docker-build.js';
 import { getGrepString } from './getGrepString.js';
 import { getSpecFilePaths } from './getSpecFilePaths.js';
 import { getTestContextPaths } from './getTestContextPaths.js';
@@ -88,7 +88,7 @@ export const PlaywrightRunnerPlugin = (options: {
       const { localImageName, localBaseImageName } = options.config;
 
       try {
-        await runDockerBuild({
+        await buildDockerImage({
           dockerfile: Dockerfile,
           contextDir: '.',
           platform: 'linux/amd64',

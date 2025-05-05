@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 35-aws-deploy-lambda-with-image-from-registry
+      - type-updates
   workflow_dispatch:
 
 env:

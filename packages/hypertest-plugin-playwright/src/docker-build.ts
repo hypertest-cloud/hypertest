@@ -2,7 +2,6 @@ import { execa } from 'execa';
 import type {
   AnyDockerfile,
   BuildArgsOf,
-  Dockerfile,
   EnvOf,
 } from '@hypertest/hypertest-types';
 
@@ -20,7 +19,7 @@ export type DockerBuildOptions<
   env: EnvOf<TDockerfile>;
 };
 
-export async function runDockerBuild<
+export async function buildDockerImage<
   // biome-ignore lint/style/useNamingConvention: <explanation>
   TDockerfile extends AnyDockerfile,
 >({
