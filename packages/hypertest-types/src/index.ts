@@ -1,79 +1,48 @@
-import { z } from 'zod';
+import type { z } from 'zod';
+import type { CloudFunctionProviderPluginDefinition } from './cloud-function-provider.js';
+import type { ConfigSchema } from './config-schema.js';
+import type { TestRunnerPluginDefinition } from './test-runner-plugin.js';
+
+export type HypertestConfigInput = z.input<typeof ConfigSchema>;
+export type HypertestConfigOutput = z.output<typeof ConfigSchema>;
+
+export interface HypertestConfig<InvokePayloadContext> {
+  imageName: string;
+  localImageName?: string;
+  localBaseImageName?: string;
+  concurrency?: number;
+  testRunner: TestRunnerPluginDefinition<InvokePayloadContext>;
+  cloudFunctionProvider: CloudFunctionProviderPluginDefinition;
+}
+
+export interface ResolvedHypertestConfig {
+  imageName: string;
+  localImageName: string;
+  localBaseImageName: string;
+  concurrency: number;
+}
 
 export interface CommandOptions {
   dryRun?: boolean;
 }
 
-export interface PluginBase {
-  name: string;
-  validate: () => Promise<void>;
+export interface InvokePayload<Context> {
+  context: Context;
 }
-
-export type TestPluginHandler = (
-  config: ResolvedHypertestConfig,
-  opts: CommandOptions,
-) => HypertestPlugin<{
-  grep: string;
-}>;
-
-export type TestPlugin = z.infer<typeof TestPluginSchema>;
-
-export type CloudPluginHandler = (
-  config: ResolvedHypertestConfig,
-  opts: CommandOptions,
-) => HypertestProviderCloud<{
-  grep: string;
-}>;
-
-export type CloudPlugin = z.infer<typeof CloudPluginSchema>;
-
-export type ResolvedHypertestConfig = z.output<typeof ConfigSchema>;
-export type HypertestConfig = z.input<typeof ConfigSchema>;
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-const FunctionSchema = <T extends (...args: any[]) => any>() =>
-  z.function() as unknown as z.ZodType<T>;
-
-const PluginSchema = z.object({
-  name: z.string(),
-  version: z.string(),
-  validate: z.function(),
-});
-
-const TestPluginSchema = PluginSchema.extend({
-  handler: FunctionSchema<TestPluginHandler>(),
-});
-
-const CloudPluginSchema = PluginSchema.extend({
-  handler: FunctionSchema<CloudPluginHandler>(),
-});
-
-export const ConfigSchema = z
-  .object({
-    imageName: z.string(),
-    localImageName: z.string().optional(),
-    localBaseImageName: z.string().optional(),
-    plugins: z.object({
-      testPlugin: TestPluginSchema,
-      cloudPlugin: CloudPluginSchema,
-    }),
-  })
-  .transform((config) => {
-    return {
-      ...config,
-      localImageName: config.localImageName ?? config.imageName,
-      localBaseImageName: config.localBaseImageName ?? 'hypertest/local-base-playwright',
-    };
-  });
-
-export interface HypertestPlugin<CloudFunctionContext> {
-  getCloudFunctionContexts: () => Promise<CloudFunctionContext[]>;
-  buildImage: () => Promise<void>;
+export interface PluginDefinition<T extends (...args: any[]) => any> {
+  name: string;
+  version: string;
+  validate: () => Promise<void>;
+  handler: T;
 }
 
-export interface HypertestProviderCloud<CloudFunctionContext> {
-  pullBaseImage: () => Promise<void>;
-  pushImage: () => Promise<void>;
-  invoke: (context: CloudFunctionContext) => Promise<string>;
-  updateLambdaImage: () => Promise<void>;
-}
+// biome-ignore lint/performance/noReExportAll: <explanation>
+export * from './cloud-function-provider.js';
+// biome-ignore lint/performance/noReExportAll: <explanation>
+export * from './test-runner-plugin.js';
+// biome-ignore lint/performance/noReExportAll: <explanation>
+export * from './config-schema.js';
+// biome-ignore lint/performance/noReExportAll: <explanation>
+export * from './docker.js';
