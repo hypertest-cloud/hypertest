@@ -108,7 +108,7 @@ const HypertestProviderCloudAWS = (
         process.exit(1);
       }
     },
-    invoke: async (context) => {
+    invoke: async ({ context }) => {
       const command = new InvokeCommand({
         FunctionName: settings.functionName,
         InvocationType: 'RequestResponse',
