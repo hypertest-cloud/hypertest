@@ -1,7 +1,22 @@
 import winston from 'winston';
 
-export const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  format: winston.format.json(),
-  transports: [new winston.transports.Console()],
-});
+let loggerInstance: winston.Logger | null = null;
+
+export const initLogger = (config: winston.LoggerOptions): void => {
+  loggerInstance = winston.createLogger({
+    level: 'info',
+    format: winston.format.json(),
+    transports: [new winston.transports.Console()],
+    ...config,
+  });
+};
+
+export const getLogger = (): winston.Logger => {
+  if (!loggerInstance) {
+    throw new Error(
+      'Logger has not been initialized. Function initLogger() has to be triggered first.',
+    );
+  }
+
+  return loggerInstance;
+};
