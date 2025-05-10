@@ -4,9 +4,13 @@ import {
   type ResolvedHypertestConfig,
   type TestRunnerPluginDefinition,
 } from '@hypertest/hypertest-types';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { z } from 'zod';
 
-export const getConfigFilepath = () => `${process.cwd()}/hypertest.config.js`;
+export const getConfigFilepath = () =>
+  pathToFileURL(path.resolve(process.cwd(), 'hypertest.config.js')).href;
+
 export const loadConfig = async <T>(): Promise<{
   config: ResolvedHypertestConfig;
   testRunner: TestRunnerPluginDefinition<T>;
