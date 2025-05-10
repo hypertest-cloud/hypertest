@@ -1,11 +1,17 @@
 import {
+  type CloudFunctionProviderPluginDefinition,
   ConfigSchema,
   type ResolvedHypertestConfig,
+  type TestRunnerPluginDefinition,
 } from '@hypertest/hypertest-types';
 import { z } from 'zod';
 
 export const getConfigFilepath = () => `${process.cwd()}/hypertest.config.js`;
-export const loadConfig = async (): Promise<ResolvedHypertestConfig> => {
+export const loadConfig = async <T>(): Promise<{
+  config: ResolvedHypertestConfig;
+  testRunner: TestRunnerPluginDefinition<T>;
+  cloudFunctionProvider: CloudFunctionProviderPluginDefinition;
+}> => {
   const config: unknown = await import(getConfigFilepath());
 
   const module = await z
@@ -16,10 +22,16 @@ export const loadConfig = async (): Promise<ResolvedHypertestConfig> => {
     })
     .parseAsync(config);
 
-  const parsedConfig = await ConfigSchema.parseAsync(module.default);
+  const { testRunner, cloudFunctionProvider, ...parsedConfig } =
+    await ConfigSchema.parseAsync(module.default);
 
-  await parsedConfig.plugins.testPlugin.validate();
-  await parsedConfig.plugins.cloudPlugin.validate();
+  await testRunner.validate();
+  await cloudFunctionProvider.validate();
 
-  return parsedConfig;
+  return {
+    config: parsedConfig,
+    testRunner: testRunner as TestRunnerPluginDefinition<T>,
+    cloudFunctionProvider:
+      cloudFunctionProvider as CloudFunctionProviderPluginDefinition,
+  };
 };

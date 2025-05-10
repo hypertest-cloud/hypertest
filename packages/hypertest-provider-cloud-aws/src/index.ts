@@ -6,8 +6,8 @@ import {
 } from '@aws-sdk/client-lambda';
 import { fromEnv } from '@aws-sdk/credential-providers';
 import type {
-  CloudPlugin,
-  HypertestProviderCloud,
+  CloudFunctionProviderPlugin,
+  CloudFunctionProviderPluginDefinition,
   ResolvedHypertestConfig,
 } from '@hypertest/hypertest-types';
 import { z } from 'zod';
@@ -40,10 +40,10 @@ const getEcrAuth = async (ecrClient: ECRClient) => {
 };
 
 // biome-ignore lint/style/useNamingConvention: <explanation>
-const HypertestProviderCloudAWS = <T>(
+const HypertestProviderCloudAWS = (
   settings: HypertestProviderCloudAwsConfig,
   config: ResolvedHypertestConfig,
-): HypertestProviderCloud<T> => {
+): CloudFunctionProviderPlugin => {
   const lambdaClient = new LambdaClient({
     credentials: fromEnv(),
     region: settings.region,
@@ -108,7 +108,7 @@ const HypertestProviderCloudAWS = <T>(
         process.exit(1);
       }
     },
-    invoke: async (context) => {
+    invoke: async ({ context }) => {
       const command = new InvokeCommand({
         FunctionName: settings.functionName,
         InvocationType: 'RequestResponse',
@@ -149,9 +149,9 @@ type HypertestProviderCloudAwsConfig = z.infer<
   typeof HypertestProviderCloudAwsConfigSchema
 >;
 
-export const plugin = (
+const plugin = (
   options: HypertestProviderCloudAwsConfig,
-): CloudPlugin => ({
+): CloudFunctionProviderPluginDefinition => ({
   name: '',
   version: '0.0.1',
   validate: async () => {
@@ -161,3 +161,6 @@ export const plugin = (
     return HypertestProviderCloudAWS(options, config);
   },
 });
+
+// biome-ignore lint/style/noDefaultExport: <explanation>
+export default plugin;
