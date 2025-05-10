@@ -1,4 +1,5 @@
 import type { z } from 'zod';
+import type winston from 'winston';
 import type { CloudFunctionProviderPluginDefinition } from './cloud-function-provider.js';
 import type { ConfigSchema } from './config-schema.js';
 import type { TestRunnerPluginDefinition } from './test-runner-plugin.js';
@@ -11,6 +12,7 @@ export interface HypertestConfig<InvokePayloadContext> {
   localImageName?: string;
   localBaseImageName?: string;
   concurrency?: number;
+  logger?: winston.LoggerOptions;
   testRunner: TestRunnerPluginDefinition<InvokePayloadContext>;
   cloudFunctionProvider: CloudFunctionProviderPluginDefinition;
 }
@@ -20,6 +22,7 @@ export interface ResolvedHypertestConfig {
   localImageName: string;
   localBaseImageName: string;
   concurrency: number;
+  logger: winston.Logger;
 }
 
 export interface CommandOptions {
