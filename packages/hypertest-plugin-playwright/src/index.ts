@@ -16,12 +16,15 @@ import type {
   PlaywrightPluginOptions,
 } from './types.js';
 
-const getPlaywrightConfig = async (): Promise<{
+const getPlaywrightConfig = async (
+  config: ResolvedHypertestConfig,
+): Promise<{
   playwrightConfigFilepath: string;
   config: PlaywrightTestConfig;
 }> => {
   const configFilepath = './playwright.config.js';
-  console.log('Loading PW config from:', configFilepath);
+  config.logger.verbose(`Loading PW config from: ${configFilepath}`);
+
   return {
     playwrightConfigFilepath: configFilepath,
     config: await import(path.resolve(process.cwd(), configFilepath)).then(
@@ -56,13 +59,15 @@ export const PlaywrightRunnerPlugin = (options: {
 }): TestRunnerPlugin<PlaywrightCloudFunctionContext> => {
   return {
     getCloudFunctionContexts: async () => {
-      const { config: pwConfig } = await getPlaywrightConfig();
+      const { config: pwConfig } = await getPlaywrightConfig(options.config);
       const projectName = getProjectName(pwConfig);
       const testDir = getTestDir(pwConfig);
-      console.log(testDir);
+      options.config.logger.verbose(`Playwright tests directory: ${testDir}`);
 
       const specFilePaths = getSpecFilePaths(testDir);
-      console.log(specFilePaths);
+      options.config.logger.verbose(
+        `Playwright test spec file paths: ${specFilePaths.join(', ')}`,
+      );
 
       const fileContexts = await Promise.all(
         specFilePaths.map(async (specFilePath) => {
@@ -83,7 +88,7 @@ export const PlaywrightRunnerPlugin = (options: {
     },
     buildImage: async () => {
       const { config: pwConfig, playwrightConfigFilepath } =
-        await getPlaywrightConfig();
+        await getPlaywrightConfig(options.config);
       const testDir = getTestDir(pwConfig);
       const { localImageName, localBaseImageName } = options.config;
 
@@ -104,7 +109,9 @@ export const PlaywrightRunnerPlugin = (options: {
           env: {},
         });
       } catch (error) {
-        console.error('Error while building Docker image:', error);
+        options.config.logger.error(
+          `Error while building Docker image: ${error}`,
+        );
         process.exit(1);
       }
     },
