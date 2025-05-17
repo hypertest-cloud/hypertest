@@ -62,17 +62,17 @@ export const HypertestCore = <InvokePayloadContext>(options: {
         'Deploying lambda image to the cloud infrastructure',
       );
 
+      options.config.logger.info('Pulling base image');
       await options.cloudFunctionProvider.pullBaseImage();
-      options.config.logger.info('Base image has been pulled');
 
-      await options.testRunner.buildImage();
       options.config.logger.info('Building container image');
+      await options.testRunner.buildImage();
 
-      await options.cloudFunctionProvider.pushImage();
       options.config.logger.info('Pushing image to the cloud');
+      await options.cloudFunctionProvider.pushImage();
 
-      await options.cloudFunctionProvider.updateLambdaImage();
       options.config.logger.info('Updating lambda image');
+      await options.cloudFunctionProvider.updateLambdaImage();
     },
   };
 };
