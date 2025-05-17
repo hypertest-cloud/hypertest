@@ -7,6 +7,7 @@ import type {
 } from '@hypertest/hypertest-types';
 import type { PlaywrightTestConfig } from '@playwright/test';
 import { z } from 'zod';
+import type winston from 'winston';
 import { buildDockerImage } from './docker-build.js';
 import { getGrepString } from './getGrepString.js';
 import { getSpecFilePaths } from './getSpecFilePaths.js';
@@ -17,13 +18,13 @@ import type {
 } from './types.js';
 
 const getPlaywrightConfig = async (
-  config: ResolvedHypertestConfig,
+  logger: winston.Logger,
 ): Promise<{
   playwrightConfigFilepath: string;
   config: PlaywrightTestConfig;
 }> => {
   const configFilepath = './playwright.config.js';
-  config.logger.verbose(`Loading PW config from: ${configFilepath}`);
+  logger.verbose(`Loading PW config from: ${configFilepath}`);
 
   return {
     playwrightConfigFilepath: configFilepath,
@@ -59,7 +60,9 @@ export const PlaywrightRunnerPlugin = (options: {
 }): TestRunnerPlugin<PlaywrightCloudFunctionContext> => {
   return {
     getCloudFunctionContexts: async () => {
-      const { config: pwConfig } = await getPlaywrightConfig(options.config);
+      const { config: pwConfig } = await getPlaywrightConfig(
+        options.config.logger,
+      );
       const projectName = getProjectName(pwConfig);
       const testDir = getTestDir(pwConfig);
       options.config.logger.verbose(`Playwright tests directory: ${testDir}`);
@@ -88,7 +91,7 @@ export const PlaywrightRunnerPlugin = (options: {
     },
     buildImage: async () => {
       const { config: pwConfig, playwrightConfigFilepath } =
-        await getPlaywrightConfig(options.config);
+        await getPlaywrightConfig(options.config.logger);
       const testDir = getTestDir(pwConfig);
       const { localImageName, localBaseImageName } = options.config;
 
