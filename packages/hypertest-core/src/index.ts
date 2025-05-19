@@ -42,6 +42,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
 }): HypertestCore => {
   return {
     invoke: async () => {
+      options.config.logger.info('Invoking cloud functions');
       const functionInvokePayloads =
         await options.testRunner.getCloudFunctionContexts();
 
@@ -54,12 +55,23 @@ export const HypertestCore = <InvokePayloadContext>(options: {
         { concurrency: options.config.concurrency },
       );
 
-      console.log(results);
+      options.config.logger.verbose(`Test results: ${results.toString()}`);
     },
     deploy: async () => {
+      options.config.logger.info(
+        'Deploying lambda image to the cloud infrastructure',
+      );
+
+      options.config.logger.info('Pulling base image');
       await options.cloudFunctionProvider.pullBaseImage();
+
+      options.config.logger.info('Building container image');
       await options.testRunner.buildImage();
+
+      options.config.logger.info('Pushing image to the cloud');
       await options.cloudFunctionProvider.pushImage();
+
+      options.config.logger.info('Updating lambda image');
       await options.cloudFunctionProvider.updateLambdaImage();
     },
   };
