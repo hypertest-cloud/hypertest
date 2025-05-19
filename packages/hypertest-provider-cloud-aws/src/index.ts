@@ -28,7 +28,7 @@ const getEcrAuth = async (ecrClient: ECRClient, logger: winston.Logger) => {
     throw new Error('Invalid authorization data received.');
   }
 
-  logger.debug('ERC authorization proxy endpoint:', proxyEndpoint);
+  logger.debug('ECR authorization proxy endpoint:', proxyEndpoint);
   // Decode the authorization token (Base64 encoded "username:password")
   const decodedToken = Buffer.from(authorizationToken, 'base64').toString();
   const [username, password] = decodedToken.split(':');
