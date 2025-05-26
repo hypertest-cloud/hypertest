@@ -1,16 +1,19 @@
 import type { z } from 'zod';
+import type winston from 'winston';
 import type { CloudFunctionProviderPluginDefinition } from './cloud-function-provider.js';
 import type { ConfigSchema } from './config-schema.js';
 import type { TestRunnerPluginDefinition } from './test-runner-plugin.js';
 
 export type HypertestConfigInput = z.input<typeof ConfigSchema>;
 export type HypertestConfigOutput = z.output<typeof ConfigSchema>;
+// TODO Add comparing ConfigSchema and HypertestConfig, they should be in sync
 
 export interface HypertestConfig<InvokePayloadContext> {
   imageName: string;
   localImageName?: string;
   localBaseImageName?: string;
   concurrency?: number;
+  loggerOptions?: winston.LoggerOptions;
   testRunner: TestRunnerPluginDefinition<InvokePayloadContext>;
   cloudFunctionProvider: CloudFunctionProviderPluginDefinition;
 }
@@ -20,6 +23,7 @@ export interface ResolvedHypertestConfig {
   localImageName: string;
   localBaseImageName: string;
   concurrency: number;
+  logger: winston.Logger;
 }
 
 export interface CommandOptions {

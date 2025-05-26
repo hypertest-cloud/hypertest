@@ -5,6 +5,7 @@ on:
     branches:
       - 35-aws-deploy-lambda-with-image-from-registry
       - type-updates
+      - 43-misc-add-winston-for-inner-process-logs
   workflow_dispatch:
 
 env:
