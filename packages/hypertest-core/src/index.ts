@@ -42,26 +42,24 @@ export const HypertestCore = <InvokePayloadContext>(options: {
   cloudFunctionProvider: CloudFunctionProviderPlugin;
 }): HypertestCore => {
   return {
+    // TODO grep is only fo tests, remove later
     invoke: async (grep?: string) => {
       options.config.logger.info('Invoking cloud functions');
       const functionInvokePayloads = grep
-        ? ([{ context: { grep } }] as InvokePayload<InvokePayloadContext>[])
+        ? ([
+            {
+              uuid: crypto.randomUUID(),
+              context: { grep },
+            },
+          ] as InvokePayload<InvokePayloadContext>[])
         : await options.testRunner.getCloudFunctionContexts();
 
       const results = await promiseMap(
         functionInvokePayloads,
-        async (payload) => {
-          const uuid = crypto.randomUUID();
-          const ingestedPayload = {
-            ...payload,
-            uuid,
-          };
-
-          return {
-            ...ingestedPayload,
-            result: await options.cloudFunctionProvider.invoke(ingestedPayload),
-          };
-        },
+        async (payload) => ({
+          ...payload,
+          result: await options.cloudFunctionProvider.invoke(payload),
+        }),
         { concurrency: options.config.concurrency },
       );
 
