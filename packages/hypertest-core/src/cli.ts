@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import 'dotenv/config';
+import fs from 'node:fs';
 import { Command } from '@commander-js/extra-typings';
 import { ZodError } from 'zod';
-import fs from 'node:fs';
 import { getConfigFilepath, loadConfig } from './config.js';
 import { setupHypertest } from './index.js';
 

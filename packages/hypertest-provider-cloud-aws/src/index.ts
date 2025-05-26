@@ -6,14 +6,15 @@ import {
 } from '@aws-sdk/client-lambda';
 import { fromEnv } from '@aws-sdk/credential-providers';
 import type {
-  CloudPlugin,
-  HypertestProviderCloud,
+  CloudFunctionProviderPlugin,
+  CloudFunctionProviderPluginDefinition,
   ResolvedHypertestConfig,
 } from '@hypertest/hypertest-types';
 import { z } from 'zod';
+import type winston from 'winston';
 import { runCommand } from './runCommand.js';
 
-const getEcrAuth = async (ecrClient: ECRClient) => {
+const getEcrAuth = async (ecrClient: ECRClient, logger: winston.Logger) => {
   const command = new GetAuthorizationTokenCommand({});
   const response = await ecrClient.send(command);
 
@@ -27,7 +28,7 @@ const getEcrAuth = async (ecrClient: ECRClient) => {
     throw new Error('Invalid authorization data received.');
   }
 
-  console.log('proxyEndpoint:', proxyEndpoint);
+  logger.debug('ECR authorization proxy endpoint:', proxyEndpoint);
   // Decode the authorization token (Base64 encoded "username:password")
   const decodedToken = Buffer.from(authorizationToken, 'base64').toString();
   const [username, password] = decodedToken.split(':');
@@ -40,10 +41,10 @@ const getEcrAuth = async (ecrClient: ECRClient) => {
 };
 
 // biome-ignore lint/style/useNamingConvention: <explanation>
-const HypertestProviderCloudAWS = <T>(
+const HypertestProviderCloudAWS = (
   settings: HypertestProviderCloudAwsConfig,
   config: ResolvedHypertestConfig,
-): HypertestProviderCloud<T> => {
+): CloudFunctionProviderPlugin => {
   const lambdaClient = new LambdaClient({
     credentials: fromEnv(),
     region: settings.region,
@@ -60,51 +61,59 @@ const HypertestProviderCloudAWS = <T>(
   return {
     async pullBaseImage() {
       try {
-        const { username, password, proxyEndpoint } =
-          await getEcrAuth(ecrClient);
+        const { username, password, proxyEndpoint } = await getEcrAuth(
+          ecrClient,
+          config.logger,
+        );
 
-        console.log('Logging in to ECR...');
+        config.logger.verbose('Logging in to ECR...');
         runCommand(
           `docker login -u ${username} -p ${password} ${proxyEndpoint}`,
         );
 
         // Push the Docker image to ECR
-        console.log('Pulling base docker lambda runner image to local repo...');
+        config.logger.verbose(
+          'Pulling base docker lambda runner image to local repo...',
+        );
         runCommand(`docker pull ${settings.baseImage}`);
 
         // Push the Docker image to ECR
-        console.log(
+        config.logger.verbose(
           `Tagging local image with ${config.localBaseImageName} ...`,
         );
         runCommand(
           `docker tag ${settings.baseImage} ${config.localBaseImageName}`,
         );
       } catch (error) {
-        console.error('Error pushing Docker image to ECR:', error);
+        config.logger.error(`Error pushing Docker image to ECR: ${error}`);
         process.exit(1);
       }
     },
     pushImage: async () => {
       try {
-        const { username, password, proxyEndpoint } =
-          await getEcrAuth(ecrClient);
+        const { username, password, proxyEndpoint } = await getEcrAuth(
+          ecrClient,
+          config.logger,
+        );
 
-        console.log('Logging in to ECR...');
+        config.logger.verbose('Logging in to ECR...');
         runCommand(
           `docker login -u ${username} -p ${password} ${proxyEndpoint}`,
         );
 
         const targetName = getTargetImageName();
 
-        console.log('Tagging with remote tag');
+        config.logger.verbose('Tagging local image with remote tag');
         runCommand(`docker tag ${config.localImageName} ${targetName}`);
 
-        console.log('Pushing Docker image to ECR...');
+        config.logger.verbose('Pushing Docker image to ECR...');
         runCommand(`docker push ${targetName}`);
 
-        console.log(`Docker image pushed successfully to ${targetName}`);
+        config.logger.verbose(
+          `Docker image pushed successfully to ${targetName}`,
+        );
       } catch (error) {
-        console.error('Error pushing Docker image to ECR:', error);
+        config.logger.error(`Error pushing Docker image to ECR: ${error}`);
         process.exit(1);
       }
     },
@@ -131,11 +140,11 @@ const HypertestProviderCloudAWS = <T>(
       try {
         const response = await lambdaClient.send(command);
 
-        console.log(
+        config.logger.verbose(
           `Lambda ${settings.functionName} image update has been started, status: ${response.LastUpdateStatus}`,
         );
       } catch (error) {
-        console.error('Error updating lambda by new image', error);
+        config.logger.error(`Error updating lambda by new image ${error}`);
         process.exit(1);
       }
     },
@@ -154,9 +163,9 @@ type HypertestProviderCloudAwsConfig = z.infer<
   typeof HypertestProviderCloudAwsConfigSchema
 >;
 
-export const plugin = (
+const plugin = (
   options: HypertestProviderCloudAwsConfig,
-): CloudPlugin => ({
+): CloudFunctionProviderPluginDefinition => ({
   name: '',
   version: '0.0.1',
   validate: async () => {
@@ -166,3 +175,6 @@ export const plugin = (
     return HypertestProviderCloudAWS(options, config);
   },
 });
+
+// biome-ignore lint/style/noDefaultExport: <explanation>
+export default plugin;

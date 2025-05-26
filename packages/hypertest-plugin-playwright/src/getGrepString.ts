@@ -1,5 +1,5 @@
-import escapeStringRegexp from 'escape-string-regexp';
 import path from 'node:path';
+import escapeStringRegexp from 'escape-string-regexp';
 
 export const getGrepString = (
   projectName: string,

@@ -1,66 +1,88 @@
 import type {
+  CloudFunctionProviderPlugin,
   CommandOptions,
   HypertestConfig,
-  HypertestPlugin,
-  HypertestProviderCloud,
+  InvokePayload,
+  ResolvedHypertestConfig,
+  TestRunnerPlugin,
 } from '@hypertest/hypertest-types';
 import { loadConfig } from './config.js';
+import { promiseMap } from './utils.js';
 
 interface HypertestCore {
   deploy: () => Promise<void>;
   invoke: (grep?: string) => Promise<void>;
 }
 
-export const defineConfig = (config: HypertestConfig) => config;
+export const defineConfig = <T>(config: HypertestConfig<T>) => config;
 
 export const setupHypertest = async ({ dryRun }: CommandOptions) => {
-  const config = await loadConfig();
+  const { config, ...providers } = await loadConfig();
 
-  const cloudProvider = config.plugins.cloudPlugin.handler(config, { dryRun });
-  const plugin = config.plugins.testPlugin.handler(config, {
+  const cloudFunctionProvider = providers.cloudFunctionProvider.handler(
+    config,
+    {
+      dryRun,
+    },
+  );
+  const testRunner = providers.testRunner.handler(config, {
     dryRun,
   });
 
   return HypertestCore({
-    cloudProvider,
-    plugin,
+    config,
+    cloudFunctionProvider,
+    testRunner,
   });
 };
 
-export const HypertestCore = <Context>(options: {
-  plugin: HypertestPlugin<Context>;
-  cloudProvider: HypertestProviderCloud<Context>;
+export const HypertestCore = <InvokePayloadContext>(options: {
+  config: ResolvedHypertestConfig;
+  testRunner: TestRunnerPlugin<InvokePayloadContext>;
+  cloudFunctionProvider: CloudFunctionProviderPlugin;
 }): HypertestCore => {
   return {
     invoke: async (grep?: string) => {
-      const contexts = grep
-        ? ([{ grep }] as Context[])
-        : await options.plugin.getCloudFunctionContexts();
+      options.config.logger.info('Invoking cloud functions');
+      const functionInvokePayloads = grep
+        ? ([{ context: { grep } }] as InvokePayload<InvokePayloadContext>[])
+        : await options.testRunner.getCloudFunctionContexts();
 
-      const results = await Promise.all(
-        contexts.map(async (context) => {
+      const results = await promiseMap(
+        functionInvokePayloads,
+        async (payload) => {
           const uuid = crypto.randomUUID();
-          const ingestedContext = {
-            ...context,
+          const ingestedPayload = {
+            ...payload,
             uuid,
           };
 
           return {
-            ingestedContext,
-            result: JSON.parse(
-              await options.cloudProvider.invoke(ingestedContext),
-            ),
+            ...ingestedPayload,
+            result: await options.cloudFunctionProvider.invoke(ingestedPayload),
           };
-        }),
+        },
+        { concurrency: options.config.concurrency },
       );
 
-      console.log(results);
+      options.config.logger.verbose(`Test results: ${results.toString()}`);
     },
     deploy: async () => {
-      await options.cloudProvider.pullBaseImage();
-      await options.plugin.buildImage();
-      await options.cloudProvider.pushImage();
-      await options.cloudProvider.updateLambdaImage();
+      options.config.logger.info(
+        'Deploying lambda image to the cloud infrastructure',
+      );
+
+      options.config.logger.info('Pulling base image');
+      await options.cloudFunctionProvider.pullBaseImage();
+
+      options.config.logger.info('Building container image');
+      await options.testRunner.buildImage();
+
+      options.config.logger.info('Pushing image to the cloud');
+      await options.cloudFunctionProvider.pushImage();
+
+      options.config.logger.info('Updating lambda image');
+      await options.cloudFunctionProvider.updateLambdaImage();
     },
   };
 };
