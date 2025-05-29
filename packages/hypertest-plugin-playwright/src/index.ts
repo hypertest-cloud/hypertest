@@ -53,7 +53,7 @@ const getTestDir = (config: PlaywrightTestConfig) => {
   return testDir;
 };
 
-export const PlaywrightRunnerPlugin = (options: {
+const PlaywrightRunnerPlugin = (options: {
   options: PlaywrightPluginOptions;
   config: ResolvedHypertestConfig;
   dryRun?: boolean;
