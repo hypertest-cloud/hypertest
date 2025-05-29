@@ -4,11 +4,11 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs/promises';
 import chromium from '@sparticuz/chromium';
 import type { Context } from 'aws-lambda';
-import { v4 as uuidv4 } from 'uuid';
+import { uploadToS3 } from './uploadToS3.js';
 
 const printConfigTemplate = (
   json: Record<string, unknown>,
-  reportUuid: string,
+  outputDir: string,
 ) => `
 import path from 'node:path';
 import userConfig from '/tests/playwright.config.js';
@@ -26,56 +26,87 @@ userConfig.projects?.forEach((p) => {
   };
 });
 userConfig.testDir = path.resolve('/tests', userConfig.testDir);
-userConfig.reporter = [['json', { outputFile: '/tmp/playwright-results-${reportUuid}.json' }]];
+userConfig.reporter = [['json', { outputFile: '${outputDir}/playwright-results.json' }]];
+userConfig.outputDir = '${outputDir}'
 userConfig.workers = 1;
 console.log(userConfig);
 
 export default userConfig;
 `;
 
-async function main(grep?: string) {
+async function main(uuid: string, bucketName: string, grep?: string) {
+  const testRunDir = `/tmp/${uuid}`;
+  const testOutputDir = `${testRunDir}/output`;
+
+  await fs.mkdir(testOutputDir, { recursive: true });
+
   const opts = {
     args: chromium.args,
     executablePath: await chromium.executablePath(),
     headless: true,
   };
 
-  const reportUuid = uuidv4();
-
   await fs.writeFile(
-    '/tmp/_playwright.config.ts',
-    printConfigTemplate(opts, reportUuid),
+    `${testRunDir}/_playwright.config.ts`,
+    printConfigTemplate(opts, testOutputDir),
   );
 
-  // const cmd = './node_modules/.bin/playwright test -c /tmp/_playwright.config.ts';
   console.log(process.cwd());
   const cmd = grep
-    ? `npx playwright test -c /tmp/_playwright.config.ts --grep "${grep}"`
-    : 'npx playwright test -c /tmp/_playwright.config.ts';
+    ? `npx playwright test -c ${testRunDir}/_playwright.config.ts --grep "${grep}"`
+    : `npx playwright test -c ${testRunDir}/_playwright.config.ts`;
 
   try {
     execSync(cmd, {
       stdio: 'inherit',
       cwd: process.cwd(),
     });
+  } catch (error) {
+    console.log('main test run error:', error);
+  }
+
+  // TODO: Remove all console logs and execSync's with debugs
+  console.log(`ls -la /tmp/${uuid}/output`);
+  try {
+    execSync(`ls -la /tmp/${uuid}/output`, {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
   } catch (error) {}
 
+  console.log(`ls -la /tmp/${uuid}/output/screenshots`);
+  try {
+    execSync(`ls -la /tmp/${uuid}/output/screenshots`, {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
+  } catch (error) {}
+
+  const uploadResult = await uploadToS3(bucketName, testOutputDir, uuid);
+  if (!uploadResult.success) {
+    throw new Error('Failed to upload test results to S3.');
+  }
+
   const report = JSON.parse(
-    await fs.readFile(`/tmp/playwright-results-${reportUuid}.json`, 'utf8'),
+    await fs.readFile(`${testOutputDir}/playwright-results.json`, 'utf8'),
   );
 
   return {
     expected: report.stats.expected,
     unexpected: report.stats.unexpected,
+    uuid,
     grep,
   };
 }
 
-const handler = async (event: { grep: string }, context: Context) => {
+const handler = async (
+  event: { uuid: string; bucketName: string; grep?: string },
+  context: Context,
+) => {
   console.log(event, context);
 
   try {
-    return await main(event.grep);
+    return await main(event.uuid, event.bucketName, event.grep);
   } catch (err) {
     console.error(err);
 

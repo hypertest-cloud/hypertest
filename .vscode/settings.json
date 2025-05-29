@@ -18,6 +18,8 @@
     "editor.defaultFormatter": "biomejs.biome"
   },
   "cSpell.words": [
-    "hypertest"
+    "hypertest",
+    "nodir",
+    "sparticuz"
   ]
 }
