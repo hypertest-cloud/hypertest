@@ -166,6 +166,15 @@ const plugin = (
   validate: async () => {
     await HypertestProviderCloudAwsConfigSchema.parseAsync(options);
   },
+  getCliDoctorChecks: (config) => [
+    {
+      title: 'Concurrency limits',
+      description: 'Check if AWS account have proper concurrency settings',
+      run: async () => {
+        },
+        children: [],
+      }
+    ],
   handler: (config) => {
     return HypertestProviderCloudAWS(options, config);
   },

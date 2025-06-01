@@ -6,7 +6,6 @@ import { ZodError } from 'zod';
 import { getConfigFileURL, loadConfig } from './config.js';
 import { setupHypertest } from './index.js';
 import { fileURLToPath } from 'node:url';
-import { ServiceQuotasClient } from '@aws-sdk/client-service-quotas';
 import { promiseMap } from './utils.js';
 import { Check } from '@hypertest/hypertest-types';
 
@@ -62,8 +61,9 @@ const processCheck = async (check: Check) => {
 
 const runDoctor = async () => {
   await promiseMap(CORE_CHECKS, processCheck)
+
   const config = await loadConfig();
-  const cloudChecks = config.cloudFunctionProvider.getChecks(config)
+  const cloudChecks = config.cloudFunctionProvider.getCliDoctorChecks?.(config) ?? []
   await promiseMap(cloudChecks, processCheck)
 };
 
