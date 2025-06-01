@@ -5,6 +5,7 @@ import aws from '@hypertest/hypertest-provider-cloud-aws';
 
 // biome-ignore lint/style/noDefaultExport: <explanation>
 export default defineConfig({
+  concurrency: 30,
   imageName: 'hypertest/playground-playwright',
   localImageName: 'hypertest/playground-playwright',
   localBaseImageName: 'hypertest/local-base-playwright',
