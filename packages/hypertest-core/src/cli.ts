@@ -3,8 +3,9 @@ import 'dotenv/config';
 import fs from 'node:fs';
 import { Command } from '@commander-js/extra-typings';
 import { ZodError } from 'zod';
-import { getConfigFilepath, loadConfig } from './config.js';
+import { getConfigFileURL, loadConfig } from './config.js';
 import { setupHypertest } from './index.js';
+import { fileURLToPath } from 'node:url';
 
 const checks = [
   {
@@ -12,7 +13,7 @@ const checks = [
     description: 'Check for valid config',
     run: async () => {
       try {
-        if (!fs.existsSync(getConfigFilepath())) {
+        if (!fs.existsSync(fileURLToPath(getConfigFileURL()))) {
           throw new CheckError('hypertest.config.js is missing');
         }
         return await loadConfig();
