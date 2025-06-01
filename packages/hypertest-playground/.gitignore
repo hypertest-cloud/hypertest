@@ -20,5 +20,5 @@ node_modules
 /blob-report/
 /playwright/.cache/
 
-# Lambda environment
+# Lambda env related
 /tmp
