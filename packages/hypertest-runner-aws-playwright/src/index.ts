@@ -4,7 +4,7 @@ import chromium from '@sparticuz/chromium';
 import type { Context } from 'aws-lambda';
 import { execSync } from 'node:child_process';
 import fs from 'node:fs/promises';
-import { uploadToS3 } from './uploadToS3.js';
+import { uploadToS3 } from './utils/uploadToS3.js';
 
 const printConfigTemplate = (
   json: Record<string, unknown>,
