@@ -11,13 +11,13 @@ COPY \
     ./tsconfig.json \
     ./
 COPY \
-    ./packages/hypertest-runner-playwright/ \
-    ./packages/hypertest-runner-playwright/
+    ./packages/hypertest-runner-aws-playwright/ \
+    ./packages/hypertest-runner-aws-playwright/
 
 RUN ls -la
 
 RUN npm ci
-RUN npm run build -w packages/hypertest-runner-playwright
+RUN npm run build -w packages/hypertest-runner-aws-playwright
 
 # magic....
 
@@ -35,4 +35,4 @@ RUN npm install -g aws-lambda-ric
 COPY --from=hypertest-runner-build ${FUNCTION_DIR} ${FUNCTION_DIR}
 
 ENTRYPOINT ["/usr/local/lib/node_modules/npm/bin/npx-cli.js", "aws-lambda-ric"]
-CMD ["/function/packages/hypertest-runner-playwright/dist/index.handler"]
+CMD ["/function/packages/hypertest-runner-aws-playwright/dist/index.handler"]

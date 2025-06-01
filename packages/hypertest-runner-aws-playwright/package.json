@@ -1,5 +1,5 @@
 {
-  "name": "@hypertest/hypertest-runner-playwright",
+  "name": "@hypertest/hypertest-runner-aws-playwright",
   "version": "0.0.1",
   "type": "module",
   "exports": {
