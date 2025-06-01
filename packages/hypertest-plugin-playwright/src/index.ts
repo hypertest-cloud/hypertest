@@ -123,9 +123,7 @@ const PlaywrightRunnerPlugin = (options: {
   };
 };
 
-const OptionsSchema = z.object({
-  baseImage: z.string().optional(),
-});
+const OptionsSchema = z.object({});
 
 type Options = z.infer<typeof OptionsSchema>;
 
