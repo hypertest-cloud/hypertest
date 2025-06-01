@@ -9,7 +9,8 @@
   "dependencies": {
     "@hypertest/hypertest-core": "0.x.x",
     "@hypertest/hypertest-plugin-playwright": "0.x.x",
-    "@hypertest/hypertest-runner-aws-playwright": "0.x.x"
+    "@hypertest/hypertest-runner-aws-playwright": "0.x.x",
+    "dotenv": "^16.5.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",

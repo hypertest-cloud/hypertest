@@ -212,9 +212,11 @@ test.describe('Item', () => {
 
     // TODO: Testing screenshots, remove later
     await page.screenshot({
-      path: 'output/screenshots/testInfoTitle.png',
+      path: `${process.env.HT_TEST_ARTIFACTS_PATH}/screenshots/testInfoTitle.png`,
     });
-    await page.screenshot({ path: 'testInfoTitleSolo.png' });
+    await page.screenshot({
+      path: `${process.env.HT_TEST_ARTIFACTS_PATH}/screenshots/testInfoTitleSolo.png`,
+    });
   });
 });
 
