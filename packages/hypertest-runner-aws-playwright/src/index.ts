@@ -1,9 +1,9 @@
 process.env.HOME = '/tmp';
 
-import { execSync } from 'node:child_process';
-import fs from 'node:fs/promises';
 import chromium from '@sparticuz/chromium';
 import type { Context } from 'aws-lambda';
+import { execSync } from 'node:child_process';
+import fs from 'node:fs/promises';
 import { uploadToS3 } from './uploadToS3.js';
 
 const printConfigTemplate = (
@@ -53,8 +53,8 @@ async function main(uuid: string, bucketName: string, grep?: string) {
 
   console.log(process.cwd());
   const cmd = grep
-    ? `npx playwright test -c ${testRunDir}/_playwright.config.ts --grep "${grep}"`
-    : `npx playwright test -c ${testRunDir}/_playwright.config.ts`;
+    ? `HT_TEST_ARTIFACTS_PATH=${testRunDir} npx playwright test -c ${testRunDir}/_playwright.config.ts --grep "${grep}"`
+    : `HT_TEST_ARTIFACTS_PATH=${testRunDir} npx playwright test -c ${testRunDir}/_playwright.config.ts`;
 
   try {
     execSync(cmd, {
@@ -66,17 +66,17 @@ async function main(uuid: string, bucketName: string, grep?: string) {
   }
 
   // TODO: Remove all console logs and execSync's with debugs
-  console.log(`ls -la /tmp/${uuid}/output`);
+  console.log(`ls -la ${testRunDir}/output`);
   try {
-    execSync(`ls -la /tmp/${uuid}/output`, {
+    execSync(`ls -la ${testRunDir}/output`, {
       stdio: 'inherit',
       cwd: process.cwd(),
     });
   } catch (error) {}
 
-  console.log(`ls -la /tmp/${uuid}/output/screenshots`);
+  console.log(`ls -la ${testRunDir}/output/screenshots`);
   try {
-    execSync(`ls -la /tmp/${uuid}/output/screenshots`, {
+    execSync(`ls -la ${testRunDir}/output/screenshots`, {
       stdio: 'inherit',
       cwd: process.cwd(),
     });
