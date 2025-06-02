@@ -173,7 +173,7 @@ const plugin = (
   },
   getCliDoctorChecks: (config) => [
     {
-      title: 'Concurrency limits',
+      title: 'AWS Concurrency limits',
       description: 'Check if AWS account have proper concurrency settings',
       run: async () => {
         const client = new ServiceQuotasClient({ region: options.region });
