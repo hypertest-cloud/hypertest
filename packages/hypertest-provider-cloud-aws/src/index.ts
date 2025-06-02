@@ -18,6 +18,7 @@ import {
 import { z } from 'zod';
 import type winston from 'winston';
 import { runCommand } from './runCommand.js';
+import { isAwsSdkError } from './ts-guards.js';
 
 const getEcrAuth = async (ecrClient: ECRClient, logger: winston.Logger) => {
   const command = new GetAuthorizationTokenCommand({});
@@ -128,10 +129,24 @@ const HypertestProviderCloudAWS = (
         InvocationType: 'RequestResponse',
         Payload: JSON.stringify(context),
       });
-      const { Payload } = await lambdaClient.send(command);
-      const result = Payload ? Buffer.from(Payload).toString('utf-8') : '';
 
-      return result;
+      try {
+        const { Payload } = await lambdaClient.send(command);
+        const result = Payload ? Buffer.from(Payload).toString('utf-8') : '';
+
+        return result;
+      } catch (error) {
+        config.logger.error(`Failed to send lambda: ${error}`);
+
+        if (isAwsSdkError(error) && error.$metadata.httpStatusCode === 429) {
+          config.logger.error(
+            `Rate limit exceeded (HTTP 429) while invoking Lambda function.` +
+            `Refer to the README for instructions on how to increase the maximum number of allowed Lambda invocations for your account.`
+          );
+        }
+
+        process.exit(1);
+      }
     },
     updateLambdaImage: async () => {
       const command = new UpdateFunctionCodeCommand({
