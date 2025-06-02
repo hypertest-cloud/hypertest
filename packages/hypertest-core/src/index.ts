@@ -42,7 +42,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
   cloudFunctionProvider: CloudFunctionProviderPlugin;
 }): HypertestCore => {
   return {
-    // TODO grep is only fo tests, remove later
+    // TODO grep param is only for internal dev testing, remove later
     invoke: async (grep?: string) => {
       options.config.logger.info('Invoking cloud functions');
       const functionInvokePayloads = grep

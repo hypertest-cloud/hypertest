@@ -117,15 +117,15 @@ const HypertestProviderCloudAWS = (
         process.exit(1);
       }
     },
-    invoke: async (context) => {
-      const ingestedContext = {
-        ...context,
+    invoke: async (payload) => {
+      const ingestedPayload = {
+        ...payload,
         bucketName: settings.bucketName,
       };
       const command = new InvokeCommand({
         FunctionName: settings.functionName,
         InvocationType: 'RequestResponse',
-        Payload: JSON.stringify(ingestedContext),
+        Payload: JSON.stringify(ingestedPayload),
       });
       const { Payload } = await lambdaClient.send(command);
       const result = Payload ? Buffer.from(Payload).toString('utf-8') : '';

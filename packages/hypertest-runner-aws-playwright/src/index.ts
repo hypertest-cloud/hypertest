@@ -6,6 +6,10 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs/promises';
 import { uploadToS3 } from './utils/uploadToS3.js';
 
+type EventContext = {
+  grep?: string;
+};
+
 const printConfigTemplate = (
   json: Record<string, unknown>,
   outputDir: string,
@@ -102,13 +106,14 @@ async function main(uuid: string, bucketName: string, grep?: string) {
 }
 
 const handler = async (
-  event: { uuid: string; bucketName: string; grep?: string },
+  event: { uuid: string; bucketName: string; context: EventContext },
   context: Context,
 ) => {
+  // biome-ignore lint/suspicious/noConsoleLog: <explanation>
   console.log(event, context);
 
   try {
-    return await main(event.uuid, event.bucketName, event.grep);
+    return await main(event.uuid, event.bucketName, event.context?.grep);
   } catch (err) {
     console.error(err);
 
