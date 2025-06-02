@@ -5,9 +5,8 @@ import { Command } from '@commander-js/extra-typings';
 import { ZodError } from 'zod';
 import { getConfigFileURL, loadConfig } from './config.js';
 import { setupHypertest } from './index.js';
-import { fileURLToPath } from 'node:url';
 import { promiseMap } from './utils.js';
-import { Check } from '@hypertest/hypertest-types';
+import { CheckError, type Check } from '@hypertest/hypertest-types';
 
 const CORE_CHECKS: Check[] = [
   {
@@ -32,12 +31,6 @@ const CORE_CHECKS: Check[] = [
 
 const program = new Command();
 
-class CheckError extends Error {
-  constructor(public readonly problem: string) {
-    super(problem);
-  }
-}
-
 const iconMap = {
   ok: '🟢',
   warn: '🟡',
@@ -57,14 +50,14 @@ const processCheck = async (check: Check) => {
       return { status: 'error' as const, message: err.message };
     });
   console.log(`${iconMap[result.status]} ${result.message}\n`);
-}
+};
 
 const runDoctor = async () => {
-  await promiseMap(CORE_CHECKS, processCheck)
+  await promiseMap(CORE_CHECKS, processCheck);
 
-  const config = await loadConfig();
-  const cloudChecks = config.cloudFunctionProvider.getCliDoctorChecks?.(config) ?? []
-  await promiseMap(cloudChecks, processCheck)
+  const { config, cloudFunctionProvider } = await loadConfig();
+  const cloudChecks = cloudFunctionProvider.getCliDoctorChecks?.(config) ?? [];
+  await promiseMap(cloudChecks, processCheck);
 };
 
 program.name('hypertest').version('0.0.1');

@@ -5,10 +5,15 @@ import {
   UpdateFunctionCodeCommand,
 } from '@aws-sdk/client-lambda';
 import { fromEnv } from '@aws-sdk/credential-providers';
-import type {
-  CloudFunctionProviderPlugin,
-  CloudFunctionProviderPluginDefinition,
-  ResolvedHypertestConfig,
+import {
+  ServiceQuotasClient,
+  GetServiceQuotaCommand,
+} from '@aws-sdk/client-service-quotas';
+import {
+  CheckError,
+  type CloudFunctionProviderPlugin,
+  type CloudFunctionProviderPluginDefinition,
+  type ResolvedHypertestConfig,
 } from '@hypertest/hypertest-types';
 import { z } from 'zod';
 import type winston from 'winston';
@@ -171,10 +176,31 @@ const plugin = (
       title: 'Concurrency limits',
       description: 'Check if AWS account have proper concurrency settings',
       run: async () => {
-        },
-        children: [],
-      }
-    ],
+        const client = new ServiceQuotasClient({ region: options.region });
+
+        // TODO Encounter adding proper permissions for the cloud account in Pulumi procedures.
+        const response = await client.send(
+          new GetServiceQuotaCommand({
+            ServiceCode: 'lambda',
+            QuotaCode: 'L-B99A9384', // Lambda invocations per account per region
+          }),
+        );
+
+        if (!response.Quota?.Value) {
+          throw new CheckError(
+            `Unable to retrieve the Lambda invocation quota for your account in ${options.region} region.`,
+          );
+        }
+
+        if (config.concurrency > response.Quota.Value) {
+          throw new CheckError(
+            'The configured concurrency exceeds the maximum allowed Lambda invocations for your account. Please refer to the README for instructions on how to resolve this.',
+          );
+        }
+      },
+      children: [],
+    },
+  ],
   handler: (config) => {
     return HypertestProviderCloudAWS(options, config);
   },

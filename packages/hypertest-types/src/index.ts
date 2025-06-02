@@ -3,7 +3,7 @@ import type winston from 'winston';
 import type { CloudFunctionProviderPluginDefinition } from './cloud-function-provider.js';
 import type { ConfigSchema } from './config-schema.js';
 import type { TestRunnerPluginDefinition } from './test-runner-plugin.js';
-import { Check } from './cli-doctor.js';
+import type { Check } from './cli-doctor.js';
 
 export type HypertestConfigInput = z.input<typeof ConfigSchema>;
 export type HypertestConfigOutput = z.output<typeof ConfigSchema>;
@@ -40,7 +40,7 @@ export interface PluginDefinition<T extends (...args: any[]) => any> {
   name: string;
   version: string;
   validate: () => Promise<void>;
-  getCliDoctorChecks?: (...config: any[]) => Check[];
+  getCliDoctorChecks?: (config: ResolvedHypertestConfig) => Check[];
   handler: T;
 }
 
