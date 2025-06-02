@@ -210,6 +210,8 @@ test.describe('Item', () => {
     ]);
     await checkTodosInLocalStorage(page, 'buy some sausages');
 
+    console.log('HT_TEST_ARTIFACTS_PATH:', process.env.HT_TEST_ARTIFACTS_PATH);
+
     // TODO: Testing screenshots, remove later
     await page.screenshot({
       path: `${process.env.HT_TEST_ARTIFACTS_PATH}/screenshots/testInfoTitle.png`,
