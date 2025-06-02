@@ -51,11 +51,13 @@ async function main(uuid: string, bucketName: string, grep?: string) {
     printConfigTemplate(opts, testOutputDir),
   );
 
+  console.log('process.cwd()');
   console.log(process.cwd());
   const cmd = grep
     ? `HT_TEST_ARTIFACTS_PATH=${testRunDir} npx playwright test -c ${testRunDir}/_playwright.config.ts --grep "${grep}"`
     : `HT_TEST_ARTIFACTS_PATH=${testRunDir} npx playwright test -c ${testRunDir}/_playwright.config.ts`;
 
+  console.log('Running command:', cmd);
   try {
     execSync(cmd, {
       stdio: 'inherit',
