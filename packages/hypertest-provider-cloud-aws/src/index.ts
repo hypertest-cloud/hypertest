@@ -174,7 +174,7 @@ const plugin = (
   getCliDoctorChecks: (config) => [
     {
       title: 'AWS Concurrency limits',
-      description: 'Check if AWS account have proper concurrency settings',
+      description: 'Check if AWS account have sufficient concurrency limit',
       run: async () => {
         const client = new ServiceQuotasClient({ region: options.region });
 
@@ -196,6 +196,11 @@ const plugin = (
           throw new CheckError(
             'The configured concurrency exceeds the maximum allowed Lambda invocations for your account. Please refer to the README for instructions on how to resolve this.',
           );
+        }
+
+        return {
+          configConcurrencyLimit: config.concurrency,
+          cloudConcurrencyLimit: response.Quota.Value
         }
       },
       children: [],
