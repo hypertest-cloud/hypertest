@@ -7,6 +7,7 @@ import { getConfigFileURL, loadConfig } from './config.js';
 import { setupHypertest } from './index.js';
 import { promiseMap } from './utils.js';
 import { CheckError, type Check } from '@hypertest/hypertest-types';
+import { fileURLToPath } from 'node:url';
 
 const CORE_CHECKS: Check[] = [
   {
@@ -14,7 +15,7 @@ const CORE_CHECKS: Check[] = [
     description: 'Check for valid config',
     run: async () => {
       try {
-        if (!fs.existsSync(getConfigFileURL())) {
+        if (!fs.existsSync(fileURLToPath(getConfigFileURL()))) {
           throw new CheckError('hypertest.config.js is missing');
         }
         return await loadConfig();
