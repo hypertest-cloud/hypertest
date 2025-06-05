@@ -31,6 +31,7 @@ export interface CommandOptions {
 }
 
 export interface InvokePayload<Context> {
+  uuid: string;
   context: Context;
 }
 

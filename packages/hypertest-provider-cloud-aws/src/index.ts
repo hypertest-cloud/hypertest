@@ -10,8 +10,8 @@ import type {
   CloudFunctionProviderPluginDefinition,
   ResolvedHypertestConfig,
 } from '@hypertest/hypertest-types';
-import { z } from 'zod';
 import type winston from 'winston';
+import { z } from 'zod';
 import { runCommand } from './runCommand.js';
 
 const getEcrAuth = async (ecrClient: ECRClient, logger: winston.Logger) => {
@@ -117,14 +117,23 @@ const HypertestProviderCloudAWS = (
         process.exit(1);
       }
     },
-    invoke: async ({ context }) => {
+    invoke: async (payload) => {
+      const ingestedPayload = {
+        ...payload,
+        bucketName: settings.bucketName,
+      };
+
+      console.log('ingestedPayload:', ingestedPayload);
+
       const command = new InvokeCommand({
         FunctionName: settings.functionName,
         InvocationType: 'RequestResponse',
-        Payload: JSON.stringify(context),
+        Payload: JSON.stringify(ingestedPayload),
       });
       const { Payload } = await lambdaClient.send(command);
       const result = Payload ? Buffer.from(Payload).toString('utf-8') : '';
+
+      console.log('result:', result);
 
       return result;
     },
@@ -133,6 +142,7 @@ const HypertestProviderCloudAWS = (
         FunctionName: settings.functionName,
         ImageUri: getTargetImageName(),
       });
+
       try {
         const response = await lambdaClient.send(command);
 
@@ -152,6 +162,7 @@ export const HypertestProviderCloudAwsConfigSchema = z.object({
   region: z.string(),
   ecrRegistry: z.string(),
   functionName: z.string(),
+  bucketName: z.string(),
 });
 
 type HypertestProviderCloudAwsConfig = z.infer<
