@@ -38,6 +38,11 @@ test.describe('New Todo', () => {
     ]);
 
     await checkNumberOfTodosInLocalStorage(page, 2);
+
+    // Save screenshot
+    await page.screenshot({
+      path: `${process.env.HT_TEST_ARTIFACTS_OUTPUT_PATH}/screenshots/edit-an-item.png`,
+    });
   });
 
   test('should clear text input field when an item is added', async ({
@@ -53,9 +58,15 @@ test.describe('New Todo', () => {
     // Check that input is empty.
     await expect(newTodo).toBeEmpty();
     await checkNumberOfTodosInLocalStorage(page, 1);
+
+    // Save HAR file
+    await page.routeFromHAR(
+      `${process.env.HT_TEST_ARTIFACTS_OUTPUT_PATH}/hars/edit-an-item.har`,
+      { update: true },
+    );
   });
 
-  test('should append new items to the bottom of the list', async ({
+  test('should append new items to the bottom of the list and fail', async ({
     page,
   }) => {
     // Create 3 items.
@@ -73,6 +84,9 @@ test.describe('New Todo', () => {
     // Check all items in one call.
     await expect(page.getByTestId('todo-title')).toHaveText(TODO_ITEMS);
     await checkNumberOfTodosInLocalStorage(page, 3);
+
+    // Fail to record a video
+    throw new Error();
   });
 });
 
@@ -185,7 +199,7 @@ test.describe('Item', () => {
     await checkNumberOfCompletedTodosInLocalStorage(page, 0);
   });
 
-  test('should allow me to edit an item', async ({ page }) => {
+  test('should allow me to edit an item and fail', async ({ page }) => {
     await createDefaultTodos(page);
 
     const todoItems = page.getByTestId('todo-item');
@@ -206,24 +220,6 @@ test.describe('Item', () => {
       TODO_ITEMS[2],
     ]);
     await checkTodosInLocalStorage(page, 'buy some sausages');
-
-    // TODO: Remove later
-    console.log('inside test');
-    console.log(
-      'HT_TEST_ARTIFACTS_OUTPUT_PATH:',
-      process.env.HT_TEST_ARTIFACTS_OUTPUT_PATH,
-    );
-
-    // Save screenshot
-    await page.screenshot({
-      path: `${process.env.HT_TEST_ARTIFACTS_OUTPUT_PATH}/screenshots/edit-an-item.png`,
-    });
-
-    // Save HAR file
-    await page.routeFromHAR(
-      `${process.env.HT_TEST_ARTIFACTS_OUTPUT_PATH}/hars/edit-an-item.har`,
-      { update: true },
-    );
   });
 });
 
