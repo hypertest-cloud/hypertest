@@ -211,7 +211,7 @@ test.describe('Item', () => {
     console.log('inside test');
     console.log('HT_TEST_ARTIFACTS_PATH:', process.env.HT_TEST_ARTIFACTS_PATH);
 
-    const screenshotPath = `${process.env.HT_TEST_ARTIFACTS_PATH}/testInfoTitle.png`;
+    const screenshotPath = `${process.env.HT_TEST_ARTIFACTS_PATH}/screenshots/testInfoTitle.png`;
     console.log('screenshotPath:', screenshotPath);
 
     // TODO: Testing screenshots, remove later
@@ -219,7 +219,7 @@ test.describe('Item', () => {
       path: screenshotPath,
     });
     await page.screenshot({
-      path: `${process.env.HT_TEST_ARTIFACTS_PATH}/testInfoTitleSolo.png`,
+      path: `${process.env.HT_TEST_ARTIFACTS_PATH}/screenshots/testInfoTitleSolo.png`,
     });
   });
 });
