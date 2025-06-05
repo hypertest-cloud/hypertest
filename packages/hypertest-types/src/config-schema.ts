@@ -6,6 +6,7 @@ const PluginDefinitionSchema = z.object({
   name: z.string(),
   version: z.string(),
   validate: z.function(),
+  getCliDoctorChecks: z.function().optional(),
   handler: z.function(),
 });
 
