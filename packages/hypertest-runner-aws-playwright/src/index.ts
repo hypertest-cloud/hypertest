@@ -58,8 +58,8 @@ async function main(uuid: string, bucketName: string, grep?: string) {
   console.log('process.cwd()');
   console.log(process.cwd());
   const cmd = grep
-    ? `HT_TEST_ARTIFACTS_PATH=${testOutputDir} npx playwright test -c ${testRunDir}/_playwright.config.ts --grep "${grep}"`
-    : `HT_TEST_ARTIFACTS_PATH=${testOutputDir} npx playwright test -c ${testRunDir}/_playwright.config.ts`;
+    ? `HT_TEST_ARTIFACTS_OUTPUT_PATH=${testOutputDir} npx playwright test -c ${testRunDir}/_playwright.config.ts --grep "${grep}"`
+    : `HT_TEST_ARTIFACTS_OUTPUT_PATH=${testOutputDir} npx playwright test -c ${testRunDir}/_playwright.config.ts`;
 
   console.log('Running command:', cmd);
   try {

@@ -209,18 +209,21 @@ test.describe('Item', () => {
 
     // TODO: Remove later
     console.log('inside test');
-    console.log('HT_TEST_ARTIFACTS_PATH:', process.env.HT_TEST_ARTIFACTS_PATH);
+    console.log(
+      'HT_TEST_ARTIFACTS_OUTPUT_PATH:',
+      process.env.HT_TEST_ARTIFACTS_OUTPUT_PATH,
+    );
 
-    const screenshotPath = `${process.env.HT_TEST_ARTIFACTS_PATH}/screenshots/testInfoTitle.png`;
-    console.log('screenshotPath:', screenshotPath);
+    // Save screenshot
+    await page.screenshot({
+      path: `${process.env.HT_TEST_ARTIFACTS_OUTPUT_PATH}/screenshots/edit-an-item.png`,
+    });
 
-    // TODO: Testing screenshots, remove later
-    await page.screenshot({
-      path: screenshotPath,
-    });
-    await page.screenshot({
-      path: `${process.env.HT_TEST_ARTIFACTS_PATH}/screenshots/testInfoTitleSolo.png`,
-    });
+    // Save HAR file
+    await page.routeFromHAR(
+      `${process.env.HT_TEST_ARTIFACTS_OUTPUT_PATH}/hars/edit-an-item.har`,
+      { update: true },
+    );
   });
 });
 
