@@ -1,5 +1,10 @@
 import { type Page, expect, test } from '@playwright/test';
 
+type LocalStorageTodo = {
+  title: string;
+  completed: boolean;
+};
+
 test.beforeEach(async ({ page }) => {
   await page.goto('https://demo.playwright.dev/todomvc');
 });
@@ -9,10 +14,6 @@ const TODO_ITEMS = [
   'feed the cat',
   'book a doctors appointment',
 ] as const;
-
-test.describe('desc', () => {
-  test('test2', () => {});
-});
 
 test.describe('New Todo', () => {
   test('should allow me to add todo items', async ({ page }) => {
@@ -37,10 +38,6 @@ test.describe('New Todo', () => {
     ]);
 
     await checkNumberOfTodosInLocalStorage(page, 2);
-  });
-
-  test.describe('Nested describe', () => {
-    test('Super nested test', () => {});
   });
 
   test('should clear text input field when an item is added', async ({
@@ -210,14 +207,19 @@ test.describe('Item', () => {
     ]);
     await checkTodosInLocalStorage(page, 'buy some sausages');
 
+    // TODO: Remove later
+    console.log('inside test');
     console.log('HT_TEST_ARTIFACTS_PATH:', process.env.HT_TEST_ARTIFACTS_PATH);
+
+    const screenshotPath = `${process.env.HT_TEST_ARTIFACTS_PATH}/testInfoTitle.png`;
+    console.log('screenshotPath:', screenshotPath);
 
     // TODO: Testing screenshots, remove later
     await page.screenshot({
-      path: `${process.env.HT_TEST_ARTIFACTS_PATH}/screenshots/testInfoTitle.png`,
+      path: screenshotPath,
     });
     await page.screenshot({
-      path: `${process.env.HT_TEST_ARTIFACTS_PATH}/screenshots/testInfoTitleSolo.png`,
+      path: `${process.env.HT_TEST_ARTIFACTS_PATH}/testInfoTitleSolo.png`,
     });
   });
 });
@@ -491,8 +493,8 @@ async function checkNumberOfCompletedTodosInLocalStorage(
 ) {
   return await page.waitForFunction((e) => {
     return (
-      JSON.parse(localStorage['react-todos']).filter(
-        (todo: any) => todo.completed,
+      (JSON.parse(localStorage['react-todos']) as LocalStorageTodo[]).filter(
+        (todo) => todo.completed,
       ).length === e
     );
   }, expected);
@@ -500,8 +502,8 @@ async function checkNumberOfCompletedTodosInLocalStorage(
 
 async function checkTodosInLocalStorage(page: Page, title: string) {
   return await page.waitForFunction((t) => {
-    return JSON.parse(localStorage['react-todos'])
-      .map((todo: any) => todo.title)
+    return (JSON.parse(localStorage['react-todos']) as LocalStorageTodo[])
+      .map((todo) => todo.title)
       .includes(t);
   }, title);
 }
