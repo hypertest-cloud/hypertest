@@ -3,9 +3,9 @@
 layout: home
 
 hero:
-  name: "Hypertest Documentation"
-  text: "Revolutionize your testing with our plug-and-play TypeScript library. Effortlessly integrates, distributing tests in the cloud to cut runtime to just your slowest test. Exceptionally affordable for fast, cost-effective development."
-  tagline: My great project tagline
+  name: "Hypertest"
+  text: "Revolutionize your testing with our plug and play TS library."
+  tagline: Effortlessly integrates, distributing tests in the cloud to cut runtime to just your slowest test. Exceptionally affordable for fast, cost-effective development.
   actions:
     - theme: brand
       text: Markdown Examples
