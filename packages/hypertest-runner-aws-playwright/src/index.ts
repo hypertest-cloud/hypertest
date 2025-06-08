@@ -61,6 +61,13 @@ async function main(uuid: string, bucketName: string, grep?: string) {
     ? `HT_TEST_ARTIFACTS_OUTPUT_PATH=${testOutputDir} npx playwright test -c ${testRunDir}/_playwright.config.ts --grep "${grep}"`
     : `HT_TEST_ARTIFACTS_OUTPUT_PATH=${testOutputDir} npx playwright test -c ${testRunDir}/_playwright.config.ts`;
 
+try {
+    execSync('ls -la /tmp/.cache/ms-playwright/', {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
+  } catch (error) {}
+
   console.log('Running command:', cmd);
   try {
     execSync(cmd, {
@@ -70,6 +77,13 @@ async function main(uuid: string, bucketName: string, grep?: string) {
   } catch (error) {
     console.log('main test run error:', error);
   }
+
+  try {
+    execSync('ls -la /tmp/.cache/ms-playwright/', {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
+  } catch (error) {}
 
   // TODO: Remove all console logs and execSync's with debugs
   console.log(`ls -la ${testRunDir}/output`);
