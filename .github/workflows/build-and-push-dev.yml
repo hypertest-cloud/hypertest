@@ -3,16 +3,14 @@ name: Build and push to dev
 on:
   push:
     branches:
-      - 35-aws-deploy-lambda-with-image-from-registry
-      - type-updates
-      - 43-misc-add-winston-for-inner-process-logs
+      - 37-lambda-runner-save-test-artifacts-to-s3
   workflow_dispatch:
 
 env:
   ECR_REPOSITORY: "hypertest/base-playwright"
 
 jobs:
-  build-and-deploy:
+  build-and-deploy-base:
     name: Build base image and push to ECR
     runs-on: ubuntu-latest
 
@@ -42,8 +40,8 @@ jobs:
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
   build-and-deploy-playground:
-    name: Build playground and push to ECR
-    needs: [build-and-deploy]
+    name: Build playground image and push to ECR
+    needs: [build-and-deploy-base]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

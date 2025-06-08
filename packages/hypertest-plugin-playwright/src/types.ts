@@ -3,5 +3,4 @@ export interface PlaywrightCloudFunctionContext {
 }
 
 export interface PlaywrightPluginOptions {
-  baseImage?: string;
 }
