@@ -7,14 +7,14 @@ export default defineConfig({
   testDir: './playwright/tests',
   fullyParallel: false,
   forbidOnly: true,
-  retries: 1,
+  retries: 0,
   workers: 1,
   reporter: [
     ['json', { outputFile: 'test-artifacts/output/playwright-results.json' }],
   ],
   use: {
     trace: 'on-first-retry',
-    video: 'on-first-retry',
+    video: 'retain-on-failure',
   },
   outputDir: 'test-artifacts/output',
   projects: [
