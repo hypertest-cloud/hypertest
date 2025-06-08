@@ -15,7 +15,3 @@ RUN echo "{}" > package.json
 RUN npm i @playwright/test dotenv
 COPY ${PLAYWRIGHT_CONFIG_FILEPATH} ${PLAYWRIGHT_CONFIG_FILEPATH}
 COPY ${TEST_DIR} ${TEST_DIR}
-
-# TODO: Think about better workaround for ffmpeg library?
-RUN mkdir -p /tmp/.cache/ms-playwright/ffmpeg-1011
-RUN ln -s /usr/bin/ffmpeg /tmp/.cache/ms-playwright/ffmpeg-1011/ffmpeg-linux

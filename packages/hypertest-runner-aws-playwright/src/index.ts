@@ -61,7 +61,45 @@ async function main(uuid: string, bucketName: string, grep?: string) {
     ? `HT_TEST_ARTIFACTS_OUTPUT_PATH=${testOutputDir} npx playwright test -c ${testRunDir}/_playwright.config.ts --grep "${grep}"`
     : `HT_TEST_ARTIFACTS_OUTPUT_PATH=${testOutputDir} npx playwright test -c ${testRunDir}/_playwright.config.ts`;
 
-try {
+  try {
+    execSync('ffmpeg -version', {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
+  } catch (error) {}
+
+  try {
+    execSync('which ffmpeg', {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
+  } catch (error) {}
+
+  try {
+    execSync('ls -la /usr/bin/', {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
+  } catch (error) {}
+
+  try {
+    execSync('mkdir -p /tmp/.cache/ms-playwright/ffmpeg-1011', {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
+  } catch (error) {}
+
+  try {
+    execSync(
+      'ln -s /usr/bin/ffmpeg /tmp/.cache/ms-playwright/ffmpeg-1011/ffmpeg-linux',
+      {
+        stdio: 'inherit',
+        cwd: process.cwd(),
+      },
+    );
+  } catch (error) {}
+
+  try {
     execSync('ls -la /tmp/.cache/ms-playwright/', {
       stdio: 'inherit',
       cwd: process.cwd(),
