@@ -1,10 +1,6 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('loops', () => {
-  test('throwing error', () => {
-    throw new Error();
-  });
-
   const array = ['some1', 'some2'];
   for (const param of array) {
     test(`for ${param}`, () => {
