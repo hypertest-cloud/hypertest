@@ -198,6 +198,10 @@ test.describe('Item', () => {
     await expect(firstTodo).not.toHaveClass('completed');
     await expect(secondTodo).not.toHaveClass('completed');
     await checkNumberOfCompletedTodosInLocalStorage(page, 0);
+
+    await page.screenshot({
+      path: `${process.env.HT_TEST_ARTIFACTS_OUTPUT_PATH}/demo-todo-app.png`,
+    });
   });
 
   test('should allow me to edit an item and fail', async ({ page }) => {
