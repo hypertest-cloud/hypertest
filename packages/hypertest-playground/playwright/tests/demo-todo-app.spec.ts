@@ -86,7 +86,7 @@ test.describe('New Todo', () => {
     await checkNumberOfTodosInLocalStorage(page, 3);
 
     // Fail to record a video
-    throw new Error();
+    // throw new Error();
   });
 });
 
