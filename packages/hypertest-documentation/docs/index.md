@@ -8,11 +8,11 @@ hero:
   tagline: Effortlessly integrates, distributing tests in the cloud to cut runtime to just your slowest test. Exceptionally affordable for fast, cost-effective development.
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: Primary redirect
+      link: /todo
     - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: Secondary redirect
+      link: /todo
 
 features:
   - title: Feature A
