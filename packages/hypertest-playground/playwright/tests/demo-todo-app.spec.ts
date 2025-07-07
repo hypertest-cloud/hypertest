@@ -84,10 +84,6 @@ test.describe('New Todo', () => {
     // Check all items in one call.
     await expect(page.getByTestId('todo-title')).toHaveText(TODO_ITEMS);
     await checkNumberOfTodosInLocalStorage(page, 3);
-
-    // TODO
-    // Fail to record a video
-    // throw new Error();
   });
 });
 

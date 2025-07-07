@@ -72,7 +72,7 @@ program
     await core.deploy();
   });
 
-// TODO grep option is only fo tests, remove later
+// TODO grep option is only for tests, remove later
 program
   .command('invoke')
   .option('--dry-run')

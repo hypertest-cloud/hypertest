@@ -18,7 +18,6 @@ test('get started link', async ({ page }) => {
     page.getByRole('heading', { name: 'Installation' }),
   ).toBeVisible();
 
-  // TODO:
   await page.screenshot({
     path: `${process.env.HT_TEST_ARTIFACTS_OUTPUT_PATH}/playwright-web-get-started.png`,
   });
