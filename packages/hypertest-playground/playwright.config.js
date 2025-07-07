@@ -14,7 +14,7 @@ export default defineConfig({
   ],
   use: {
     trace: 'on-first-retry',
-    video: 'on',
+    video: 'off',
   },
   outputDir: 'test-artifacts/output',
   projects: [
