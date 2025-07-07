@@ -55,36 +55,47 @@ async function main(uuid: string, bucketName: string, grep?: string) {
     printConfigTemplate(opts, testOutputDir),
   );
 
-  console.log('process.cwd()');
-  console.log(process.cwd());
+  // Build the Playwright test command.
   const cmd = grep
     ? `HT_TEST_ARTIFACTS_OUTPUT_PATH=${testOutputDir} npx playwright test -c ${testRunDir}/_playwright.config.ts --grep "${grep}"`
     : `HT_TEST_ARTIFACTS_OUTPUT_PATH=${testOutputDir} npx playwright test -c ${testRunDir}/_playwright.config.ts`;
 
-  // try {
-  //   execSync('mkdir -p /tmp/.cache/ms-playwright/ffmpeg-1011', {
-  //     stdio: 'inherit',
-  //     cwd: process.cwd(),
-  //   });
-  // } catch (error) {}
+  // Ensure the ffmpeg cache directory exists and create a symlink
+  // to the system ffmpeg binary. This is necessary for Playwright
+  // to handle video recording. The directory structure is based on
+  // Playwright's architecture. The symlink points to the system's
+  // ffmpeg binary.
+  try {
+    execSync('mkdir -p /tmp/.cache/ms-playwright/ffmpeg-1011', {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+    });
+  } catch (error) {
+    // biome-ignore lint/suspicious/noConsoleLog: <explanation>
+    console.log('Error creating directory for ffmpeg cache:', error);
+  }
 
-  // try {
-  //   execSync(
-  //     'ln -s /usr/bin/ffmpeg /tmp/.cache/ms-playwright/ffmpeg-1011/ffmpeg-linux',
-  //     {
-  //       stdio: 'inherit',
-  //       cwd: process.cwd(),
-  //     },
-  //   );
-  // } catch (error) {}
+  try {
+    execSync(
+      'ln -s /usr/bin/ffmpeg /tmp/.cache/ms-playwright/ffmpeg-1011/ffmpeg-linux',
+      {
+        stdio: 'inherit',
+        cwd: process.cwd(),
+      },
+    );
+  } catch (error) {
+    // biome-ignore lint/suspicious/noConsoleLog: <explanation>
+    console.log('Error creating symlink for ffmpeg:', error);
+  }
 
-  console.log('Running command:', cmd);
+  // Run the Playwright test command.
   try {
     execSync(cmd, {
       stdio: 'inherit',
       cwd: process.cwd(),
     });
   } catch (error) {
+    // biome-ignore lint/suspicious/noConsoleLog: <explanation>
     console.log('main test run error:', error);
   }
 
