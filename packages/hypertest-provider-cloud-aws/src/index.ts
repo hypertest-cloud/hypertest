@@ -123,8 +123,6 @@ const HypertestProviderCloudAWS = (
         bucketName: settings.bucketName,
       };
 
-      console.log('ingestedPayload:', ingestedPayload);
-
       const command = new InvokeCommand({
         FunctionName: settings.functionName,
         InvocationType: 'RequestResponse',
@@ -132,8 +130,6 @@ const HypertestProviderCloudAWS = (
       });
       const { Payload } = await lambdaClient.send(command);
       const result = Payload ? Buffer.from(Payload).toString('utf-8') : '';
-
-      console.log('result:', result);
 
       return result;
     },

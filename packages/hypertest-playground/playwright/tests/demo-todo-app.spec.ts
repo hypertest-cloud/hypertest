@@ -1,9 +1,9 @@
 import { type Page, expect, test } from '@playwright/test';
 
-type LocalStorageTodo = {
+interface LocalStorageTodo {
   title: string;
   completed: boolean;
-};
+}
 
 test.beforeEach(async ({ page }) => {
   await page.goto('https://demo.playwright.dev/todomvc');

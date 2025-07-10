@@ -6,9 +6,9 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs/promises';
 import { uploadToS3 } from './utils/uploadToS3.js';
 
-type EventContext = {
+interface EventContext {
   grep?: string;
-};
+}
 
 const printConfigTemplate = (
   json: Record<string, unknown>,
