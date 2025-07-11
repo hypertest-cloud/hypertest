@@ -13,6 +13,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
     "@types/aws-lambda": "^8.10.147",
+    "@types/mime-types": "^3.0.1",
     "typescript": "^5.4.5"
   },
   "dependencies": {
