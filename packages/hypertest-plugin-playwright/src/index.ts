@@ -53,7 +53,7 @@ const getTestDir = (config: PlaywrightTestConfig) => {
   return testDir;
 };
 
-export const PlaywrightRunnerPlugin = (options: {
+const PlaywrightRunnerPlugin = (options: {
   options: PlaywrightPluginOptions;
   config: ResolvedHypertestConfig;
   dryRun?: boolean;
@@ -87,7 +87,9 @@ export const PlaywrightRunnerPlugin = (options: {
         }),
       );
 
-      return fileContexts.flat().map((context) => ({ context }));
+      return fileContexts
+        .flat()
+        .map((context) => ({ uuid: crypto.randomUUID(), context }));
     },
     buildImage: async () => {
       const { config: pwConfig, playwrightConfigFilepath } =
@@ -121,9 +123,7 @@ export const PlaywrightRunnerPlugin = (options: {
   };
 };
 
-const OptionsSchema = z.object({
-  baseImage: z.string().optional(),
-});
+const OptionsSchema = z.object({});
 
 type Options = z.infer<typeof OptionsSchema>;
 

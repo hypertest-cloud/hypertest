@@ -8,5 +8,8 @@
     "build": "npm run build -w packages --if-present",
     "lint": "npm run lint --workspaces"
   },
-  "workspaces": ["packages/hypertest-types", "packages/*"]
+  "workspaces": [
+    "packages/hypertest-types",
+    "packages/*"
+  ]
 }
