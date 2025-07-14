@@ -15,8 +15,8 @@ import {
   type CloudFunctionProviderPluginDefinition,
   type ResolvedHypertestConfig,
 } from '@hypertest/hypertest-types';
-import { z } from 'zod';
 import type winston from 'winston';
+import { z } from 'zod';
 import { runCommand } from './runCommand.js';
 import { isAwsSdkError } from './ts-guards.js';
 
@@ -123,11 +123,16 @@ const HypertestProviderCloudAWS = (
         process.exit(1);
       }
     },
-    invoke: async ({ context }) => {
+    invoke: async (payload) => {
+      const ingestedPayload = {
+        ...payload,
+        bucketName: settings.bucketName,
+      };
+
       const command = new InvokeCommand({
         FunctionName: settings.functionName,
         InvocationType: 'RequestResponse',
-        Payload: JSON.stringify(context),
+        Payload: JSON.stringify(ingestedPayload),
       });
 
       try {
@@ -153,6 +158,7 @@ const HypertestProviderCloudAWS = (
         FunctionName: settings.functionName,
         ImageUri: getTargetImageName(),
       });
+
       try {
         const response = await lambdaClient.send(command);
 
@@ -172,6 +178,7 @@ export const HypertestProviderCloudAwsConfigSchema = z.object({
   region: z.string(),
   ecrRegistry: z.string(),
   functionName: z.string(),
+  bucketName: z.string(),
 });
 
 type HypertestProviderCloudAwsConfig = z.infer<

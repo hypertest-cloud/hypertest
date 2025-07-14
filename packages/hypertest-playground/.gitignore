@@ -5,20 +5,18 @@
 # Envs
 .env
 
-# Cypress
-cypress/screenshots
-cypress/videos
-cypress/reports
-
 # Project specific
 node_modules
 
-#Playwright
+# Playwright
 
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Test artifects
+/test-artifacts
 
 # Lambda env related
 /tmp
