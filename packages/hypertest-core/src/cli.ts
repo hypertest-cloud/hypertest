@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import 'dotenv/config';
 import fs from 'node:fs';
+import util from 'node:util';
 import { Command } from '@commander-js/extra-typings';
 import { ZodError } from 'zod';
 import { getConfigFileURL, loadConfig } from './config.js';
@@ -18,7 +19,20 @@ const CORE_CHECKS: Check[] = [
         if (!fs.existsSync(fileURLToPath(getConfigFileURL()))) {
           throw new CheckError('hypertest.config.js is missing');
         }
-        return await loadConfig();
+        const { config } = await loadConfig();
+
+        return `Config loaded successfully.
+${util.inspect(
+  {
+    concurrency: config.concurrency,
+    imageName: config.imageName,
+    localImageName: config.localImageName,
+    localBaseImageName: config.localBaseImageName,
+  },
+  false,
+  null,
+  true,
+)}`;
       } catch (err) {
         if (err instanceof ZodError) {
           throw new CheckError(err.message);
