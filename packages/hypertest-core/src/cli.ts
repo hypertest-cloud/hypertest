@@ -21,18 +21,15 @@ const CORE_CHECKS: Check[] = [
         }
         const { config } = await loadConfig();
 
-        return `Config loaded successfully.
-${util.inspect(
-  {
-    concurrency: config.concurrency,
-    imageName: config.imageName,
-    localImageName: config.localImageName,
-    localBaseImageName: config.localBaseImageName,
-  },
-  false,
-  null,
-  true,
-)}`;
+        return {
+          message: 'Config loaded successfully.',
+          data: {
+            concurrency: config.concurrency,
+            imageName: config.imageName,
+            localImageName: config.localImageName,
+            localBaseImageName: config.localBaseImageName,
+          },
+        };
       } catch (err) {
         if (err instanceof ZodError) {
           throw new CheckError(err.message);
@@ -57,14 +54,17 @@ const processCheck = async (check: Check) => {
 
   const result = await check
     .run()
-    .then((message) => ({ status: 'ok' as const, message }))
+    .then((output) => ({ status: 'ok' as const, ...output }))
     .catch((err) => {
       if (err instanceof CheckError) {
-        return { status: 'warn' as const, message: err.message };
+        return { status: 'warn' as const, message: err.message, data: null };
       }
-      return { status: 'error' as const, message: err.message };
+      return { status: 'error' as const, message: err.message, data: null };
     });
-  console.log(`${iconMap[result.status]} ${result.message}\n`);
+  console.log(
+    `${iconMap[result.status]} ${result.message}
+${util.inspect(result?.data, false, null, true)} \n`,
+  );
 };
 
 const runDoctor = async () => {

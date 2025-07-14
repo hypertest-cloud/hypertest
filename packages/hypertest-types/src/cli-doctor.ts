@@ -1,7 +1,7 @@
 export interface Check {
   title: string;
   description: string;
-  run: () => Promise<unknown>;
+  run: () => Promise<{ message: string; data: Record<string, unknown> | null }>;
   children: [];
 }
 

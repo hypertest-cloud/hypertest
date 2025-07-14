@@ -141,7 +141,7 @@ const HypertestProviderCloudAWS = (
         if (isAwsSdkError(error) && error.$metadata.httpStatusCode === 429) {
           config.logger.error(
             `Rate limit exceeded (HTTP 429) while invoking Lambda function.` +
-            `Refer to the README for instructions on how to increase the maximum number of allowed Lambda invocations for your account.`
+              `Refer to the README for instructions on how to increase the maximum number of allowed Lambda invocations for your account.`,
           );
         }
 
@@ -214,9 +214,12 @@ const plugin = (
         }
 
         return {
-          configConcurrencyLimit: config.concurrency,
-          cloudConcurrencyLimit: response.Quota.Value
-        }
+          message: 'Concurrency limit is sufficient for correct config',
+          data: {
+            configConcurrencyLimit: config.concurrency,
+            cloudConcurrencyLimit: response.Quota.Value,
+          },
+        };
       },
       children: [],
     },
