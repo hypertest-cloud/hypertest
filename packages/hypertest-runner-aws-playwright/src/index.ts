@@ -43,7 +43,7 @@ async function main(
   runId: string,
   testId: string,
   bucketName: string,
-  grep?: string,
+  grep: string,
 ) {
   const testRunDir = `/tmp/${runId}/${testId}`;
   const testOutputDir = `${testRunDir}/output`;
@@ -65,12 +65,8 @@ async function main(
     printConfigTemplate(opts, testOutputDir),
   );
 
-  // TODO: Verify case where grep is not needed, and why?
-  // By design, we should always run only single test in a single run.
   // Build the Playwright test command.
-  const cmd = grep
-    ? `HT_TEST_ARTIFACTS_OUTPUT_PATH=${testOutputDir} npx playwright test -c ${testRunDir}/_playwright.config.ts --grep "${grep}"`
-    : `HT_TEST_ARTIFACTS_OUTPUT_PATH=${testOutputDir} npx playwright test -c ${testRunDir}/_playwright.config.ts`;
+  const cmd = `HT_TEST_ARTIFACTS_OUTPUT_PATH=${testOutputDir} npx playwright test -c ${testRunDir}/_playwright.config.ts --grep "${grep}"`;
 
   // Ensure the ffmpeg cache directory exists.
   try {
