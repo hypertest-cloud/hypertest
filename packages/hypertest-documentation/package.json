@@ -6,5 +6,8 @@
   },
   "dependencies": {
     "vitepress": "^1.6.3"
+  },
+  "devDependencies": {
+    "@babel/parser": "^7.28.0"
   }
 }
