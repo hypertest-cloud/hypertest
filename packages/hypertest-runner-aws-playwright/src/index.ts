@@ -8,7 +8,7 @@ import fs from 'node:fs/promises';
 import { uploadToS3 } from './utils/uploadToS3.js';
 
 interface EventContext {
-  grep?: string;
+  grep: string;
 }
 
 const printConfigTemplate = (
@@ -65,6 +65,8 @@ async function main(
     printConfigTemplate(opts, testOutputDir),
   );
 
+  // TODO: Verify case where grep is not needed, and why?
+  // By design, we should always run only single test in a single run.
   // Build the Playwright test command.
   const cmd = grep
     ? `HT_TEST_ARTIFACTS_OUTPUT_PATH=${testOutputDir} npx playwright test -c ${testRunDir}/_playwright.config.ts --grep "${grep}"`
@@ -157,7 +159,7 @@ const handler = async (
       event.runId,
       event.testId,
       event.bucketName,
-      event.context?.grep,
+      event.context.grep,
     );
   } catch (err) {
     console.error(err);
