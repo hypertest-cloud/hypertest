@@ -48,7 +48,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       const functionInvokePayloads = grep
         ? ([
             {
-              uuid: crypto.randomUUID(),
+              testId: crypto.randomUUID(),
               context: { grep },
             },
           ] as InvokePayload<InvokePayloadContext>[])

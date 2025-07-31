@@ -32,7 +32,7 @@ export interface CommandOptions {
 }
 
 export interface InvokePayload<Context> {
-  uuid: string;
+  testId: string;
   context: Context;
 }
 

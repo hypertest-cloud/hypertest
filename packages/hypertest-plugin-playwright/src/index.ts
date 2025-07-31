@@ -89,7 +89,7 @@ const PlaywrightRunnerPlugin = (options: {
 
       return fileContexts
         .flat()
-        .map((context) => ({ uuid: crypto.randomUUID(), context }));
+        .map((context) => ({ testId: crypto.randomUUID(), context }));
     },
     buildImage: async () => {
       const { config: pwConfig, playwrightConfigFilepath } =
