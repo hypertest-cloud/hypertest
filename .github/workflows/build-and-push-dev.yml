@@ -3,7 +3,7 @@ name: Build and push to dev
 on:
   push:
     branches:
-      - 73-core-introduce-hypertest-run-id-above-all-single-test-uuids
+      - feat/remove-non-grep-run-in-aws-playwright-runner
   workflow_dispatch:
 
 env:
