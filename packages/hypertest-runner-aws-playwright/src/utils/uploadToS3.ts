@@ -11,6 +11,7 @@ interface UploadResult {
 export const uploadToS3 = async (
   bucketName: string,
   testOutputDir: string,
+  runId: string,
   testId: string,
 ): Promise<UploadResult> => {
   const s3Client = new S3Client({
@@ -34,7 +35,7 @@ export const uploadToS3 = async (
         // biome-ignore lint/style/useNamingConvention: <explanation>
         Bucket: bucketName,
         // biome-ignore lint/style/useNamingConvention: <explanation>
-        Key: `${testId}/${relativeFilePath}`,
+        Key: `${runId}/${testId}/${relativeFilePath}`,
         // biome-ignore lint/style/useNamingConvention: <explanation>
         Body: fileContent,
         // biome-ignore lint/style/useNamingConvention: <explanation>

@@ -38,8 +38,8 @@ console.log(userConfig);
 export default userConfig;
 `;
 
-async function main(testId: string, bucketName: string, grep?: string) {
-  const testRunDir = `/tmp/${testId}`;
+async function main(runId: string, testId: string, bucketName: string, grep?: string) {
+  const testRunDir = `/tmp/${runId}/${testId}`;
   const testOutputDir = `${testRunDir}/output`;
 
   await fs.mkdir(testOutputDir, { recursive: true });
@@ -99,7 +99,7 @@ async function main(testId: string, bucketName: string, grep?: string) {
     console.log('main test run error:', error);
   }
 
-  const uploadResult = await uploadToS3(bucketName, testOutputDir, testId);
+  const uploadResult = await uploadToS3(bucketName, testOutputDir, runId, testId);
   if (!uploadResult.success) {
     throw new Error('Failed to upload test results to S3.');
   }
@@ -111,20 +111,21 @@ async function main(testId: string, bucketName: string, grep?: string) {
   return {
     expected: report.stats.expected,
     unexpected: report.stats.unexpected,
+    runId,
     testId,
     grep,
   };
 }
 
 const handler = async (
-  event: { testId: string; bucketName: string; context: EventContext },
+  event: { runId: string; testId: string; bucketName: string; context: EventContext },
   context: Context,
 ) => {
   // biome-ignore lint/suspicious/noConsoleLog: <explanation>
   console.log(event, context);
 
   try {
-    return await main(event.testId, event.bucketName, event.context?.grep);
+    return await main(event.runId, event.testId, event.bucketName, event.context?.grep);
   } catch (err) {
     console.error(err);
 
