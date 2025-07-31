@@ -2,6 +2,7 @@ import type {
   CloudFunctionProviderPlugin,
   CommandOptions,
   HypertestConfig,
+  InvokePayload,
   ResolvedHypertestConfig,
   TestRunnerPlugin,
 } from '@hypertest/hypertest-types';
@@ -10,7 +11,7 @@ import { promiseMap } from './utils.js';
 
 interface HypertestCore {
   deploy: () => Promise<void>;
-  invoke: () => Promise<void>;
+  invoke: (grep?: string) => Promise<void>;
 }
 
 export const defineConfig = <T>(config: HypertestConfig<T>) => config;
@@ -41,10 +42,19 @@ export const HypertestCore = <InvokePayloadContext>(options: {
   cloudFunctionProvider: CloudFunctionProviderPlugin;
 }): HypertestCore => {
   return {
-    invoke: async () => {
+    // TODO grep param is only for internal dev testing, remove later
+    invoke: async (grep?: string) => {
       options.config.logger.info('Invoking cloud functions');
-      const functionInvokePayloads =
-        await options.testRunner.getCloudFunctionContexts();
+      const functionInvokePayloads = grep
+        ? ([
+            {
+              uuid: crypto.randomUUID(),
+              context: { grep },
+            },
+          ] as InvokePayload<InvokePayloadContext>[])
+        : await options.testRunner.getCloudFunctionContexts();
+
+      console.log('functionInvokePayloads:', functionInvokePayloads);
 
       const results = await promiseMap(
         functionInvokePayloads,

@@ -3,6 +3,7 @@ import type winston from 'winston';
 import type { CloudFunctionProviderPluginDefinition } from './cloud-function-provider.js';
 import type { ConfigSchema } from './config-schema.js';
 import type { TestRunnerPluginDefinition } from './test-runner-plugin.js';
+import type { Check } from './cli-doctor.js';
 
 export type HypertestConfigInput = z.input<typeof ConfigSchema>;
 export type HypertestConfigOutput = z.output<typeof ConfigSchema>;
@@ -31,6 +32,7 @@ export interface CommandOptions {
 }
 
 export interface InvokePayload<Context> {
+  uuid: string;
   context: Context;
 }
 
@@ -39,6 +41,7 @@ export interface PluginDefinition<T extends (...args: any[]) => any> {
   name: string;
   version: string;
   validate: () => Promise<void>;
+  getCliDoctorChecks?: (config: ResolvedHypertestConfig) => Check[];
   handler: T;
 }
 
@@ -50,3 +53,5 @@ export * from './test-runner-plugin.js';
 export * from './config-schema.js';
 // biome-ignore lint/performance/noReExportAll: <explanation>
 export * from './docker.js';
+// biome-ignore lint/performance/noReExportAll: <explanation>
+export * from './cli-doctor.js';
