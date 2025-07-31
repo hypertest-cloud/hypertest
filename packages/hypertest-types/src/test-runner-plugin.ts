@@ -6,9 +6,9 @@ import type {
 } from './index.js';
 
 export interface TestRunnerPlugin<InvokePayloadContext> {
-  getCloudFunctionContexts: () => Promise<
-    InvokePayload<InvokePayloadContext>[]
-  >;
+  getCloudFunctionContexts: (
+    runId: string,
+  ) => Promise<InvokePayload<InvokePayloadContext>[]>;
   buildImage: () => Promise<void>;
 }
 

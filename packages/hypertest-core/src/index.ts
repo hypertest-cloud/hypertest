@@ -45,14 +45,17 @@ export const HypertestCore = <InvokePayloadContext>(options: {
     // TODO grep param is only for internal dev testing, remove later
     invoke: async (grep?: string) => {
       options.config.logger.info('Invoking cloud functions');
+
+      const runId = crypto.randomUUID();
       const functionInvokePayloads = grep
         ? ([
             {
+              runId,
               testId: crypto.randomUUID(),
               context: { grep },
             },
           ] as InvokePayload<InvokePayloadContext>[])
-        : await options.testRunner.getCloudFunctionContexts();
+        : await options.testRunner.getCloudFunctionContexts(runId);
 
       console.log('functionInvokePayloads:', functionInvokePayloads);
 
