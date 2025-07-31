@@ -3,7 +3,7 @@ name: Build and push to dev
 on:
   push:
     branches:
-      - 37-lambda-runner-save-test-artifacts-to-s3
+      - 73-core-introduce-hypertest-run-id-above-all-single-test-uuids
   workflow_dispatch:
 
 env:

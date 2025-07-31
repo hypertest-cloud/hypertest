@@ -1,4 +1,3 @@
-import path from 'node:path';
 import { Dockerfile } from '@hypertest/hypertest-playwright-container';
 import type {
   ResolvedHypertestConfig,
@@ -6,8 +5,9 @@ import type {
   TestRunnerPluginDefinition,
 } from '@hypertest/hypertest-types';
 import type { PlaywrightTestConfig } from '@playwright/test';
-import { z } from 'zod';
+import path from 'node:path';
 import type winston from 'winston';
+import { z } from 'zod';
 import { buildDockerImage } from './docker-build.js';
 import { getGrepString } from './getGrepString.js';
 import { getSpecFilePaths } from './getSpecFilePaths.js';
@@ -59,7 +59,7 @@ const PlaywrightRunnerPlugin = (options: {
   dryRun?: boolean;
 }): TestRunnerPlugin<PlaywrightCloudFunctionContext> => {
   return {
-    getCloudFunctionContexts: async () => {
+    getCloudFunctionContexts: async (runId: string) => {
       const { config: pwConfig } = await getPlaywrightConfig(
         options.config.logger,
       );
@@ -87,9 +87,11 @@ const PlaywrightRunnerPlugin = (options: {
         }),
       );
 
-      return fileContexts
-        .flat()
-        .map((context) => ({ uuid: crypto.randomUUID(), context }));
+      return fileContexts.flat().map((context) => ({
+        runId,
+        testId: crypto.randomUUID(),
+        context,
+      }));
     },
     buildImage: async () => {
       const { config: pwConfig, playwrightConfigFilepath } =

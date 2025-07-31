@@ -1,9 +1,9 @@
-import type { z } from 'zod';
 import type winston from 'winston';
+import type { z } from 'zod';
+import type { Check } from './cli-doctor.js';
 import type { CloudFunctionProviderPluginDefinition } from './cloud-function-provider.js';
 import type { ConfigSchema } from './config-schema.js';
 import type { TestRunnerPluginDefinition } from './test-runner-plugin.js';
-import type { Check } from './cli-doctor.js';
 
 export type HypertestConfigInput = z.input<typeof ConfigSchema>;
 export type HypertestConfigOutput = z.output<typeof ConfigSchema>;
@@ -32,7 +32,8 @@ export interface CommandOptions {
 }
 
 export interface InvokePayload<Context> {
-  uuid: string;
+  runId: string;
+  testId: string;
   context: Context;
 }
 
