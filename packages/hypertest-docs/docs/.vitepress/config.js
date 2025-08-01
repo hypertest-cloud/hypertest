@@ -1,7 +1,9 @@
 export default {
   // site-level options
-  title: 'HT',
+  title: 'hypertest',
   description: 'Just playing around.',
+  lang: 'en-US',
+  lastUpdated: true,
 
   themeConfig: {
     sidebar: [

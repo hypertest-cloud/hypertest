@@ -22,4 +22,3 @@ features:
   - title: Pipelines
     details: Accelerate your CI/CD pipelines
 ---
-
