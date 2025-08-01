@@ -1,6 +1,9 @@
 name: Build and deploy playground image to dev
 
 on:
+  push:
+    paths:
+      - 'packages/hypertest-playground/**'
   repository_dispatch:
     types: [base-image-built]
   workflow_dispatch:
@@ -21,16 +24,15 @@ jobs:
       - name: Check for changes
         id: changes
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            # When triggered by runner workflow, always run (skip change checks)
+            echo "playground=true" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            # When triggered by push to playground paths, always run
+            echo "playground=true" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             # For manual dispatch, check if playground has changes in recent commits
             if git diff --name-only HEAD~5 HEAD | grep -q "^packages/hypertest-playground/"; then
-              echo "playground=true" >> $GITHUB_OUTPUT
-            else
-              echo "playground=false" >> $GITHUB_OUTPUT
-            fi
-          else
-            # For repository dispatch, check if playground has changes since last base image build
-            if git diff --name-only ${{ github.event.client_payload.sha }}~10 ${{ github.event.client_payload.sha }} | grep -q "^packages/hypertest-playground/"; then
               echo "playground=true" >> $GITHUB_OUTPUT
             else
               echo "playground=false" >> $GITHUB_OUTPUT
