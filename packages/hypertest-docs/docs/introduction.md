@@ -7,7 +7,7 @@ next:
 
 # Introduction
 
-Hypertest is a revolutionary **plug-and-play TypeScript library** that transforms how you run your test suites. Instead of waiting for your entire test suite to complete sequentially, Hypertest distributes your tests across cloud infrastructure, cutting your total runtime down to **just your slowest individual test**.
+hypertest is a revolutionary **plug-and-play TypeScript library** that transforms how you run your test suites. Instead of waiting for your entire test suite to complete sequentially, hypertest distributes your tests across cloud infrastructure, cutting your total runtime down to **just your slowest individual test**. Exceptionally affordable for fast, cost-effective development.
 
 ## The problem we solve
 

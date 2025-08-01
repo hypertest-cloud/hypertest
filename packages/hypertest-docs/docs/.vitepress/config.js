@@ -1,7 +1,8 @@
+// biome-ignore lint/style/noDefaultExport: <explanation>
 export default {
-  // site-level options
   title: 'hypertest',
-  description: 'Just playing around.',
+  description:
+    'Distributes tests in the cloud to cut runtime to just your slowest test.',
   lang: 'en-US',
   lastUpdated: true,
 
