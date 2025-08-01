@@ -10,8 +10,40 @@ env:
   ECR_REPOSITORY: "hypertest/base-playwright"
 
 jobs:
+  check-changes:
+    name: Check for runner-aws-playwright changes
+    runs-on: ubuntu-latest
+    outputs:
+      runner-aws-playwright-changed: ${{ steps.changes.outputs.runner-aws-playwright }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # For manual dispatch, check if runner-aws-playwright has changes in recent commits
+            if git diff --name-only HEAD~5 HEAD | grep -q "^packages/hypertest-runner-aws-playwright/"; then
+              echo "runner-aws-playwright=true" >> $GITHUB_OUTPUT
+            else
+              echo "runner-aws-playwright=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            # For push events, check if runner-aws-playwright has changes in the current push
+            if git diff --name-only HEAD~1 HEAD | grep -q "^packages/hypertest-runner-aws-playwright/"; then
+              echo "runner-aws-playwright=true" >> $GITHUB_OUTPUT
+            else
+              echo "runner-aws-playwright=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
   base-image:
     name: Build and push base image to dev ECR
+    needs: check-changes
+    if: needs.check-changes.outputs.runner-aws-playwright-changed == 'true'
     runs-on: ubuntu-latest
 
     steps:
