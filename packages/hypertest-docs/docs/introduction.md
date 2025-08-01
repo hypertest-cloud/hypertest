@@ -48,7 +48,7 @@ Get the same test reports and artifacts you're used to, just delivered much fast
 
 ## Who should use hypertest?
 
-Hypertest is a perfect tool for:
+hypertest is a perfect tool for:
 
 - **Development teams** with growing test suites slowing down their workflow,
 - **CI/CD pipelines** that need faster feedback loops,
@@ -57,7 +57,7 @@ Hypertest is a perfect tool for:
 
 ## Real-world impact
 
-Teams using Hypertest typically see:
+Teams using hypertest typically see:
 
 - **Significant reduction** in test suite execution time and test infrastructure costs,
 - **Improved developer productivity** with faster feedback loops,
