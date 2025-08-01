@@ -19,7 +19,7 @@ export default {
         items: [
           { text: 'Installation', link: 'getting-started/installation' },
           { text: 'Configuration', link: 'getting-started/configuration' },
-          { text: 'Using', link: 'getting-started/using' },
+          { text: 'Usage', link: 'getting-started/usage' },
         ],
       },
       {

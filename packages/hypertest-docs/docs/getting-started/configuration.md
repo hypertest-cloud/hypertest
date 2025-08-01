@@ -1,8 +1,8 @@
 ---
 outline: deep
 next:
-  text: Using
-  link: /getting-started/using
+  text: Usage
+  link: /getting-started/usage
 prev:
   text: Installation
   link: /getting-started/installation
