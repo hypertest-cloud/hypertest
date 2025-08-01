@@ -1,11 +1,14 @@
-name: Build and deploy playground image to dev
+name: playground-image-dev
 
 on:
   push:
     paths:
       - 'packages/hypertest-playground/**'
-  repository_dispatch:
-    types: [base-image-built]
+  workflow_call:
+    inputs:
+      commit-sha:
+        required: true
+        type: string
   workflow_dispatch:
 
 jobs:
@@ -17,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.client_payload.sha || github.sha }}
+          ref: ${{ inputs.commit-sha || github.sha }}
 
       - uses: actions/setup-node@v4
         with:
