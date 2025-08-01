@@ -45,5 +45,6 @@ jobs:
     name: Trigger playground deployment
     needs: base-image
     uses: ./.github/workflows/playground-image-dev.yml
+    secrets: inherit
     with:
       commit-sha: ${{ github.sha }}
