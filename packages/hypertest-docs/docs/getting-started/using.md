@@ -1,5 +1,9 @@
 ---
 outline: deep
+next: false
+prev:
+  text: Configuration
+  link: /getting-started/configuration
 ---
 
 # Using
