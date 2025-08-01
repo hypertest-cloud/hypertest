@@ -1,4 +1,4 @@
-name: Build and push AWS Playwright base image to dev
+name: runner-aws-playwright-base-image-dev
 
 on:
   push:
@@ -41,9 +41,9 @@ jobs:
           docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Trigger playground deployment
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          event-type: base-image-built
-          client-payload: '{"sha": "${{ github.sha }}", "ref": "${{ github.ref }}"}'
+  trigger-playground-dev:
+    name: Trigger playground deployment
+    needs: base-image
+    uses: ./.github/workflows/playground-image-dev.yml
+    with:
+      commit-sha: ${{ github.sha }}
