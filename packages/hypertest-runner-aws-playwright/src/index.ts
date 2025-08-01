@@ -7,6 +7,8 @@ import { existsSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import { uploadToS3 } from './utils/uploadToS3.js';
 
+// TODO: remove that comment
+
 interface EventContext {
   grep: string;
 }
