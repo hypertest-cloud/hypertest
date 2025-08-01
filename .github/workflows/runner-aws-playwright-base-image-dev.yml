@@ -1,4 +1,4 @@
-name: Build and push base image to dev
+name: Build and push AWS Playwright base image to dev
 
 on:
   push:
