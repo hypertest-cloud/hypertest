@@ -6,8 +6,41 @@ on:
   workflow_dispatch:
 
 jobs:
+  check-changes:
+    name: Check for playground changes
+    runs-on: ubuntu-latest
+    outputs:
+      playground-changed: ${{ steps.changes.outputs.playground }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.client_payload.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # For manual dispatch, check if playground has changes in recent commits
+            if git diff --name-only HEAD~5 HEAD | grep -q "^packages/hypertest-playground/"; then
+              echo "playground=true" >> $GITHUB_OUTPUT
+            else
+              echo "playground=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            # For repository dispatch, check if playground has changes since last base image build
+            if git diff --name-only ${{ github.event.client_payload.sha }}~10 ${{ github.event.client_payload.sha }} | grep -q "^packages/hypertest-playground/"; then
+              echo "playground=true" >> $GITHUB_OUTPUT
+            else
+              echo "playground=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
   playground-image:
     name: Build and deploy playground image to dev
+    needs: check-changes
+    if: needs.check-changes.outputs.playground-changed == 'true'
     runs-on: ubuntu-latest
 
     steps:
