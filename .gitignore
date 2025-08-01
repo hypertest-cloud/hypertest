@@ -4,4 +4,7 @@
 node_modules
 dist
 
+# Claude
+CLAUDE.md
+
 .hypertest

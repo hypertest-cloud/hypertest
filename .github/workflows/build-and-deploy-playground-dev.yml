@@ -1,0 +1,41 @@
+name: Build and deploy playground image to dev
+
+on:
+  repository_dispatch:
+    types: [base-image-built]
+  workflow_dispatch:
+
+jobs:
+  playground-image:
+    name: Build and deploy playground image to dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.client_payload.sha || github.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Link core binary
+        run: npm link -w packages/hypertest-core
+
+      - name: Deploy
+        id: deploy
+        working-directory: packages/hypertest-playground
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+        run: npx hypertest deploy
