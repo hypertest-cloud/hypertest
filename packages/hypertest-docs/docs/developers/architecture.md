@@ -22,4 +22,6 @@ Core is responsible for two processes. Deploying cloud function image in to the 
 
 - When cloud function is invoked the hypertest runner enters the game. Runner is prepared in advance container image (in deploy process) and placed in cloud function. Basing on invoke payload it is able to run single test. Then it saves test output in to the cloud bucket.
 
+- <strong>(Coming soon)</strong> When main process is ended then the summary report is generated. It is based on artefact stored in the bucket.
+
 ![Infrastructure graph](./intrastracture-graph.png)
