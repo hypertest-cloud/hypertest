@@ -2,8 +2,6 @@ name: Build and push base image to dev
 
 on:
   push:
-    branches:
-      - feat/update-github-actions-workflows
   workflow_dispatch:
 
 env:
