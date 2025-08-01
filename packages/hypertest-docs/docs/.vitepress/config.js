@@ -10,9 +10,11 @@ export default {
       {
         text: 'Introduction',
         link: '/introduction',
+        collapsed: false,
       },
       {
         text: 'Getting Started',
+        collapsed: false,
         items: [
           { text: 'Installation', link: 'getting-started/installation' },
           { text: 'Configuration', link: 'getting-started/configuration' },
@@ -22,20 +24,24 @@ export default {
       {
         text: 'Plugins',
         link: '/plugins',
+        collapsed: true,
         items: [],
       },
       {
         text: 'Clouds',
         link: '/clouds',
+        collapsed: true,
         items: [],
       },
       {
         text: 'Developers',
+        collapsed: true,
         items: [{ text: 'Architecture', link: '/developers/architecture' }],
       },
       {
         text: 'Release notes',
         link: '/release-notes',
+        collapsed: true,
         items: [],
       },
     ],
@@ -44,5 +50,8 @@ export default {
       pattern:
         'https://github.com/hypertest-cloud/hypertest/tree/main/packages/hypertest-docs/docs/:path',
     },
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/hypertest-cloud/hypertest' },
+    ],
   },
 };
