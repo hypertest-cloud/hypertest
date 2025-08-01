@@ -1,7 +1,5 @@
 import { type Page, expect, test } from '@playwright/test';
 
-// TODO: remove that comment
-
 interface LocalStorageTodo {
   title: string;
   completed: boolean;
