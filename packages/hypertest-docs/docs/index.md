@@ -8,18 +8,17 @@ hero:
   tagline: Effortlessly integrates, distributing tests in the cloud to cut runtime to just your slowest test. Exceptionally affordable for fast, cost-effective development.
   actions:
     - theme: brand
-      text: Primary redirect
-      link: /todo
+      text: Learn more
+      link: /introduction
     - theme: alt
-      text: Secondary redirect
-      link: /todo
+      text: View on GitHub
+      link: https://github.com/hypertest-cloud/hypertest
 
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: Plugins
+    details: Adapt the hypertest to the tech requirements of your project.
+  - title: Clouds
+    details: Choose the cloud solution that suits you best
+  - title: Pipelines
+    details: Accelerate your CI/CD pipelines
 ---
-

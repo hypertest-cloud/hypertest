@@ -2,6 +2,6 @@
 outline: deep
 ---
 
-# Todo
+# Plugins
 
 This should be implemented. What are you waiting for?
