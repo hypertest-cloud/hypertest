@@ -39,5 +39,10 @@ export default {
         items: [],
       },
     ],
+    editLink: {
+      text: 'Edit this page on GitHub',
+      pattern:
+        'https://github.com/hypertest-cloud/hypertest/tree/main/packages/hypertest-docs/docs/:path',
+    },
   },
 };
