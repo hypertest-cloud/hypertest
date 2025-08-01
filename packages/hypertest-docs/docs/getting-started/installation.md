@@ -1,5 +1,11 @@
 ---
 outline: deep
+next:
+  text: Configuration
+  link: /getting-started/configuration
+prev:
+  text: Introduction
+  link: /introduction
 ---
 
 # Installation
