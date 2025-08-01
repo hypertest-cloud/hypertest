@@ -1,6 +1,6 @@
 export default {
   // site-level options
-  title: 'Hypertest',
+  title: 'HT',
   description: 'Just playing around.',
 
   themeConfig: {

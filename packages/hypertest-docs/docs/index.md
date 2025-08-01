@@ -15,11 +15,11 @@ hero:
       link: https://github.com/hypertest-cloud/hypertest
 
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: Plugins
+    details: Adapt the hypertest to the tech requirements of your project.
+  - title: Clouds
+    details: Choose the cloud solution that suits you best
+  - title: Pipelines
+    details: Accelerate your CI/CD pipelines
 ---
 
