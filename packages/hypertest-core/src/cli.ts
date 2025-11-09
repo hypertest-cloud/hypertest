@@ -9,6 +9,7 @@ import { setupHypertest } from './index.js';
 import { promiseMap } from './utils.js';
 import { CheckError, type Check } from '@hypertest/hypertest-types';
 import { fileURLToPath } from 'node:url';
+import { initializeHypertestConfig } from './init.js';
 
 const CORE_CHECKS: Check[] = [
   {
@@ -76,6 +77,9 @@ const runDoctor = async () => {
 };
 
 program.name('hypertest').version('0.0.1');
+
+program.command('init').action(initializeHypertestConfig);
+
 program.command('doctor').action(() => {
   runDoctor();
 });
