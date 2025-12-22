@@ -2,6 +2,8 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import inquirer from 'inquirer';
 
+const CONFIG_FILENAME = 'hypertest.config.js';
+
 const QUESTIONS = [
   {
     type: 'number',
@@ -60,7 +62,7 @@ const QUESTIONS = [
 ];
 
 export const initializeHypertestConfig = async () => {
-  const configPath = path.resolve(process.cwd(), 'hypertestTEST.config.js');
+  const configPath = path.resolve(process.cwd(), CONFIG_FILENAME);
 
   const {
     concurrency,
@@ -102,6 +104,6 @@ export default defineConfig({
 `,
   );
 
-  console.log('\n✅ File hypertest.config.js has been created!');
+  console.log(`\n✅ File ${CONFIG_FILENAME} has been created!`);
   console.log(`Path: ${configPath}\n`);
 };
