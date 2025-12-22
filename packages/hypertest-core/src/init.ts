@@ -32,29 +32,29 @@ const QUESTIONS = [
   },
   {
     type: 'input',
-    name: 'AWScloudFunctionProvider_baseImage',
+    name: 'awsCloudFunctionProvider_baseImage',
     message: 'Cloud function base image:',
   },
   {
     type: 'input',
-    name: 'AWScloudFunctionProvider_region',
+    name: 'awscloudFunctionProvider_region',
     message: 'Cloud function region:',
     default: 'eu-central-1',
   },
   {
     type: 'input',
-    name: 'AWScloudFunctionProvider_ecrRegistry',
+    name: 'awsCloudFunctionProvider_ecrRegistry',
     message: 'Cloud ECR registry URL:',
     default: 'dkr.ecr.eu-central-1.amazonaws.com',
   },
   {
     type: 'input',
-    name: 'AWScloudFunctionProvider_functionName',
+    name: 'awsCloudFunctionProvider_functionName',
     message: 'Cloud function name:',
   },
   {
     type: 'input',
-    name: 'AWScloudFunctionProvider_bucketName',
+    name: 'awsCloudFunctionProvider_bucketName',
     message: 'Cloud storage bucket name:',
   },
 ];
@@ -68,11 +68,11 @@ export const initializeHypertestConfig = async () => {
     localImageName,
     localBaseImageName,
     testRunnerOption,
-    AWScloudFunctionProvider_baseImage,
-    AWScloudFunctionProvider_region,
-    AWScloudFunctionProvider_ecrRegistry,
-    AWScloudFunctionProvider_functionName,
-    AWScloudFunctionProvider_bucketName,
+    awscloudFunctionProvider_baseImage,
+    awscloudFunctionProvider_region,
+    awscloudFunctionProvider_ecrRegistry,
+    awscloudFunctionProvider_functionName,
+    awscloudFunctionProvider_bucketName,
   } = await inquirer.prompt(QUESTIONS);
 
   fs.writeFile(
@@ -92,11 +92,11 @@ export default defineConfig({
   testRunner: ${testRunnerOption ? 'playwright({})' : 'To handle in the future'},
   cloudFunctionProvider: aws({
     baseImage:
-      '${AWScloudFunctionProvider_baseImage}',
-    region: '${AWScloudFunctionProvider_region}',
-    ecrRegistry: '${AWScloudFunctionProvider_ecrRegistry}',
-    functionName: '${AWScloudFunctionProvider_functionName}',
-    bucketName: '${AWScloudFunctionProvider_bucketName}',
+      '${awscloudFunctionProvider_baseImage}',
+    region: '${awscloudFunctionProvider_region}',
+    ecrRegistry: '${awscloudFunctionProvider_ecrRegistry}',
+    functionName: '${awscloudFunctionProvider_functionName}',
+    bucketName: '${awscloudFunctionProvider_bucketName}',
   }),
 });
 `,
