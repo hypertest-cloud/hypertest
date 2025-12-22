@@ -1,10 +1,22 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import inquirer from 'inquirer';
+import {
+  getConfigFromTemplate,
+  type TemplateProperties,
+} from './getConfigFromTemplate.js';
 
 const CONFIG_FILENAME = 'hypertest.config.js';
 
-const QUESTIONS = [
+interface Question {
+  type: 'number' | 'input' | 'list';
+  name: TemplateProperties;
+  message: string;
+  default?: unknown;
+  choices?: string[];
+}
+
+const QUESTIONS: Question[] = [
   {
     type: 'number',
     name: 'concurrency',
@@ -39,7 +51,7 @@ const QUESTIONS = [
   },
   {
     type: 'input',
-    name: 'awscloudFunctionProvider_region',
+    name: 'awsCloudFunctionProvider_region',
     message: 'Cloud function region:',
     default: 'eu-central-1',
   },
@@ -64,45 +76,10 @@ const QUESTIONS = [
 export const initializeHypertestConfig = async () => {
   const configPath = path.resolve(process.cwd(), CONFIG_FILENAME);
 
-  const {
-    concurrency,
-    imageName,
-    localImageName,
-    localBaseImageName,
-    testRunnerOption,
-    awscloudFunctionProvider_baseImage,
-    awscloudFunctionProvider_region,
-    awscloudFunctionProvider_ecrRegistry,
-    awscloudFunctionProvider_functionName,
-    awscloudFunctionProvider_bucketName,
-  } = await inquirer.prompt(QUESTIONS);
+  const promptAnswers: Record<TemplateProperties, unknown> =
+    await inquirer.prompt(QUESTIONS);
 
-  fs.writeFile(
-    configPath,
-    `
-// @ts-check
-import { defineConfig } from '@hypertest/hypertest-core';
-import playwright from '@hypertest/hypertest-plugin-playwright';
-import aws from '@hypertest/hypertest-provider-cloud-aws';
-
-// biome-ignore lint/style/noDefaultExport: <explanation>
-export default defineConfig({
-  concurrency: ${concurrency},
-  imageName: '${imageName}',
-  localImageName: '${localImageName}',
-  localBaseImageName: '${localBaseImageName}',
-  testRunner: ${testRunnerOption ? 'playwright({})' : 'To handle in the future'},
-  cloudFunctionProvider: aws({
-    baseImage:
-      '${awscloudFunctionProvider_baseImage}',
-    region: '${awscloudFunctionProvider_region}',
-    ecrRegistry: '${awscloudFunctionProvider_ecrRegistry}',
-    functionName: '${awscloudFunctionProvider_functionName}',
-    bucketName: '${awscloudFunctionProvider_bucketName}',
-  }),
-});
-`,
-  );
+  fs.writeFile(configPath, getConfigFromTemplate(promptAnswers));
 
   console.log(`\n✅ File ${CONFIG_FILENAME} has been created!`);
   console.log(`Path: ${configPath}\n`);
