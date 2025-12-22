@@ -9,7 +9,7 @@ import { setupHypertest } from './index.js';
 import { promiseMap } from './utils.js';
 import { CheckError, type Check } from '@hypertest/hypertest-types';
 import { fileURLToPath } from 'node:url';
-import { initializeHypertestConfig } from './init.js';
+import { initializeHypertestConfig } from './init/init.js';
 
 const CORE_CHECKS: Check[] = [
   {
