@@ -30,20 +30,24 @@ hypertest uses a **cloud-first approach** to test distribution:
 
 ## Key benefits
 
-#### Massive speed improvements
+### Massive speed improvements
 
 Transform your test suite from running sequentially to running in parallel across multiple cloud functions. This can reduce your whole test suite execution time to the length of your longest test.
 
-#### Almost zero cost infrastructure
+### Almost zero cost infrastructure
+
 Pay only for the compute time you actually use. Cloud functions scale to zero when not in use, making this exceptionally affordable, and costs cents when running.
 
-#### Plug and Play
-Integrate with your existing test framework (Playwright, more coming soon...) with minimal configuration changes on your end.
+### Plug and play
 
-#### Cloud agnostic
-Start with AWS cloud (and AWS Lambda as cloud functions), but easily switch to other cloud providers as your needs evolve (coming soon).
+Integrate with your existing test framework ([Playwright](https://playwright.dev/), more coming soon) with minimal configuration changes on your end.
 
-#### Unified reporting
+### Cloud agnostic
+
+Start with [AWS Lambda](https://aws.amazon.com/lambda/) as cloud functions, and easily switch to other cloud providers as your needs evolve (more coming soon).
+
+### Unified reporting
+
 Get the same test reports and artifacts you're used to, just delivered much faster.
 
 ## Who should use hypertest?

@@ -48,38 +48,38 @@ export default defineConfig({
 
 ### Core settings
 
-**`concurrency`**
-- **Type**: `number`
-- **Default**: `30`
-- **Description**: Maximum number of cloud functions to run simultaneously. Higher values = faster execution but more cloud resource usage and heavier load on your application.
+| Option | Type | Required | Default | Description |
+|--------|------|----------|---------|-------------|
+| `concurrency` | number | No | `30` | Maximum number of cloud functions to run simultaneously |
+| `imageName` | string | Yes | - | Name for your Docker image with test files |
+| `localImageName` | string | No | - | Name for local Docker image used during build |
+| `localBaseImageName` | string | No | - | Name for the local base image with hypertest runner |
 
-**`imageName`**
-- **Type**: `string`
-- **Required**: Yes
-- **Description**: Name for your Docker image with your test files that will be built and deployed to the cloud function.
-
-**`localImageName`**
-- **Type**: `string`
-- **Description**: Name for local Docker image with your test files that will be built and deployed to the cloud function.
-
-**`localBaseImageName`**
-- **Type**: `string`
-- **Description**: Name for the local base Docker image with hypertest runner for cloud function used for building your test container.
+::: tip
+Higher `concurrency` values mean faster execution but more cloud resource usage. Start with 10-30 and increase based on your AWS Lambda quotas.
+:::
 
 ### Test runner settings
 
-#### Playwright plugin
+Configure your test framework plugin via the `testRunner` option. See [Plugins](/plugins/overview) for details.
 
 ```javascript
 testRunner: playwright({
-  // Playwright-specific options go here
-  // Currently accepts empty object
+  // Playwright-specific options
 })
 ```
 
 ### Cloud provider settings
 
-#### AWS provider
+Configure your cloud infrastructure via the `cloudFunctionProvider` option. See [Clouds](/clouds/overview) for details.
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `baseImage` | string | Yes | ECR URI of the base image containing Playwright runner |
+| `region` | string | Yes | AWS region (e.g., `eu-central-1`) |
+| `ecrRegistry` | string | Yes | Your ECR registry URL |
+| `functionName` | string | Yes | Name for your Lambda function |
+| `bucketName` | string | Yes | S3 bucket for test artifacts |
 
 ```javascript
 cloudFunctionProvider: aws({
@@ -90,31 +90,6 @@ cloudFunctionProvider: aws({
   bucketName: 'your-app-hypertest-artifacts',
 })
 ```
-
-**`baseImage`**
-- **Type**: `string`
-- **Required**: Yes
-- **Description**: Base Docker image containing hypertest runner for Playwright, AWS and dependencies. Use hypertest's pre-built images or your own.
-
-**`region`**
-- **Type**: `string`
-- **Required**: Yes
-- **Description**: AWS region for your Lambda functions and resources (e.g., `us-east-1`, `eu-central-1`).
-
-**`ecrRegistry`**
-- **Type**: `string`
-- **Required**: Yes
-- **Description**: Your AWS ECR registry URL where Docker images will be stored.
-
-**`functionName`**
-- **Type**: `string`
-- **Required**: Yes
-- **Description**: Name for your AWS Lambda function. Must be unique in your AWS account.
-
-**`bucketName`**
-- **Type**: `string`
-- **Required**: Yes
-- **Description**: S3 bucket name for storing test artifacts, screenshots, videos and reports.
 
 ## AWS setup
 
