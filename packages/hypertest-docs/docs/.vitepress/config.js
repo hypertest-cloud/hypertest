@@ -7,6 +7,9 @@ export default {
   lastUpdated: true,
 
   themeConfig: {
+    search: {
+      provider: 'local',
+    },
     sidebar: [
       {
         text: 'Introduction',
@@ -64,6 +67,7 @@ export default {
     },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/hypertest-cloud/hypertest' },
+      { icon: 'discord', link: 'https://discord.gg/Ud9E86JCM3' },
     ],
   },
 };

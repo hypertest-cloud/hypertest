@@ -1,59 +1,92 @@
-# hypertest.
+# Hypertest
 
-_Revolutionize your testing with our **plug-and-play** TypeScript library. Effortlessly integrates, distributing tests in the cloud to **cut runtime to just your slowest test**. Exceptionally affordable for fast, cost-effective development._
+Revolutionize your testing with our **plug-and-play TypeScript library**. Effortlessly integrates, distributing tests in the cloud to **cut runtime to just your slowest test**. Exceptionally affordable for fast, cost-effective development.
 
-## :scroll: Project structure
+## Why Hypertest?
 
-- `hypertest-core` - library core
-- `hypertest-plugin-cypress` - core plugin for Cypress integration
-- `hypertest-runner-cypress` - Cypress test runner
-- `hypertest-playground` - Playground to test all packages together
+Modern test suites can take 10, 30, or even 60+ minutes to complete. Hypertest solves this by running each test file in a separate cloud function, transforming sequential execution into massive parallelization.
 
-## :artificial_satellite: Setting up
+- **Massive speed improvements** — Reduce test suite time to your longest individual test
+- **Near-zero cost** — Pay only for compute time, scales to zero when idle
+- **Plug and play** — Works with your existing Playwright tests
+- **Cloud agnostic** — Start with AWS Lambda, expand to other providers
 
+## Quick Start
+
+### Installation
+
+```bash
+npm install @hypertest/hypertest-core @hypertest/hypertest-plugin-playwright @hypertest/hypertest-provider-cloud-aws
 ```
-npm i
-npm run build -w packages
-npm run start:runner -w packages/hypertest-playground
-npm run start:core -w packages/hypertest-playground
+
+### Configuration
+
+Create `hypertest.config.js` in your project root:
+
+```javascript
+import { defineConfig } from '@hypertest/hypertest-core';
+import playwright from '@hypertest/hypertest-plugin-playwright';
+import aws from '@hypertest/hypertest-provider-cloud-aws';
+
+export default defineConfig({
+  concurrency: 30,
+  imageName: 'your-app/hypertest-playwright',
+  testRunner: playwright({}),
+  cloudFunctionProvider: aws({
+    baseImage: 'your-ecr-registry/hypertest/base-playwright:latest',
+    region: 'eu-central-1',
+    ecrRegistry: 'your-ecr-registry',
+    functionName: 'your-function-name',
+    bucketName: 'your-artifacts-bucket',
+  }),
+});
 ```
 
-## :test_tube: Run
+### Usage
 
-_TBA_
-
-## :handshake: Contribute
-
-_TBA_
-
-## How to handle too many requests exception
-
-### Handling AWS exception:
-If you encounter the following error when invoking AWS Lambda:
+```bash
+npx hypertest deploy    # Build and deploy test image to AWS
+npx hypertest invoke    # Run tests in cloud
 ```
-TooManyRequestsException: Rate Exceeded
-at de_TooManyRequestsExceptionRes (/node_modules/@aws-sdk/client-lambda/dist-cjs/index.js:4441:21)
-```
-it means your account has hit the **Lambda concurrency or request rate limit**.
 
-#### Solution: Request a Limit Increase from AWS
+## Documentation
 
-To fix this issue, you need to request a **Lambda concurrency quota increase** from AWS:
+Full documentation available at [packages/hypertest-docs](./packages/hypertest-docs) including:
 
-1. **Go to the AWS Service Quotas console**
-   [https://console.aws.amazon.com/servicequotas/home](https://console.aws.amazon.com/servicequotas/home)
+- [Installation](./packages/hypertest-docs/docs/getting-started/installation.md)
+- [Configuration](./packages/hypertest-docs/docs/getting-started/configuration.md)
+- [Usage](./packages/hypertest-docs/docs/getting-started/usage.md)
+- [Architecture](./packages/hypertest-docs/docs/developers/architecture.md)
 
-2. In the left sidebar, click **"AWS services"**, then search for **"Lambda"**.
+## Prerequisites
 
-3. Click on **"Lambda"** to view all available quotas.
+- Node.js 20+
+- Docker
+- AWS account with ECR, Lambda, and S3 configured
 
-4. Look for the following quotas (depending on your use case):
-   - `Concurrent executions`
-   - `Requests per second (RPS)` for function invocations
-   - `GetFunction, InvokeFunction and other API request limits`
+## Contributing
 
-5. Click on the relevant quota, then click **"Request quota increase"**.
+### Setup
 
-6. Fill in the new limit you need (e.g., 500, 1000, or more) and submit the request.
+TODO: Add setup instructions
 
-7. AWS will usually review and approve your request within 1 business day.
+### Development
+
+TODO: Add development instructions
+
+### Project Structure
+
+| Package | Description |
+|---------|-------------|
+| `hypertest-core` | CLI and orchestration |
+| `hypertest-types` | Shared TypeScript interfaces |
+| `hypertest-plugin-playwright` | Playwright integration |
+| `hypertest-provider-cloud-aws` | AWS cloud provider |
+| `hypertest-runner-aws-playwright` | Lambda execution handler |
+| `hypertest-playground` | Example implementation |
+| `hypertest-docs` | Documentation site |
+
+## Community
+
+- [GitHub Issues](https://github.com/hypertest-cloud/hypertest/issues)
+- [Discord](https://discord.gg/Ud9E86JCM3)

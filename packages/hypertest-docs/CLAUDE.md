@@ -5,53 +5,52 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 ```bash
-# Start local dev server with hot reload
-npm run dev
-
-# Build static site for production (outputs to docs/.vitepress/dist)
-npm run build
-
-# Preview the built site locally
-npm run preview
+npm run dev      # Start local dev server with hot reload
+npm run build    # Build static site (outputs to docs/.vitepress/dist)
+npm run preview  # Preview the built site locally
 ```
 
 ## Project Structure
 
-This is a VitePress documentation site for Hypertest - a cloud-based test distribution system. The site is part of a larger monorepo at `packages/hypertest-docs`.
+VitePress documentation site for hypertest (cloud-based test distribution system). Part of monorepo at `packages/hypertest-docs`.
 
 ### Key Locations
 
-- **VitePress config**: `docs/.vitepress/config.js` - Site configuration, sidebar navigation, theme settings
+- **VitePress config**: `docs/.vitepress/config.js` - Sidebar navigation and theme settings
 - **Home page**: `docs/index.md` - Hero layout with features
-- **Documentation pages**: `docs/*.md` and subdirectories
-- **Assets**: `docs/developers/intrastracture-graph.png` (architecture diagram)
 
 ### Content Organization
 
 ```
 docs/
-├── index.md                    # Home page (hero layout)
-├── introduction.md             # Main intro and value proposition
-├── plugins.md                  # Placeholder
-├── clouds.md                   # Placeholder
-├── release-notes.md            # Placeholder
+├── index.md                      # Home page (hero layout)
+├── introduction.md               # Main intro and value proposition
 ├── getting-started/
-│   ├── installation.md         # Package installation guide
-│   ├── configuration.md        # Config file and AWS setup
-│   └── usage.md                # Deploy/invoke workflow
-└── developers/
-    ├── architecture.md         # System architecture docs
-    └── intrastracture-graph.png
+│   ├── installation.md           # Package installation
+│   ├── configuration.md          # Config file and AWS setup
+│   └── usage.md                  # Deploy/invoke workflow
+├── plugins/
+│   ├── overview.md               # Plugin architecture
+│   └── playwright.md             # Playwright plugin deep dive
+├── clouds/
+│   ├── overview.md               # Cloud provider architecture
+│   └── aws.md                    # AWS provider deep dive
+├── runners/
+│   ├── overview.md               # Runner architecture
+│   └── aws-playwright.md         # AWS Playwright runner deep dive
+├── developers/
+│   └── architecture.md           # System architecture
+└── release-notes/
+    └── 0.1.0.md                  # Version release notes
 ```
 
 ## Adding New Documentation
 
-1. Create a new `.md` file in the appropriate directory under `docs/`
-2. Add frontmatter with `outline: deep` for automatic table of contents
-3. Update the sidebar in `docs/.vitepress/config.js` to include the new page
-4. Add `prev`/`next` links in frontmatter for navigation flow
+1. Create `.md` file in appropriate directory under `docs/`
+2. Add frontmatter with `outline: deep` and `prev`/`next` navigation links
+3. Update sidebar in `docs/.vitepress/config.js`
 
-### Page Frontmatter Example
+### Page Frontmatter
 
 ```yaml
 ---
@@ -65,24 +64,19 @@ next:
 ---
 ```
 
-## VitePress Features Used
+## Documentation Style
 
-- **Code groups**: Show npm/yarn/pnpm alternatives with `::: code-group`
-- **Hero layout**: Home page uses `layout: home` with features
-- **Edit links**: Configured to link to GitHub repo
-- **Last updated**: Timestamps enabled globally
+- Use `::: code-group` for npm/yarn/pnpm alternatives
+- Use `::: tip` and `::: warning` for callouts
+- Use tables for configuration options
+- Use ASCII diagrams for architecture visualization
+- Add links to external tools (Playwright, AWS Lambda, etc.)
+- Keep consistent heading hierarchy (H1 for title, H2 for sections, H3 for subsections)
 
-## Code Style
+## Hypertest Concepts
 
-The monorepo uses Biome for linting/formatting (config in root `biome.json`):
-- 2-space indentation
-- Single quotes for JavaScript
-- No semicolons required by default
-
-## Context: Hypertest Documentation
-
-When writing documentation, reference these key Hypertest concepts:
+When writing docs, reference these key concepts:
 - **Two-phase workflow**: Deploy (build/push Docker image) → Invoke (run tests in Lambda)
-- **Plugin architecture**: TestRunnerPlugin (Playwright) + CloudFunctionProviderPlugin (AWS)
-- **Artifacts**: Tests use `HT_TEST_ARTIFACTS_OUTPUT_PATH` env var to save screenshots/videos
-- **Configuration**: Users create `hypertest.config.js` with `defineConfig` helper
+- **Three component types**: Plugins (test framework), Clouds (infrastructure), Runners (execution)
+- **Artifacts**: Tests use `HT_TEST_ARTIFACTS_OUTPUT_PATH` env var
+- **Configuration**: `hypertest.config.js` with `defineConfig` helper
