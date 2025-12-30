@@ -6,3 +6,6 @@ dist
 
 # hypertest
 .hypertest
+
+# Claude
+.claude
