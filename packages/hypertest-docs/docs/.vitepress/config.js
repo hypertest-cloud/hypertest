@@ -41,9 +41,8 @@ export default {
       },
       {
         text: 'Release notes',
-        link: '/release-notes',
         collapsed: true,
-        items: [],
+        items: [{ text: 'Version 0.1.0', link: '/release-notes/0.1.0' }],
       },
     ],
     editLink: {
