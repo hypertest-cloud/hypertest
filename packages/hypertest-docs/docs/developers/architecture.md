@@ -1,5 +1,8 @@
 ---
 outline: deep
+prev:
+  text: AWS Playwright
+  link: /runners/aws-playwright
 ---
 
 # Architecture

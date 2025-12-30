@@ -1,6 +1,8 @@
 ---
 outline: deep
-next: false
+next:
+  text: Plugins overview
+  link: /plugins/overview
 prev:
   text: Configuration
   link: /getting-started/configuration

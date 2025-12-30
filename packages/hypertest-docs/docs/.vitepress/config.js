@@ -24,15 +24,27 @@ export default {
       },
       {
         text: 'Plugins',
-        link: '/plugins',
         collapsed: true,
-        items: [],
+        items: [
+          { text: 'Overview', link: '/plugins/overview' },
+          { text: 'Playwright', link: '/plugins/playwright' },
+        ],
       },
       {
         text: 'Clouds',
-        link: '/clouds',
         collapsed: true,
-        items: [],
+        items: [
+          { text: 'Overview', link: '/clouds/overview' },
+          { text: 'AWS', link: '/clouds/aws' },
+        ],
+      },
+      {
+        text: 'Runners',
+        collapsed: true,
+        items: [
+          { text: 'Overview', link: '/runners/overview' },
+          { text: 'AWS Playwright', link: '/runners/aws-playwright' },
+        ],
       },
       {
         text: 'Developers',
