@@ -19,7 +19,8 @@ jobs:
         with:
           ref: ${{ github.event.client_payload.sha || github.sha }}
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
