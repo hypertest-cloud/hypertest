@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "type-fest": "^4.40.1",
+    "winston": "^3.19.0",
     "zod": "^3.24.2"
   }
 }
