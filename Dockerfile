@@ -13,10 +13,14 @@ COPY \
 COPY \
     ./packages/hypertest-runner-aws-playwright/ \
     ./packages/hypertest-runner-aws-playwright/
+COPY \
+    ./packages/hypertest-types/ \
+    ./packages/hypertest-types/
 
 RUN ls -la
 
 RUN npm ci
+RUN npm run build -w packages/hypertest-types
 RUN npm run build -w packages/hypertest-runner-aws-playwright
 
 # magic....
