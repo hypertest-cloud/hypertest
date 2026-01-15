@@ -6,7 +6,7 @@ import { execSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import { uploadToS3 } from './utils/uploadToS3.js';
-import type { TestInvokeResponse } from '../../hypertest-types/src/cloud-function-provider.js';
+import type { TestInvokeResponse } from '@hypertest/hypertest-types';
 import { getTitleFromSuites } from './utils/getTitleFromSuites.js';
 
 interface EventContext {
