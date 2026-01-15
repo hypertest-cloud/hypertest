@@ -46,6 +46,22 @@ const getEcrAuth = async (ecrClient: ECRClient, logger: winston.Logger) => {
   };
 };
 
+export const TestInvokeResponseSchema = z.discriminatedUnion('success', [
+  z.object({
+    name: z.string(),
+    filePath: z.string(),
+    duration: z.number(),
+    success: z.literal(true),
+  }),
+  z.object({
+    name: z.string(),
+    filePath: z.string(),
+    duration: z.number(),
+    success: z.literal(false),
+    stackTrace: z.string(),
+  }),
+]);
+
 // biome-ignore lint/style/useNamingConvention: <explanation>
 const HypertestProviderCloudAWS = (
   settings: HypertestProviderCloudAwsConfig,
@@ -137,9 +153,11 @@ const HypertestProviderCloudAWS = (
 
       try {
         const { Payload } = await lambdaClient.send(command);
-        const result = Payload ? Buffer.from(Payload).toString('utf-8') : '';
+        const result = JSON.parse(
+          Payload ? Buffer.from(Payload).toString('utf-8') : '',
+        );
 
-        return result;
+        return TestInvokeResponseSchema.parseAsync(result);
       } catch (error) {
         config.logger.error(`Failed to send lambda: ${error}`);
 
