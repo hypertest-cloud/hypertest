@@ -22,7 +22,8 @@ jobs:
         with:
           ref: ${{ inputs.commit-sha || github.sha }}
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
