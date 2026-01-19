@@ -6,6 +6,7 @@ import type {
 } from '@hypertest/hypertest-types';
 import type { PlaywrightTestConfig } from '@playwright/test';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import type winston from 'winston';
 import { z } from 'zod';
 import { buildDockerImage } from './docker-build.js';
@@ -26,11 +27,13 @@ const getPlaywrightConfig = async (
   const configFilepath = './playwright.config.js';
   logger.verbose(`Loading PW config from: ${configFilepath}`);
 
+  const fileUrl = pathToFileURL(
+    path.resolve(process.cwd(), configFilepath),
+  ).href;
+
   return {
     playwrightConfigFilepath: configFilepath,
-    config: await import(path.resolve(process.cwd(), configFilepath)).then(
-      (mod) => mod.default,
-    ),
+    config: await import(fileUrl).then((mod) => mod.default),
   };
 };
 
