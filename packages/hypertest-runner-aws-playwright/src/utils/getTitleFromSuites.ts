@@ -27,6 +27,7 @@ const getNestedTitles = (nestedObject: Suite | Spec): string[] => {
   return [nestedObject.title];
 };
 
+// Find out more robust solution
 export const getTitleFromSuites = (suites: Suite[]): string => {
   const firstSuite = suites.at(0);
   if (!firstSuite) {
