@@ -26,3 +26,11 @@ test.describe('Those tests will fail', () => {
     throw new Error('Manual system failure triggered for testing');
   });
 });
+
+test('Im outside the description wrapper', async ({ page }) => {
+  await page.goto('https://playwright.dev/');
+
+  // This will fail because the actual text is "Playwright"
+  // You will see a "diff" in the stacktrace (Expected vs Actual)
+  await expect(page.locator('.navbar__title')).toHaveText('Non-existent Text');
+});
