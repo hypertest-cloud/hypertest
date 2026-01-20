@@ -31,7 +31,10 @@ export async function buildDockerImage<
   env = {},
 }: DockerBuildOptions<TDockerfile>): Promise<void> {
   const args = [
+    'buildx',
     'build',
+    '--provenance=false',
+    '--load',
     ['-f', '-'],
     platform ? ['--platform', platform] : [],
     imageTag ? ['-t', imageTag] : [],
