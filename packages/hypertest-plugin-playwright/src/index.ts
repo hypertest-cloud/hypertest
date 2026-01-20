@@ -16,6 +16,7 @@ import type {
   PlaywrightCloudFunctionContext,
   PlaywrightPluginOptions,
 } from './types.js';
+import { pathToFileURL } from 'node:url';
 
 const getPlaywrightConfig = async (
   logger: winston.Logger,
@@ -26,11 +27,13 @@ const getPlaywrightConfig = async (
   const configFilepath = './playwright.config.js';
   logger.verbose(`Loading PW config from: ${configFilepath}`);
 
+  const fileUrl = pathToFileURL(
+    path.resolve(process.cwd(), configFilepath),
+  ).href;
+
   return {
     playwrightConfigFilepath: configFilepath,
-    config: await import(path.resolve(process.cwd(), configFilepath)).then(
-      (mod) => mod.default,
-    ),
+    config: await import(fileUrl).then((mod) => mod.default),
   };
 };
 
@@ -63,6 +66,7 @@ const PlaywrightRunnerPlugin = (options: {
       const { config: pwConfig } = await getPlaywrightConfig(
         options.config.logger,
       );
+      console.log('pwConfig: ', pwConfig);
       const projectName = getProjectName(pwConfig);
       const testDir = getTestDir(pwConfig);
       options.config.logger.verbose(`Playwright tests directory: ${testDir}`);
