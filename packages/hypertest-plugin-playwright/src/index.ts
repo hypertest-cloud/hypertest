@@ -66,7 +66,6 @@ const PlaywrightRunnerPlugin = (options: {
       const { config: pwConfig } = await getPlaywrightConfig(
         options.config.logger,
       );
-      console.log('pwConfig: ', pwConfig);
       const projectName = getProjectName(pwConfig);
       const testDir = getTestDir(pwConfig);
       options.config.logger.verbose(`Playwright tests directory: ${testDir}`);
