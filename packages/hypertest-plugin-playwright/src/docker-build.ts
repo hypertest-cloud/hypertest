@@ -34,6 +34,7 @@ export async function buildDockerImage<
     'buildx',
     'build',
     '--provenance=false',
+    '--sbom=false',
     '--load',
     ['-f', '-'],
     platform ? ['--platform', platform] : [],
