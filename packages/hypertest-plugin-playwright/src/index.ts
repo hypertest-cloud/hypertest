@@ -17,6 +17,7 @@ import type {
   PlaywrightCloudFunctionContext,
   PlaywrightPluginOptions,
 } from './types.js';
+import { pathToFileURL } from 'node:url';
 
 const getPlaywrightConfig = async (
   logger: winston.Logger,
