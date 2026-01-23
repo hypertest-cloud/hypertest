@@ -7,7 +7,7 @@ import { existsSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import { uploadToS3 } from './utils/uploadToS3.js';
 import type { TestInvokeResponse } from '@hypertest/hypertest-types';
-import { getTitleFromSuites } from './utils/getTitleFromSuites.js';
+import { parsePlaywrightReport } from './utils/getTitleFromSuites.js';
 
 interface EventContext {
   grep: string;
@@ -130,24 +130,8 @@ async function main(
   const report = JSON.parse(
     await fs.readFile(`${testOutputDir}/playwright-results.json`, 'utf8'),
   );
-  const baseProps = {
-    name: getTitleFromSuites(report.suites),
-    filePath: report.suites.at(0)?.file ?? 'unknown',
-    duration: report.stats.duration,
-  };
 
-  if (report.stats.expected === 1 && report.stats.unexpected === 0) {
-    return {
-      success: true,
-      ...baseProps,
-    };
-  }
-  return {
-    success: false,
-    //  TODO: This should be handled in separated ticket
-    stackTrace: 'TODO',
-    ...baseProps,
-  };
+  return parsePlaywrightReport(report);
 }
 
 const handler = async (

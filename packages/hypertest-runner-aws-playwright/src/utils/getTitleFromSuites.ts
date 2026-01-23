@@ -1,39 +1,91 @@
+import type { TestInvokeResponse } from '@hypertest/hypertest-types';
+
+interface TestResult {
+  status: string;
+  duration: number;
+  error?: {
+    message: string;
+    stack: string;
+  };
+}
+
+interface PlaywrightTest {
+  results: TestResult[];
+}
+
 interface Spec {
   title: string;
+  file: string;
+  line: number;
+  column: number;
+  tests: PlaywrightTest[];
 }
+
 interface Suite {
   title: string;
   specs?: Spec[];
   suites?: Suite[];
 }
 
-const getNestedTitles = (nestedObject: Suite | Spec): string[] => {
-  if ('suites' in nestedObject && nestedObject.suites) {
-    const firstSuite = nestedObject.suites.at(0);
-    if (!firstSuite) {
-      return [nestedObject.title];
+interface PlaywrightReport {
+  suites: Suite[];
+}
+
+export const parsePlaywrightReport = (
+  report: PlaywrightReport,
+): TestInvokeResponse => {
+  const extractedData: TestInvokeResponse[] = [];
+
+  const walk = (suite: Suite, parentTitles: string[] = []) => {
+    const currentPath = suite.title
+      ? [...parentTitles, suite.title]
+      : parentTitles;
+
+    if (suite.specs) {
+      for (const spec of suite.specs) {
+        for (const test of spec.tests) {
+          const result = test.results[0];
+
+          const fullTestName = [...currentPath, spec.title].join(' > ');
+          const responseBase = {
+            name: `${spec.file} > ${fullTestName}`,
+            filePath: spec.file,
+            duration: result?.duration || 0,
+          };
+          if (result?.status === 'failed') {
+            extractedData.push({
+              ...responseBase,
+              success: false,
+              stackTrace:
+                result?.error?.stack || 'Unable to retrieve stack trace',
+            });
+          } else {
+            extractedData.push({
+              ...responseBase,
+              success: true,
+            });
+          }
+        }
+      }
     }
-    return [nestedObject.title, ...getNestedTitles(firstSuite)];
-  }
 
-  if ('specs' in nestedObject && nestedObject.specs) {
-    const firstSpec = nestedObject.specs.at(0);
-    if (!firstSpec) {
-      return [nestedObject.title];
+    if (suite.suites) {
+      for (const subSuite of suite.suites) {
+        walk(subSuite, currentPath);
+      }
     }
-    return [nestedObject.title, firstSpec.title];
+  };
+
+  for (const rootSuite of report.suites) {
+    walk(rootSuite);
   }
 
-  return [nestedObject.title];
-};
-
-// Find out more robust solution
-export const getTitleFromSuites = (suites: Suite[]): string => {
-  const firstSuite = suites.at(0);
-  if (!firstSuite) {
-    return 'unknown';
+  if (extractedData.length > 1) {
+    throw new Error('Playwright executed more than one test.');
   }
-  const titles = getNestedTitles(firstSuite);
+  if (extractedData.length === 0) {
+    throw new Error('Test was not found.');
+  }
 
-  return titles.join(' > ');
+  return extractedData[0];
 };
