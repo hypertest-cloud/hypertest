@@ -7,7 +7,7 @@ import { existsSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import { uploadToS3 } from './utils/uploadToS3.js';
 import type { TestInvokeResponse } from '@hypertest/hypertest-types';
-import { parsePlaywrightReport } from './utils/getTitleFromSuites.js';
+import { parsePlaywrightReport } from './utils/parsePlaywrightReport.js';
 
 interface EventContext {
   grep: string;
