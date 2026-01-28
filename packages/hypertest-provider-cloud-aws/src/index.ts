@@ -48,17 +48,17 @@ const getEcrAuth = async (ecrClient: ECRClient, logger: winston.Logger) => {
 
 export const TestInvokeResponseSchema = z.discriminatedUnion('success', [
   z.object({
+    success: z.literal(true),
     name: z.string(),
     filePath: z.string(),
     duration: z.number(),
-    success: z.literal(true),
   }),
   z.object({
-    name: z.string(),
-    filePath: z.string(),
-    duration: z.number(),
     success: z.literal(false),
-    stackTrace: z.string(),
+    message: z.string(),
+    name: z.string().optional(),
+    filePath: z.string().optional(),
+    stackTrace: z.string().optional(),
   }),
 ]);
 
@@ -144,6 +144,7 @@ const HypertestProviderCloudAWS = (
         ...payload,
         bucketName: settings.bucketName,
       };
+      let resultCOpy = '';
 
       const command = new InvokeCommand({
         FunctionName: settings.functionName,

@@ -5,20 +5,20 @@ import type {
   ResolvedHypertestConfig,
 } from './index.js';
 
-interface TestInvokeResponseBase {
-  name: string;
-  filePath: string;
-  duration: number; //in ms
-}
 export type TestInvokeResponse =
-  | (TestInvokeResponseBase & {
+  | {
       success: true;
-    })
-  | (TestInvokeResponseBase & {
+      name: string;
+      filePath: string;
+      duration: number; //in ms
+    }
+  | {
       success: false;
-      stackTrace: string;
-    });
-
+      message: string;
+      name?: string;
+      filePath?: string;
+      stackTrace?: string;
+    };
 export interface CloudFunctionProviderPlugin {
   pullBaseImage: () => Promise<void>;
   pushImage: () => Promise<void>;

@@ -156,16 +156,21 @@ const handler = async (
     );
   } catch (err) {
     console.error(err);
+    const defaultStackTrace = `Test grep that was to be called: "${event.context.grep}"`;
 
     if (err instanceof Error) {
       return {
-        status: 'error',
+        success: false,
         message: err.message,
-        stack: err.stack,
+        stackTrace: err.stack || defaultStackTrace,
       };
     }
+
     return {
-      status: 'unknown-error',
+      success: false,
+      message:
+        'Unknown error. Failed to properly invoke or retrieve lambda invocation output',
+      stackTrace: defaultStackTrace,
     };
   }
 };
