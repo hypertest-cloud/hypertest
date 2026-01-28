@@ -48,7 +48,7 @@ export const parsePlaywrightReport = (
 
           const fullTestName = [...currentPath, spec.title].join(' > ');
           const responseBase = {
-            name: `${spec.file} > ${fullTestName}`,
+            name: fullTestName,
             filePath: spec.file,
             duration: result?.duration || 0,
           };
