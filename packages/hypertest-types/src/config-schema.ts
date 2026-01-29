@@ -11,9 +11,9 @@ const PluginDefinitionSchema = z.object({
 });
 
 const WinstonLoggerOptions = z.object({
-  levels: z.record(z.number()).optional(), // Config.AbstractConfigSetLevels to zazwyczaj mapa string -> number
+  levels: z.record(z.number()).optional(),
   silent: z.boolean().optional(),
-  format: z.any().optional(), // logform.Format to złożony obiekt, z.any() jest tu najbezpieczniejszy
+  format: z.any().optional(),
   level: z.union([
     z.literal('error'),
     z.literal('warn'),
