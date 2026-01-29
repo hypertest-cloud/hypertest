@@ -10,6 +10,7 @@ export default defineConfig({
   localImageName: 'hypertest/playground-playwright',
   localBaseImageName: 'hypertest/local-base-playwright',
   testRunner: playwright({}),
+  loggerOptions: {},
   cloudFunctionProvider: aws({
     baseImage:
       '491085409730.dkr.ecr.eu-central-1.amazonaws.com/hypertest/base-playwright:latest',
