@@ -4,11 +4,11 @@ import {
   LambdaClient,
   UpdateFunctionCodeCommand,
 } from '@aws-sdk/client-lambda';
-import { fromEnv } from '@aws-sdk/credential-providers';
 import {
-  ServiceQuotasClient,
   GetServiceQuotaCommand,
+  ServiceQuotasClient,
 } from '@aws-sdk/client-service-quotas';
+import { fromEnv } from '@aws-sdk/credential-providers';
 import {
   CheckError,
   type CloudFunctionProviderPlugin,
@@ -90,7 +90,8 @@ const HypertestProviderCloudAWS = (
 
         config.logger.verbose('Logging in to ECR...');
         runCommand(
-          `docker login -u ${username} -p ${password} ${proxyEndpoint}`,
+          `docker login -u ${username} --password-stdin ${proxyEndpoint}`,
+          { input: password },
         );
 
         // Push the Docker image to ECR
@@ -120,7 +121,8 @@ const HypertestProviderCloudAWS = (
 
         config.logger.verbose('Logging in to ECR...');
         runCommand(
-          `docker login -u ${username} -p ${password} ${proxyEndpoint}`,
+          `docker login -u ${username} --password-stdin ${proxyEndpoint}`,
+          { input: password },
         );
 
         const targetName = getTargetImageName();

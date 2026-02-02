@@ -5,10 +5,11 @@ export const runCommand = (
   cmd: string,
   options?: {
     cwd?: string;
+    input?: string;
   },
 ): void => {
   execSync(cmd, {
-    stdio: 'inherit',
+    stdio: options?.input ? 'pipe' : 'inherit',
     cwd: process.cwd(),
     ...options,
   });
