@@ -144,7 +144,6 @@ const HypertestProviderCloudAWS = (
         ...payload,
         bucketName: settings.bucketName,
       };
-      let resultCOpy = '';
 
       const command = new InvokeCommand({
         FunctionName: settings.functionName,
