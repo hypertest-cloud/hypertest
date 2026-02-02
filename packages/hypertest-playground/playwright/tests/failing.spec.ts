@@ -14,9 +14,8 @@ test.describe('Those tests will fail', () => {
   test('timeout error example', async ({ page }) => {
     await page.goto('https://playwright.dev/');
 
-    // This will fail after the default timeout (30s) because the selector doesn't exist.
     // The stacktrace will show logs of the "Actionability check"
-    await page.click('#button-that-does-not-exist');
+    await page.click('#button-that-does-not-exist', { timeout: 10000 });
   });
 
   test('standard JS error example', async ({ page }) => {
