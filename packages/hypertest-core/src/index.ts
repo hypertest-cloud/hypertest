@@ -57,8 +57,6 @@ export const HypertestCore = <InvokePayloadContext>(options: {
           ] as InvokePayload<InvokePayloadContext>[])
         : await options.testRunner.getCloudFunctionContexts(runId);
 
-      console.log('functionInvokePayloads:', functionInvokePayloads);
-
       const results = await promiseMap(
         functionInvokePayloads,
         async (payload) => ({
@@ -68,7 +66,15 @@ export const HypertestCore = <InvokePayloadContext>(options: {
         { concurrency: options.config.concurrency },
       );
 
-      options.config.logger.verbose(`Test results: ${results.toString()}`);
+      options.config.logger.info(
+        `Functions invoked successfully. Run id: ${results[0].runId}`,
+      );
+      for (const { result, testId } of results) {
+        options.config.logger.verbose(`TestId: ${testId}`);
+        options.config.logger.verbose(
+          `Test results: ${JSON.stringify(result, null, 2)}`,
+        );
+      }
     },
     deploy: async () => {
       options.config.logger.info(
@@ -86,6 +92,8 @@ export const HypertestCore = <InvokePayloadContext>(options: {
 
       options.config.logger.info('Updating lambda image');
       await options.cloudFunctionProvider.updateLambdaImage();
+
+      options.config.logger.info('Deploy successful');
     },
   };
 };

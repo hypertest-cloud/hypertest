@@ -6,6 +6,7 @@ import type {
 } from '@hypertest/hypertest-types';
 import type { PlaywrightTestConfig } from '@playwright/test';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import type winston from 'winston';
 import { z } from 'zod';
 import { buildDockerImage } from './docker-build.js';
@@ -16,7 +17,6 @@ import type {
   PlaywrightCloudFunctionContext,
   PlaywrightPluginOptions,
 } from './types.js';
-import { pathToFileURL } from 'node:url';
 
 const getPlaywrightConfig = async (
   logger: winston.Logger,
