@@ -66,13 +66,15 @@ export const HypertestCore = <InvokePayloadContext>(options: {
         { concurrency: options.config.concurrency },
       );
 
-      console.log('Run id: ', results[0].runId);
+      options.config.logger.info(
+        `Functions invoked successfully. Run id: ${results[0].runId}`,
+      );
       for (const { result, testId } of results) {
-        console.log('TestId: ', testId);
-        console.log(`Test results: ${JSON.stringify(result, null, 2)}`);
+        options.config.logger.verbose(`TestId: ${testId}`);
+        options.config.logger.verbose(
+          `Test results: ${JSON.stringify(result, null, 2)}`,
+        );
       }
-
-      options.config.logger.verbose(`Test results: ${results.toString()}`);
     },
     deploy: async () => {
       options.config.logger.info(
