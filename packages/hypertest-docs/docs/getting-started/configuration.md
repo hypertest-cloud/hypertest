@@ -24,15 +24,18 @@ import aws from '@hypertest/hypertest-provider-cloud-aws';
 export default defineConfig({
   // Number of cloud functions to run in parallel
   concurrency: 30,
-  
+
   // Docker image names for your test container
   imageName: 'your-app/hypertest-playwright',
   localImageName: 'your-app/hypertest-playwright',
   localBaseImageName: 'your-app/hypertest-base-playwright',
-  
+
   // Test runner plugin configuration
   testRunner: playwright({}),
-  
+
+  // Custom Winston LoggerOptions for the internal logger instance.
+  loggerOptions: {},
+
   // Cloud provider configuration
   cloudFunctionProvider: aws({
     baseImage: 'your-account.dkr.ecr.region.amazonaws.com/hypertest/base-playwright:latest',

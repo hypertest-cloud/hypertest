@@ -11,6 +11,9 @@ const PluginDefinitionSchema = z.object({
 });
 
 const WinstonLoggerOptions = z.object({
+  levels: z.record(z.number()).optional(),
+  silent: z.boolean().optional(),
+  format: z.any().optional(),
   level: z.union([
     z.literal('error'),
     z.literal('warn'),
@@ -20,8 +23,13 @@ const WinstonLoggerOptions = z.object({
     z.literal('debug'),
     z.literal('silly'),
   ]),
-  format: z.record(z.any()),
-  transports: z.record(z.any()).array(),
+  exitOnError: z.union([z.function(), z.boolean()]).optional(),
+  defaultMeta: z.any().optional(),
+  transports: z.union([z.any(), z.array(z.any())]).optional(),
+  handleExceptions: z.boolean().optional(),
+  handleRejections: z.boolean().optional(),
+  exceptionHandlers: z.any().optional(),
+  rejectionHandlers: z.any().optional(),
 });
 
 export const ConfigSchema = z
