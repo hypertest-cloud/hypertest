@@ -6,8 +6,11 @@ const getRelativeUnixPath = (from: string, to: string): string => {
 };
 
 const escapeForTerminalRegex = (value: string): string => {
+  // First, escape regex special characters
   const regexSafe = escapeStringRegexp(value);
 
+  // Double the backslashes for shell escaping since the grep pattern
+  // is passed inside double quotes in the shell command
   return regexSafe.replace(/\\/g, '\\\\');
 };
 
