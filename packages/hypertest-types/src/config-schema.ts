@@ -14,15 +14,17 @@ const WinstonLoggerOptions = z.object({
   levels: z.record(z.number()).optional(),
   silent: z.boolean().optional(),
   format: z.any().optional(),
-  level: z.union([
-    z.literal('error'),
-    z.literal('warn'),
-    z.literal('info'),
-    z.literal('http'),
-    z.literal('verbose'),
-    z.literal('debug'),
-    z.literal('silly'),
-  ]),
+  level: z
+    .union([
+      z.literal('error'),
+      z.literal('warn'),
+      z.literal('info'),
+      z.literal('http'),
+      z.literal('verbose'),
+      z.literal('debug'),
+      z.literal('silly'),
+    ])
+    .optional(),
   exitOnError: z.union([z.function(), z.boolean()]).optional(),
   defaultMeta: z.any().optional(),
   transports: z.union([z.any(), z.array(z.any())]).optional(),
