@@ -90,3 +90,15 @@ TODO: Add development instructions
 
 - [GitHub Issues](https://github.com/hypertest-cloud/hypertest/issues)
 - [Discord](https://discord.gg/Ud9E86JCM3)
+
+## License
+
+Hypertest is licensed under the [Elastic License 2.0 (ELv2)](./LICENSE.md).
+
+The ELv2 license grants you free use, modification, and redistribution of the software with the following restrictions:
+
+- You may not provide the software to third parties as a hosted or managed service
+- You may not remove or obscure licensing notices
+- You may not circumvent license key functionality
+
+For more information, see our [License FAQ](./packages/hypertest-docs/docs/license/faq.md).

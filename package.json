@@ -2,6 +2,7 @@
   "name": "hypertest",
   "version": "0.1.0",
   "author": "Marcin Łesek <hello@hypertest.cloud>",
+  "license": "Elastic-2.0",
   "private": "false",
   "scripts": {
     "docker": "npm run build && docker build . -t hypertest-playwright",
