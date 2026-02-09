@@ -50,6 +50,14 @@ export default {
         items: [{ text: 'Architecture', link: '/developers/architecture' }],
       },
       {
+        text: 'License',
+        collapsed: true,
+        items: [
+          { text: 'Overview', link: '/license/overview' },
+          { text: 'FAQ', link: '/license/faq' },
+        ],
+      },
+      {
         text: 'Release notes',
         collapsed: true,
         items: [{ text: 'Version 0.1.0', link: '/release-notes/0.1.0' }],
