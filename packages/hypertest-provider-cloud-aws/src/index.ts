@@ -19,6 +19,7 @@ import type winston from 'winston';
 import { z } from 'zod';
 import { runCommand } from './runCommand.js';
 import { isAwsSdkError } from './ts-guards.js';
+import { isDockerRunning } from './isDockerRunning.js';
 
 const getEcrAuth = async (ecrClient: ECRClient, logger: winston.Logger) => {
   const command = new GetAuthorizationTokenCommand({});
@@ -80,8 +81,19 @@ const HypertestProviderCloudAWS = (
     return `${settings.ecrRegistry}/${config.imageName}:latest`;
   };
 
+  const assertDockerDaemon = () => {
+    if (!isDockerRunning()) {
+      config.logger.error(
+        'Error: Docker daemon is not running. Please start Docker and try again.',
+      );
+      process.exit(1);
+    }
+  };
+
   return {
     async pullBaseImage() {
+      assertDockerDaemon();
+
       try {
         const { username, password, proxyEndpoint } = await getEcrAuth(
           ecrClient,
@@ -113,6 +125,8 @@ const HypertestProviderCloudAWS = (
       }
     },
     pushImage: async () => {
+      assertDockerDaemon();
+
       try {
         const { username, password, proxyEndpoint } = await getEcrAuth(
           ecrClient,
