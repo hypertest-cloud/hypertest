@@ -3,6 +3,9 @@ outline: deep
 prev:
   text: AWS Playwright
   link: /runners/aws-playwright
+next:
+  text: 'License Overview'
+  link: '/license/overview'
 ---
 
 # Architecture

@@ -3,6 +3,9 @@ outline: deep
 prev:
   text: 'License Overview'
   link: '/license/overview'
+next:
+  text: 'Version 0.1.0'
+  link: '/release-notes/0.1.0'
 ---
 
 # License FAQ

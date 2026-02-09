@@ -1,5 +1,8 @@
 ---
 outline: deep
+prev:
+  text: 'Architecture'
+  link: '/developers/architecture'
 next:
   text: 'License FAQ'
   link: '/license/faq'
