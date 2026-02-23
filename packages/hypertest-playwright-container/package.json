@@ -1,6 +1,7 @@
 {
   "name": "@hypertest/hypertest-playwright-container",
   "version": "0.0.1",
+  "license": "Elastic-2.0",
   "type": "module",
   "files": ["Dockerfile", "index.js"],
   "exports": "./index.js",

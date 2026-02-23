@@ -1,6 +1,7 @@
 {
   "name": "@hypertest/hypertest-docs",
   "version": "0.1.0",
+  "license": "Elastic-2.0",
   "scripts": {
     "dev": "vitepress dev docs",
     "build": "vitepress build docs",
