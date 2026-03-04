@@ -52,7 +52,7 @@ Note: `hypertest-types` must build first (see workspace ordering in root `packag
 Two plugin interfaces in `hypertest-types`:
 
 **TestRunnerPlugin** (`test-runner-plugin.ts`):
-- `getCloudFunctionContexts(runId)`: Returns invoke payloads (one per test file)
+- `getInvokePayloads(runId)`: Returns invoke payloads (one per test file)
 - `buildImage()`: Builds Docker image with tests
 
 **CloudFunctionProviderPlugin** (`cloud-function-provider.ts`):
