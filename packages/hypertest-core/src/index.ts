@@ -55,7 +55,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
               context: { grep },
             },
           ] as InvokePayload<InvokePayloadContext>[])
-        : await options.testRunner.getCloudFunctionContexts(runId);
+        : await options.testRunner.getInvokePayloads(runId);
 
       const results = await promiseMap(
         functionInvokePayloads,
