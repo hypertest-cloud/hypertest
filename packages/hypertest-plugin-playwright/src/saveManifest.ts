@@ -12,7 +12,7 @@ import type {
  */
 export const saveManifest = (
   invokePayloadContexts: PlaywrightCloudFunctionContext[],
-  fileName = 'manifest.json',
+  fileName: string,
 ) => {
   try {
     const manifest: DockerBuildManifest = {

@@ -94,7 +94,7 @@ const PlaywrightRunnerPlugin = (options: {
 }): TestRunnerPlugin<PlaywrightCloudFunctionContext> => {
   return {
     getInvokePayloads: async (runId) => {
-      const manifest = await readManifest();
+      const manifest = await readManifest(options.config.invokeManifestName);
 
       return manifest.invokePayloadContexts.map((context) => ({
         runId,
@@ -128,7 +128,10 @@ const PlaywrightRunnerPlugin = (options: {
         const cloudFunctionContexts = await getCloudFunctionContexts(
           options.config.logger,
         );
-        await saveManifest(cloudFunctionContexts);
+        await saveManifest(
+          cloudFunctionContexts,
+          options.config.invokeManifestName,
+        );
       } catch (error) {
         options.config.logger.error(
           `Error while building Docker image: ${error}`,

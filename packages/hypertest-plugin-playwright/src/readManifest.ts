@@ -5,11 +5,9 @@ import type { DockerBuildManifest } from './types.js';
 /**
  * Read manifest from project root
  * @param {string} fileName - The name of the file (defaults to manifest.json).
- * @returns {DockerBuildManifest} - readed manifest object
+ * @returns {DockerBuildManifest} - Manifest object
  */
-export const readManifest = (
-  fileName = 'manifest.json',
-): DockerBuildManifest => {
+export const readManifest = (fileName: string): DockerBuildManifest => {
   try {
     const rootPath = path.join(process.cwd(), fileName);
 

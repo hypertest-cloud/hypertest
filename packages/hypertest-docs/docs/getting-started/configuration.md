@@ -30,6 +30,9 @@ export default defineConfig({
   localImageName: 'your-app/hypertest-playwright',
   localBaseImageName: 'your-app/hypertest-base-playwright',
 
+  // Custom hypertest invocation manifest filename
+  invokeManifestName: 'hypertest.invoke.manifest',
+
   // Test runner plugin configuration
   testRunner: playwright({}),
 

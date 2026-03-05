@@ -13,6 +13,7 @@ export interface HypertestConfig<InvokePayloadContext> {
   imageName: string;
   localImageName?: string;
   localBaseImageName?: string;
+  invokeManifestName?: string;
   concurrency?: number;
   loggerOptions?: winston.LoggerOptions;
   testRunner: TestRunnerPluginDefinition<InvokePayloadContext>;
@@ -23,6 +24,7 @@ export interface ResolvedHypertestConfig {
   imageName: string;
   localImageName: string;
   localBaseImageName: string;
+  invokeManifestName: string;
   concurrency: number;
   logger: winston.Logger;
 }
