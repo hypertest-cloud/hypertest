@@ -10,6 +10,7 @@ export interface TestRunnerPlugin<InvokePayloadContext> {
     runId: string,
   ) => Promise<InvokePayload<InvokePayloadContext>[]>;
   buildImage: () => Promise<void>;
+  buildAndStoreManifest: () => Promise<void>;
 }
 
 export type TestRunnerPluginFactory<InvokePayloadContext> = (

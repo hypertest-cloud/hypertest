@@ -87,6 +87,9 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       options.config.logger.info('Building container image');
       await options.testRunner.buildImage();
 
+      options.config.logger.info('Building and storing manifest');
+      await options.testRunner.buildAndStoreManifest();
+
       options.config.logger.info('Pushing image to the cloud');
       await options.cloudFunctionProvider.pushImage();
 

@@ -124,20 +124,21 @@ const PlaywrightRunnerPlugin = (options: {
           },
           env: {},
         });
-
-        const cloudFunctionContexts = await getCloudFunctionContexts(
-          options.config.logger,
-        );
-        await saveManifest(
-          cloudFunctionContexts,
-          options.config.invokeManifestName,
-        );
       } catch (error) {
         options.config.logger.error(
           `Error while building Docker image: ${error}`,
         );
         process.exit(1);
       }
+    },
+    buildAndStoreManifest: async () => {
+      const cloudFunctionContexts = await getCloudFunctionContexts(
+        options.config.logger,
+      );
+      await saveManifest(
+        cloudFunctionContexts,
+        options.config.invokeManifestName,
+      );
     },
   };
 };
