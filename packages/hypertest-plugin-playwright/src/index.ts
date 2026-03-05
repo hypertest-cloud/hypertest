@@ -58,42 +58,40 @@ const getTestDir = (config: PlaywrightTestConfig) => {
   return testDir;
 };
 
+const getCloudFunctionContexts = async (logger: winston.Logger) => {
+  const { config: pwConfig } = await getPlaywrightConfig(logger);
+  const projectName = getProjectName(pwConfig);
+  const testDir = getTestDir(pwConfig);
+  logger.verbose(`Playwright tests directory: ${testDir}`);
+
+  const specFilePaths = getSpecFilePaths(testDir);
+  logger.verbose(
+    `Playwright test spec file paths: ${specFilePaths.join(', ')}`,
+  );
+
+  const fileContexts = await Promise.all(
+    specFilePaths.map(async (specFilePath) => {
+      const testContextPaths = await getTestContextPaths(specFilePath);
+
+      return testContextPaths.map((testContextPath) => ({
+        grep: getGrepString(
+          projectName,
+          testDir,
+          specFilePath,
+          testContextPath,
+        ),
+      }));
+    }),
+  );
+
+  return fileContexts.flat();
+};
+
 const PlaywrightRunnerPlugin = (options: {
   options: PlaywrightPluginOptions;
   config: ResolvedHypertestConfig;
   dryRun?: boolean;
 }): TestRunnerPlugin<PlaywrightCloudFunctionContext> => {
-  const getInvokePayloadContexts = async () => {
-    const { config: pwConfig } = await getPlaywrightConfig(
-      options.config.logger,
-    );
-    const projectName = getProjectName(pwConfig);
-    const testDir = getTestDir(pwConfig);
-    options.config.logger.verbose(`Playwright tests directory: ${testDir}`);
-
-    const specFilePaths = getSpecFilePaths(testDir);
-    options.config.logger.verbose(
-      `Playwright test spec file paths: ${specFilePaths.join(', ')}`,
-    );
-
-    const fileContexts = await Promise.all(
-      specFilePaths.map(async (specFilePath) => {
-        const testContextPaths = await getTestContextPaths(specFilePath);
-
-        return testContextPaths.map((testContextPath) => ({
-          grep: getGrepString(
-            projectName,
-            testDir,
-            specFilePath,
-            testContextPath,
-          ),
-        }));
-      }),
-    );
-
-    return fileContexts.flat();
-  };
-
   return {
     getInvokePayloads: async (runId) => {
       const manifest = await readManifest();
@@ -127,8 +125,10 @@ const PlaywrightRunnerPlugin = (options: {
           env: {},
         });
 
-        const invokePayloadContexts = await getInvokePayloadContexts();
-        await saveManifest(invokePayloadContexts);
+        const cloudFunctionContexts = await getCloudFunctionContexts(
+          options.config.logger,
+        );
+        await saveManifest(cloudFunctionContexts);
       } catch (error) {
         options.config.logger.error(
           `Error while building Docker image: ${error}`,
