@@ -8,7 +8,7 @@ import type {
 /**
  * Saves a manifest object to the project root as a JSON file.
  * @param {Object} data - The configuration or metadata to save.
- * @param {string} fileName - The name of the file (defaults to manifest.json).
+ * @param {string} fileName - The name of the manifest file.
  */
 export const saveManifest = (
   invokePayloadContexts: PlaywrightCloudFunctionContext[],
