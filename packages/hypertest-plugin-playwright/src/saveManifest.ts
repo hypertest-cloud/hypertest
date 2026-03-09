@@ -7,7 +7,7 @@ import type {
 
 /**
  * Saves a manifest object to the project root as a JSON file.
- * @param {Object} data - The configuration or metadata to save.
+ * @param {Object} invokePayloadContexts - Array od cloud function contexts, necessary to invoke single Lambda.
  * @param {string} fileName - The name of the manifest file.
  */
 export const saveManifest = (
