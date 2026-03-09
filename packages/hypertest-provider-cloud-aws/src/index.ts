@@ -3,6 +3,7 @@ import {
   InvokeCommand,
   LambdaClient,
   UpdateFunctionCodeCommand,
+  waitUntilFunctionUpdated,
 } from '@aws-sdk/client-lambda';
 import {
   GetServiceQuotaCommand,
@@ -184,6 +185,25 @@ const HypertestProviderCloudAWS = (
 
         config.logger.verbose(
           `Lambda ${settings.functionName} image update has been started, status: ${response.LastUpdateStatus}`,
+        );
+
+        config.logger.info(
+          `Waiting for Lambda ${settings.functionName} to finish updating...`,
+        );
+
+        await waitUntilFunctionUpdated(
+          {
+            client: lambdaClient,
+            maxWaitTime: 600,
+          },
+          {
+            // biome-ignore lint/style/useNamingConvention: AWS SDK requires PascalCase property names
+            FunctionName: settings.functionName,
+          },
+        );
+
+        config.logger.info(
+          `Lambda ${settings.functionName} update completed successfully`,
         );
       } catch (error) {
         config.logger.error(`Error updating lambda by new image ${error}`);
