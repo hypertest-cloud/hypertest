@@ -279,16 +279,35 @@ The Lambda function needs S3 permissions:
 
 ## Concurrency limits
 
-AWS Lambda has default concurrency limits per account per region. The provider includes a built-in health check that verifies your configured `concurrency` doesn't exceed your account's Lambda quota.
+AWS Lambda enforces a **concurrent executions quota** per account per region. By default this is **1,000 concurrent executions** across all Lambda functions in a region.
 
-If you hit rate limits (HTTP 429), you can request a quota increase:
+Because hypertest invokes one Lambda per test file simultaneously, the `concurrency` value in your `hypertest.config.js` maps directly to the number of Lambda executions running at any given moment. If that number exceeds your account's quota, AWS returns HTTP 429 (Too Many Requests) and the invocation fails.
 
-1. Go to AWS Service Quotas console
-2. Navigate to Lambda service
-3. Request increase for "Concurrent executions" quota
+### Check your current quota
+
+Run `npx hypertest doctor` — the built-in AWS check reads your current quota via the Service Quotas API and warns you if your configured `concurrency` would exceed it.
+
+You can also check it manually in the AWS console:
+
+1. Open [AWS Service Quotas](https://console.aws.amazon.com/servicequotas/home)
+2. Select **AWS Lambda**
+3. Find **Concurrent executions**
+
+### Request a quota increase
+
+1. Open [AWS Service Quotas](https://console.aws.amazon.com/servicequotas/home)
+2. Select **AWS Lambda → Concurrent executions**
+3. Click **Request quota increase**
+4. Enter the desired value and submit
+
+AWS typically approves increases within a few hours. For larger increases (>3,000) a business justification may be required.
 
 ::: tip
-Start with a lower `concurrency` value (e.g., 10-30) and increase gradually as needed.
+Start with a lower `concurrency` value (e.g., 10–30) and increase gradually as you scale. The optimal value depends on your test suite size and your account's quota.
+:::
+
+::: warning
+The quota is shared across **all Lambda functions** in a region. Make sure other Lambda workloads in your account won't be starved if hypertest is running at full concurrency.
 :::
 
 ## Troubleshooting
@@ -307,6 +326,6 @@ Start with a lower `concurrency` value (e.g., 10-30) and increase gradually as n
 
 ### Rate limit errors (429)
 
-- Reduce `concurrency` in hypertest config
-- Request Lambda concurrency quota increase from AWS
-- Check CloudWatch for throttling metrics
+- Reduce `concurrency` in your `hypertest.config.js`
+- Request a Lambda concurrent executions quota increase (see [Concurrency limits](#concurrency-limits) above)
+- Check CloudWatch for throttling metrics to understand the peak concurrency reached

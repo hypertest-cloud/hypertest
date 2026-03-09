@@ -63,7 +63,6 @@ export const TestInvokeResponseSchema = z.discriminatedUnion('success', [
   }),
 ]);
 
-// biome-ignore lint/style/useNamingConvention: <explanation>
 const HypertestProviderCloudAWS = (
   settings: HypertestProviderCloudAwsConfig,
   config: ResolvedHypertestConfig,
@@ -166,8 +165,7 @@ const HypertestProviderCloudAWS = (
 
         if (isAwsSdkError(error) && error.$metadata.httpStatusCode === 429) {
           config.logger.error(
-            `Rate limit exceeded (HTTP 429) while invoking Lambda function.` +
-              `Refer to the README for instructions on how to increase the maximum number of allowed Lambda invocations for your account.`,
+            'Lambda invocation failed with HTTP 429 (Too Many Requests). Your account\'s concurrent executions quota may be too low — see the AWS provider docs for steps to request a quota increase.',
           );
         }
 
@@ -199,7 +197,6 @@ const HypertestProviderCloudAWS = (
             maxWaitTime,
           },
           {
-            // biome-ignore lint/style/useNamingConvention: AWS SDK requires PascalCase property names
             FunctionName: settings.functionName,
           },
         );
