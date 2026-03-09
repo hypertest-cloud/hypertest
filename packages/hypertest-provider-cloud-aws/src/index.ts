@@ -180,6 +180,8 @@ const HypertestProviderCloudAWS = (
         ImageUri: getTargetImageName(),
       });
 
+      const maxWaitTime = 600;
+
       try {
         const response = await lambdaClient.send(command);
 
@@ -194,7 +196,7 @@ const HypertestProviderCloudAWS = (
         await waitUntilFunctionUpdated(
           {
             client: lambdaClient,
-            maxWaitTime: 600,
+            maxWaitTime,
           },
           {
             // biome-ignore lint/style/useNamingConvention: AWS SDK requires PascalCase property names
@@ -206,7 +208,14 @@ const HypertestProviderCloudAWS = (
           `Lambda ${settings.functionName} update completed successfully`,
         );
       } catch (error) {
-        config.logger.error(`Error updating lambda by new image ${error}`);
+        if (error instanceof Error && error.name === 'TimeoutError') {
+          config.logger.error(
+            `Lambda ${settings.functionName} update timed out after ${maxWaitTime} seconds. The function may still be updating — check the AWS Console for the current status.`,
+          );
+        } else {
+          config.logger.error(`Error updating lambda by new image ${error}`);
+        }
+
         process.exit(1);
       }
     },
