@@ -71,8 +71,8 @@ ${util.inspect(result?.data, false, null, true)} \n`,
 const runDoctor = async () => {
   await promiseMap(CORE_CHECKS, processCheck);
 
-  const { config, cloudFunctionProvider } = await loadConfig();
-  const cloudChecks = cloudFunctionProvider.getCliDoctorChecks?.(config) ?? [];
+  const { config, cloudProvider } = await loadConfig();
+  const cloudChecks = cloudProvider.getCliDoctorChecks?.(config) ?? [];
   await promiseMap(cloudChecks, processCheck);
 };
 

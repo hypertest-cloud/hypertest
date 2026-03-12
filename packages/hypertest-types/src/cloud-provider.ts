@@ -20,7 +20,7 @@ export type TestInvokeResponse =
       filePath?: string;
       stackTrace?: string;
     };
-export interface CloudFunctionProviderPlugin<InvokePayloadContext = unknown> {
+export interface CloudProviderPlugin<InvokePayloadContext = unknown> {
   pullBaseImage: () => Promise<void>;
   pushImage: () => Promise<void>;
   invoke: (
@@ -34,10 +34,10 @@ export interface CloudFunctionProviderPlugin<InvokePayloadContext = unknown> {
   pullManifest: () => Promise<ImageBuildManifest<InvokePayloadContext>>;
 }
 
-type CloudFunctionProviderPluginFactory = (
+type CloudProviderPluginFactory = (
   config: ResolvedHypertestConfig,
   opts: CommandOptions,
-) => CloudFunctionProviderPlugin;
+) => CloudProviderPlugin;
 
-export type CloudFunctionProviderPluginDefinition =
-  PluginDefinition<CloudFunctionProviderPluginFactory>;
+export type CloudProviderPluginDefinition =
+  PluginDefinition<CloudProviderPluginFactory>;

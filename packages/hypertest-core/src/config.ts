@@ -1,5 +1,5 @@
 import {
-  type CloudFunctionProviderPluginDefinition,
+  type CloudProviderPluginDefinition,
   ConfigSchema,
   type ResolvedHypertestConfig,
   type TestRunnerPluginDefinition,
@@ -16,7 +16,7 @@ export const getConfigFileURL= () =>
 export const loadConfig = async <T>(): Promise<{
   config: ResolvedHypertestConfig;
   testRunner: TestRunnerPluginDefinition<T>;
-  cloudFunctionProvider: CloudFunctionProviderPluginDefinition;
+  cloudProvider: CloudProviderPluginDefinition;
 }> => {
   const config: unknown = await import(getConfigFileURL());
 
@@ -28,11 +28,11 @@ export const loadConfig = async <T>(): Promise<{
     })
     .parseAsync(config);
 
-  const { testRunner, cloudFunctionProvider, loggerOptions, ...parsedConfig } =
+  const { testRunner, cloudProvider, loggerOptions, ...parsedConfig } =
     await ConfigSchema.parseAsync(module.default);
 
   await testRunner.validate();
-  await cloudFunctionProvider.validate();
+  await cloudProvider.validate();
 
   return {
     config: {
@@ -42,7 +42,7 @@ export const loadConfig = async <T>(): Promise<{
       ),
     },
     testRunner: testRunner as TestRunnerPluginDefinition<T>,
-    cloudFunctionProvider:
-      cloudFunctionProvider as CloudFunctionProviderPluginDefinition,
+    cloudProvider:
+      cloudProvider as CloudProviderPluginDefinition,
   };
 };

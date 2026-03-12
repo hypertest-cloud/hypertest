@@ -40,7 +40,7 @@ export default defineConfig({
   loggerOptions: {},
 
   // Cloud provider configuration
-  cloudFunctionProvider: aws({
+  cloudProvider: aws({
     baseImage: 'your-account.dkr.ecr.region.amazonaws.com/hypertest/base-playwright:latest',
     region: 'eu-central-1',
     ecrRegistry: 'your-account.dkr.ecr.region.amazonaws.com',
@@ -77,7 +77,7 @@ testRunner: playwright({
 
 ### Cloud provider settings
 
-Configure your cloud infrastructure via the `cloudFunctionProvider` option. See [Clouds](/clouds/overview) for details.
+Configure your cloud infrastructure via the `cloudProvider` option. See [Clouds](/clouds/overview) for details.
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
@@ -88,7 +88,7 @@ Configure your cloud infrastructure via the `cloudFunctionProvider` option. See 
 | `bucketName` | string | Yes | S3 bucket for test artifacts |
 
 ```javascript
-cloudFunctionProvider: aws({
+cloudProvider: aws({
   baseImage: 'account-id.dkr.ecr.region.amazonaws.com/hypertest/base-playwright:latest',
   region: 'eu-central-1',
   ecrRegistry: 'account-id.dkr.ecr.region.amazonaws.com',

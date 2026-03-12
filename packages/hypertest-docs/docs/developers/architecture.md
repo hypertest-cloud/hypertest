@@ -161,7 +161,7 @@ hypertest is organized as a monorepo with these packages:
 The plugin architecture allows adding support for:
 
 - **New test frameworks** - Implement `TestRunnerPluginDefinition` interface
-- **New cloud providers** - Implement `CloudFunctionProviderPluginDefinition` interface
+- **New cloud providers** - Implement `CloudProviderPluginDefinition` interface
 - **New runners** - Create Lambda handler for your framework + cloud combination
 
 ![Infrastructure graph](./intrastracture-graph.png)

@@ -30,14 +30,14 @@ When you run hypertest commands, the cloud provider handles infrastructure opera
 
 ## Using a cloud provider
 
-Cloud providers are configured in your `hypertest.config.js` file via the `cloudFunctionProvider` option:
+Cloud providers are configured in your `hypertest.config.js` file via the `cloudProvider` option:
 
 ```javascript
 import { defineConfig } from '@hypertest/hypertest-core';
 import aws from '@hypertest/hypertest-provider-cloud-aws';
 
 export default defineConfig({
-  cloudFunctionProvider: aws({
+  cloudProvider: aws({
     region: 'eu-central-1',
     functionName: 'my-tests',
     bucketName: 'my-artifacts',
@@ -59,7 +59,7 @@ More cloud providers are coming soon.
 
 ## Provider architecture
 
-Under the hood, each provider implements the `CloudFunctionProviderPluginDefinition` interface with:
+Under the hood, each provider implements the `CloudProviderPluginDefinition` interface with:
 
 - **name** - Unique identifier for the provider
 - **version** - Provider version for compatibility tracking

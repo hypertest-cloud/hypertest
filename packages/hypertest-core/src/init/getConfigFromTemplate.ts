@@ -4,11 +4,11 @@ export type TemplateProperties =
   | 'localImageName'
   | 'localBaseImageName'
   | 'testRunnerOption'
-  | 'awsCloudFunctionProvider_baseImage'
-  | 'awsCloudFunctionProvider_region'
-  | 'awsCloudFunctionProvider_ecrRegistry'
-  | 'awsCloudFunctionProvider_functionName'
-  | 'awsCloudFunctionProvider_bucketName';
+  | 'awsCloudProvider_baseImage'
+  | 'awsCloudProvider_region'
+  | 'awsCloudProvider_ecrRegistry'
+  | 'awsCloudProvider_functionName'
+  | 'awsCloudProvider_bucketName';
 
 export const getConfigFromTemplate = (
   props: Record<TemplateProperties, unknown>,
@@ -19,11 +19,11 @@ export const getConfigFromTemplate = (
     localImageName,
     localBaseImageName,
     testRunnerOption,
-    awsCloudFunctionProvider_baseImage,
-    awsCloudFunctionProvider_region,
-    awsCloudFunctionProvider_ecrRegistry,
-    awsCloudFunctionProvider_functionName,
-    awsCloudFunctionProvider_bucketName,
+    awsCloudProvider_baseImage,
+    awsCloudProvider_region,
+    awsCloudProvider_ecrRegistry,
+    awsCloudProvider_functionName,
+    awsCloudProvider_bucketName,
   } = props;
 
   return `
@@ -39,13 +39,13 @@ export default defineConfig({
   localImageName: '${localImageName}',
   localBaseImageName: '${localBaseImageName}',
   testRunner: ${testRunnerOption ? 'playwright({})' : 'To handle in the future'},
-  cloudFunctionProvider: aws({
+  cloudProvider: aws({
     baseImage:
-      '${awsCloudFunctionProvider_baseImage}',
-    region: '${awsCloudFunctionProvider_region}',
-    ecrRegistry: '${awsCloudFunctionProvider_ecrRegistry}',
-    functionName: '${awsCloudFunctionProvider_functionName}',
-    bucketName: '${awsCloudFunctionProvider_bucketName}',
+      '${awsCloudProvider_baseImage}',
+    region: '${awsCloudProvider_region}',
+    ecrRegistry: '${awsCloudProvider_ecrRegistry}',
+    functionName: '${awsCloudProvider_functionName}',
+    bucketName: '${awsCloudProvider_bucketName}',
   }),
 });
 `;

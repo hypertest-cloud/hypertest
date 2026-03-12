@@ -1,5 +1,5 @@
 import type {
-  CloudFunctionProviderPlugin,
+  CloudProviderPlugin,
   CommandOptions,
   HypertestConfig,
   ResolvedHypertestConfig,
@@ -18,7 +18,7 @@ export const defineConfig = <T>(config: HypertestConfig<T>) => config;
 export const setupHypertest = async ({ dryRun }: CommandOptions) => {
   const { config, ...providers } = await loadConfig();
 
-  const cloudFunctionProvider = providers.cloudFunctionProvider.handler(
+  const cloudProvider = providers.cloudProvider.handler(
     config,
     {
       dryRun,
@@ -30,7 +30,7 @@ export const setupHypertest = async ({ dryRun }: CommandOptions) => {
 
   return HypertestCore({
     config,
-    cloudFunctionProvider,
+    cloudProvider,
     testRunner,
   });
 };
@@ -38,7 +38,7 @@ export const setupHypertest = async ({ dryRun }: CommandOptions) => {
 export const HypertestCore = <InvokePayloadContext>(options: {
   config: ResolvedHypertestConfig;
   testRunner: TestRunnerPlugin<InvokePayloadContext>;
-  cloudFunctionProvider: CloudFunctionProviderPlugin<InvokePayloadContext>;
+  cloudProvider: CloudProviderPlugin<InvokePayloadContext>;
 }): HypertestCore => {
   const getTestDirHash = () => {
     return 'TODO This needs to be implemented in separated PR';
@@ -50,7 +50,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       options.config.logger.info('Invoking cloud functions');
 
       const runId = crypto.randomUUID();
-      const manifest = await options.cloudFunctionProvider.pullManifest();
+      const manifest = await options.cloudProvider.pullManifest();
       const testDirHash = getTestDirHash();
 
       if (manifest.testDirHash !== testDirHash) {
@@ -69,7 +69,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
         functionInvokePayloads,
         async (payload) => ({
           ...payload,
-          result: await options.cloudFunctionProvider.invoke(payload),
+          result: await options.cloudProvider.invoke(payload),
         }),
         { concurrency: options.config.concurrency },
       );
@@ -90,25 +90,25 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       );
 
       options.config.logger.info('Pulling base image');
-      await options.cloudFunctionProvider.pullBaseImage();
+      await options.cloudProvider.pullBaseImage();
 
       options.config.logger.info('Building container image');
       await options.testRunner.buildImage();
 
       options.config.logger.info('Pushing image to the cloud');
-      await options.cloudFunctionProvider.pushImage();
+      await options.cloudProvider.pushImage();
 
       options.config.logger.info('Building and storing manifest');
       const invokePayloadContext =
         await options.testRunner.getInvokePayloadContext();
       const testDirHash = getTestDirHash();
-      await options.cloudFunctionProvider.updateManifest(
+      await options.cloudProvider.updateManifest(
         invokePayloadContext,
         testDirHash,
       );
 
       options.config.logger.info('Updating lambda image');
-      await options.cloudFunctionProvider.updateLambdaImage();
+      await options.cloudProvider.updateLambdaImage();
 
       options.config.logger.info('Deploy successful');
     },

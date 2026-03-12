@@ -32,7 +32,7 @@ export default defineConfig({
   concurrency: 30,
   imageName: 'your-app/hypertest-playwright',
   testRunner: playwright({}),
-  cloudFunctionProvider: aws({
+  cloudProvider: aws({
     baseImage: 'your-ecr-registry/hypertest/base-playwright:latest',
     region: 'eu-central-1',
     ecrRegistry: 'your-ecr-registry',

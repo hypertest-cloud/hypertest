@@ -16,8 +16,8 @@ import {
 import { fromEnv } from '@aws-sdk/credential-providers';
 import {
   CheckError,
-  type CloudFunctionProviderPlugin,
-  type CloudFunctionProviderPluginDefinition,
+  type CloudProviderPlugin,
+  type CloudProviderPluginDefinition,
   type ResolvedHypertestConfig,
   type ImageBuildManifest,
   ImageBuildManifestSchema,
@@ -74,7 +74,7 @@ export const TestInvokeResponseSchema = z.discriminatedUnion('success', [
 const HypertestProviderCloudAWS = (
   settings: HypertestProviderCloudAwsConfig,
   config: ResolvedHypertestConfig,
-): CloudFunctionProviderPlugin => {
+): CloudProviderPlugin => {
   const lambdaClient = new LambdaClient({
     credentials: fromEnv(),
     region: settings.region,
@@ -327,7 +327,7 @@ type HypertestProviderCloudAwsConfig = z.infer<
 
 const plugin = (
   options: HypertestProviderCloudAwsConfig,
-): CloudFunctionProviderPluginDefinition => ({
+): CloudProviderPluginDefinition => ({
   name: '',
   version: '0.0.1',
   validate: async () => {

@@ -44,7 +44,7 @@ export const ConfigSchema = z
     concurrency: z.number().int().default(1),
     loggerOptions: WinstonLoggerOptions.optional(),
     testRunner: PluginDefinitionSchema,
-    cloudFunctionProvider: PluginDefinitionSchema,
+    cloudProvider: PluginDefinitionSchema,
   })
   .transform((config) => ({
     ...config,
