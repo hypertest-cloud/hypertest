@@ -2,7 +2,6 @@ import type {
   CloudFunctionProviderPlugin,
   CommandOptions,
   HypertestConfig,
-  InvokePayload,
   ResolvedHypertestConfig,
   TestRunnerPlugin,
 } from '@hypertest/hypertest-types';
