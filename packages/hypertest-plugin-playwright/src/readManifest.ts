@@ -12,7 +12,9 @@ export const readManifest = (fileName: string): DockerBuildManifest => {
     const rootPath = path.join(process.cwd(), fileName);
 
     if (!fs.existsSync(rootPath)) {
-      throw new Error(`Warning: File ${fileName} not found.`);
+      throw new Error(
+        `Manifest file "${fileName}" not found. Please run "npx hypertest deploy" first to create the manifest.`,
+      );
     }
 
     const rawData = fs.readFileSync(rootPath, 'utf8');
