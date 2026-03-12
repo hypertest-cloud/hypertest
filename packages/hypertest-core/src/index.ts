@@ -39,14 +39,27 @@ export const setupHypertest = async ({ dryRun }: CommandOptions) => {
 export const HypertestCore = <InvokePayloadContext>(options: {
   config: ResolvedHypertestConfig;
   testRunner: TestRunnerPlugin<InvokePayloadContext>;
-  cloudFunctionProvider: CloudFunctionProviderPlugin;
+  cloudFunctionProvider: CloudFunctionProviderPlugin<InvokePayloadContext>;
 }): HypertestCore => {
+  const getTestDirHash = () => {
+    return 'TODO';
+  };
+
   return {
     // TODO grep param is only for internal dev testing, remove later
     invoke: async (grep?: string) => {
       options.config.logger.info('Invoking cloud functions');
 
       const runId = crypto.randomUUID();
+      const manifest = await options.cloudFunctionProvider.pullManifest();
+      const testDirHash = getTestDirHash();
+
+      if (manifest.testDirHash !== testDirHash) {
+        options.config.logger.warning(
+          'Your local test code differ from what is deploying in cloud infrastructure',
+        );
+      }
+
       const functionInvokePayloads = grep
         ? ([
             {
@@ -55,7 +68,11 @@ export const HypertestCore = <InvokePayloadContext>(options: {
               context: { grep },
             },
           ] as InvokePayload<InvokePayloadContext>[])
-        : await options.testRunner.getInvokePayloads(runId);
+        : manifest.invokePayloadContexts.map((context) => ({
+            runId,
+            testId: crypto.randomUUID(),
+            context,
+          }));
 
       const results = await promiseMap(
         functionInvokePayloads,
@@ -88,7 +105,13 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       await options.testRunner.buildImage();
 
       options.config.logger.info('Building and storing manifest');
-      await options.testRunner.buildAndStoreManifest();
+      const invokePayloadContext =
+        await options.testRunner.getInvokePayloadContext();
+      const testDirHash = getTestDirHash();
+      await options.cloudFunctionProvider.updateManifest(
+        invokePayloadContext,
+        testDirHash,
+      );
 
       options.config.logger.info('Pushing image to the cloud');
       await options.cloudFunctionProvider.pushImage();
