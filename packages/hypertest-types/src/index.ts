@@ -13,7 +13,7 @@ export interface HypertestConfig<InvokePayloadContext> {
   imageName: string;
   localImageName?: string;
   localBaseImageName?: string;
-  invokeManifestName?: string;
+  buildManifestName?: string;
   concurrency?: number;
   loggerOptions?: winston.LoggerOptions;
   testRunner: TestRunnerPluginDefinition<InvokePayloadContext>;
@@ -24,7 +24,7 @@ export interface ResolvedHypertestConfig {
   imageName: string;
   localImageName: string;
   localBaseImageName: string;
-  invokeManifestName: string;
+  buildManifestName: string;
   concurrency: number;
   logger: winston.Logger;
 }
@@ -58,3 +58,7 @@ export * from './config-schema.js';
 export * from './docker.js';
 // biome-ignore lint/performance/noReExportAll: <explanation>
 export * from './cli-doctor.js';
+// biome-ignore lint/performance/noReExportAll: <explanation>
+export * from './manifest-schema.js';
+// biome-ignore lint/performance/noReExportAll: <explanation>
+export * from './manifest.js';

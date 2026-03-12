@@ -3,7 +3,3 @@ export interface PlaywrightCloudFunctionContext {
 }
 
 export interface PlaywrightPluginOptions {}
-
-export interface DockerBuildManifest {
-  invokePayloadContexts: PlaywrightCloudFunctionContext[];
-}

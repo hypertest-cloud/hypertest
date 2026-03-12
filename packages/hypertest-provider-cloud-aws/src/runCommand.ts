@@ -14,3 +14,15 @@ export const runCommand = (
     ...options,
   });
 };
+
+export const runCommandAndGetOutput = (
+  cmd: string,
+): string => {
+  const output = execSync(cmd, {
+    stdio: 'pipe',
+    cwd: process.cwd(),
+    encoding: 'utf-8',
+  });
+
+  return output.trim();
+};

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const LOCAL_BASE_IMAGE_NAME = 'hypertest/local-base-playwright';
-const INVOKE_MANIFEST_NAME = 'hypertest.invoke.manifest';
+const MANIFEST_NAME = 'hypertest.manifest';
 
 const PluginDefinitionSchema = z.object({
   name: z.string(),
@@ -40,7 +40,7 @@ export const ConfigSchema = z
     imageName: z.string(),
     localImageName: z.string().optional(),
     localBaseImageName: z.string().optional(),
-    invokeManifestName: z.string().optional(),
+    buildManifestName: z.string().optional(),
     concurrency: z.number().int().default(1),
     loggerOptions: WinstonLoggerOptions.optional(),
     testRunner: PluginDefinitionSchema,
@@ -50,5 +50,5 @@ export const ConfigSchema = z
     ...config,
     localImageName: config.localImageName ?? config.imageName,
     localBaseImageName: config.localBaseImageName ?? LOCAL_BASE_IMAGE_NAME,
-    invokeManifestName: `${config.invokeManifestName ?? INVOKE_MANIFEST_NAME}.json`,
+    buildManifestName: `${config.buildManifestName ?? MANIFEST_NAME}.json`,
   }));

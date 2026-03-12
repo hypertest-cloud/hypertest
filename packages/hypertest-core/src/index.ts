@@ -42,7 +42,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
   cloudFunctionProvider: CloudFunctionProviderPlugin<InvokePayloadContext>;
 }): HypertestCore => {
   const getTestDirHash = () => {
-    return 'TODO';
+    return 'TODO This needs to be implemented in separated PR';
   };
 
   return {
@@ -104,6 +104,9 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       options.config.logger.info('Building container image');
       await options.testRunner.buildImage();
 
+      options.config.logger.info('Pushing image to the cloud');
+      await options.cloudFunctionProvider.pushImage();
+
       options.config.logger.info('Building and storing manifest');
       const invokePayloadContext =
         await options.testRunner.getInvokePayloadContext();
@@ -112,9 +115,6 @@ export const HypertestCore = <InvokePayloadContext>(options: {
         invokePayloadContext,
         testDirHash,
       );
-
-      options.config.logger.info('Pushing image to the cloud');
-      await options.cloudFunctionProvider.pushImage();
 
       options.config.logger.info('Updating lambda image');
       await options.cloudFunctionProvider.updateLambdaImage();

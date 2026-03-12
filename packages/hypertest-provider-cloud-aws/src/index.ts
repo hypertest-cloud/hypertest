@@ -1,4 +1,9 @@
-import { ECRClient, GetAuthorizationTokenCommand } from '@aws-sdk/client-ecr';
+import { BatchGetImageCommand, ECRClient, GetAuthorizationTokenCommand } from '@aws-sdk/client-ecr';
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import {
   InvokeCommand,
   LambdaClient,
@@ -14,10 +19,12 @@ import {
   type CloudFunctionProviderPlugin,
   type CloudFunctionProviderPluginDefinition,
   type ResolvedHypertestConfig,
+  type ImageBuildManifest,
+  ImageBuildManifestSchema,
 } from '@hypertest/hypertest-types';
 import type winston from 'winston';
 import { z } from 'zod';
-import { runCommand } from './runCommand.js';
+import { runCommand, runCommandAndGetOutput } from './runCommand.js';
 import { isAwsSdkError } from './ts-guards.js';
 import { isDockerRunning } from './isDockerRunning.js';
 
@@ -76,7 +83,14 @@ const HypertestProviderCloudAWS = (
     credentials: fromEnv(),
     region: settings.region,
   });
+  const s3Client = new S3Client({
+    credentials: fromEnv(),
+    region: settings.region,
+  });
 
+  const getManifestS3Key = () => {
+    return `${config.buildManifestName}`;
+  };
   const getTargetImageName = () => {
     return `${settings.ecrRegistry}/${config.imageName}:latest`;
   };
@@ -89,6 +103,51 @@ const HypertestProviderCloudAWS = (
       process.exit(1);
     }
   };
+
+  const fetchManifest = async () => {
+    const manifestKey = getManifestS3Key();
+    const getManifestCommand = new GetObjectCommand({
+      Bucket: settings.bucketName,
+      Key: manifestKey,
+    });
+
+    const manifestResponse = await s3Client.send(getManifestCommand);
+    if (!manifestResponse.Body) {
+      throw new Error('Response body is empty.');
+    }
+
+    const bodyString = await manifestResponse.Body.transformToString();
+    const manifest = ImageBuildManifestSchema.parse(JSON.parse(bodyString));
+
+    config.logger.verbose(
+      `JSON was successfully downloaded from key ${manifestKey} in bucket ${settings.bucketName}.`,
+    );
+
+    return manifest
+  }
+
+  const fetchEcrImageDigest = async () => {
+    const batchImageCommand = new BatchGetImageCommand({
+      repositoryName: config.imageName,
+      imageIds: [{ imageTag: "latest" }],
+      acceptedMediaTypes: [
+        "application/vnd.docker.distribution.manifest.v2+json",
+        "application/vnd.oci.image.manifest.v1+json"
+      ]
+    });
+    const batchImageResponse = await ecrClient.send(batchImageCommand);
+
+    if (batchImageResponse.images && batchImageResponse.images.length > 0) {
+      const image = batchImageResponse.images[0];
+      if (!image || !image.imageId) {
+        throw new Error(
+          'Failed to pull erc deployed image.',
+        );
+      }
+
+      return image.imageId.imageDigest
+    }
+  }
 
   return {
     async pullBaseImage() {
@@ -179,8 +238,8 @@ const HypertestProviderCloudAWS = (
 
         if (isAwsSdkError(error) && error.$metadata.httpStatusCode === 429) {
           config.logger.error(
-            `Rate limit exceeded (HTTP 429) while invoking Lambda function.` +
-              `Refer to the README for instructions on how to increase the maximum number of allowed Lambda invocations for your account.`,
+            'Rate limit exceeded (HTTP 429) while invoking Lambda function.' +
+              'Refer to the README for instructions on how to increase the maximum number of allowed Lambda invocations for your account.',
           );
         }
 
@@ -201,6 +260,53 @@ const HypertestProviderCloudAWS = (
         );
       } catch (error) {
         config.logger.error(`Error updating lambda by new image ${error}`);
+        process.exit(1);
+      }
+    },
+    updateManifest: async (invokePayloadContexts, testDirHash) => {
+      try {
+        const imageEcrId = runCommandAndGetOutput(`docker inspect --format="{{index .RepoDigests 0}}" ${config.localImageName}`);
+        if (!imageEcrId) {
+          config.logger.error(`Failed to find image ${config.localImageName} erc id. Try to push image to registry before creating manifest`);
+          process.exit(1);
+        }
+
+        const manifest: ImageBuildManifest<unknown> = {
+          imageDigest: `sha256:${imageEcrId.split('@sha256:')[1]}`,
+          testDirHash,
+          invokePayloadContexts,
+        };
+
+        const manifestKey = getManifestS3Key();
+        const command = new PutObjectCommand({
+          Bucket: settings.bucketName,
+          Key: manifestKey,
+          Body: JSON.stringify(manifest),
+          ContentType: 'application/json',
+        });
+
+        await s3Client.send(command);
+        config.logger.verbose(
+          `File ${manifestKey} was successfully uploaded to bucket ${settings.bucketName}.`,
+        );
+      } catch (error) {
+        config.logger.error('Error uploading manifest:', error);
+        process.exit(1);
+      }
+    },
+    pullManifest: async () => {
+      try {
+        const manifest = await fetchManifest()
+        const ecrPushedImageDigest = await fetchEcrImageDigest()
+
+        if (manifest.imageDigest !== ecrPushedImageDigest) {
+          config.logger.error(`Manifest drift detected. Deployed cloud function image is incompatible with current manifest. Please try to run "npx hypertest deploy" first to recreate the manifest`);
+          process.exit(1);
+        }
+
+        return manifest;
+      } catch (error) {
+        config.logger.error('Error downloading manifest:', error);
         process.exit(1);
       }
     },

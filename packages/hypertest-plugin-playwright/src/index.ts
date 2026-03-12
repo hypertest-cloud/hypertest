@@ -17,8 +17,6 @@ import type {
   PlaywrightCloudFunctionContext,
   PlaywrightPluginOptions,
 } from './types.js';
-import { saveManifest } from './saveManifest.js';
-import { readManifest } from './readManifest.js';
 
 const getPlaywrightConfig = async (
   logger: winston.Logger,
@@ -58,50 +56,12 @@ const getTestDir = (config: PlaywrightTestConfig) => {
   return testDir;
 };
 
-const getCloudFunctionContexts = async (logger: winston.Logger) => {
-  const { config: pwConfig } = await getPlaywrightConfig(logger);
-  const projectName = getProjectName(pwConfig);
-  const testDir = getTestDir(pwConfig);
-  logger.verbose(`Playwright tests directory: ${testDir}`);
-
-  const specFilePaths = getSpecFilePaths(testDir);
-  logger.verbose(
-    `Playwright test spec file paths: ${specFilePaths.join(', ')}`,
-  );
-
-  const fileContexts = await Promise.all(
-    specFilePaths.map(async (specFilePath) => {
-      const testContextPaths = await getTestContextPaths(specFilePath);
-
-      return testContextPaths.map((testContextPath) => ({
-        grep: getGrepString(
-          projectName,
-          testDir,
-          specFilePath,
-          testContextPath,
-        ),
-      }));
-    }),
-  );
-
-  return fileContexts.flat();
-};
-
 const PlaywrightRunnerPlugin = (options: {
   options: PlaywrightPluginOptions;
   config: ResolvedHypertestConfig;
   dryRun?: boolean;
 }): TestRunnerPlugin<PlaywrightCloudFunctionContext> => {
   return {
-    getInvokePayloads: async (runId) => {
-      const manifest = await readManifest(options.config.invokeManifestName);
-
-      return manifest.invokePayloadContexts.map((context) => ({
-        runId,
-        testId: crypto.randomUUID(),
-        context,
-      }));
-    },
     buildImage: async () => {
       const { config: pwConfig, playwrightConfigFilepath } =
         await getPlaywrightConfig(options.config.logger);
@@ -131,14 +91,35 @@ const PlaywrightRunnerPlugin = (options: {
         process.exit(1);
       }
     },
-    buildAndStoreManifest: async () => {
-      const cloudFunctionContexts = await getCloudFunctionContexts(
+    getInvokePayloadContext: async () => {
+      const { config: pwConfig } = await getPlaywrightConfig(
         options.config.logger,
       );
-      await saveManifest(
-        cloudFunctionContexts,
-        options.config.invokeManifestName,
+      const projectName = getProjectName(pwConfig);
+      const testDir = getTestDir(pwConfig);
+      options.config.logger.verbose(`Playwright tests directory: ${testDir}`);
+
+      const specFilePaths = getSpecFilePaths(testDir);
+      options.config.logger.verbose(
+        `Playwright test spec file paths: ${specFilePaths.join(', ')}`,
       );
+
+      const fileContexts = await Promise.all(
+        specFilePaths.map(async (specFilePath) => {
+          const testContextPaths = await getTestContextPaths(specFilePath);
+
+          return testContextPaths.map((testContextPath) => ({
+            grep: getGrepString(
+              projectName,
+              testDir,
+              specFilePath,
+              testContextPath,
+            ),
+          }));
+        }),
+      );
+
+      return fileContexts.flat();
     },
   };
 };
