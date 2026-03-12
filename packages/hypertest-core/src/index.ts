@@ -47,7 +47,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
 
   return {
     // TODO grep param is only for internal dev testing, remove later
-    invoke: async (grep?: string) => {
+    invoke: async () => {
       options.config.logger.info('Invoking cloud functions');
 
       const runId = crypto.randomUUID();
@@ -60,19 +60,11 @@ export const HypertestCore = <InvokePayloadContext>(options: {
         );
       }
 
-      const functionInvokePayloads = grep
-        ? ([
-            {
-              runId,
-              testId: crypto.randomUUID(),
-              context: { grep },
-            },
-          ] as InvokePayload<InvokePayloadContext>[])
-        : manifest.invokePayloadContexts.map((context) => ({
-            runId,
-            testId: crypto.randomUUID(),
-            context,
-          }));
+      const functionInvokePayloads = manifest.invokePayloadContexts.map((context) => ({
+        runId,
+        testId: crypto.randomUUID(),
+        context,
+      }));
 
       const results = await promiseMap(
         functionInvokePayloads,

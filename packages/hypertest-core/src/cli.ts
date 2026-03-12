@@ -97,11 +97,10 @@ program
 program
   .command('invoke')
   .option('--dry-run')
-  .option('--grep <grep>', 'Grep pattern to filter tests')
   .action(async (opts) => {
     console.log(opts);
     const core = await setupHypertest(opts);
-    await core.invoke(opts.grep);
+    await core.invoke();
   });
 
 program.parse();

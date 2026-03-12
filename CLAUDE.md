@@ -28,7 +28,6 @@ npm run docker
 ```bash
 npx hypertest deploy              # Deploy tests to cloud (builds + pushes image to ECR + updates Lambda)
 npx hypertest invoke              # Run tests in cloud
-npx hypertest invoke --grep <pattern>  # Run specific tests matching pattern
 npx hypertest doctor              # Validate configuration and cloud provider setup
 ```
 
