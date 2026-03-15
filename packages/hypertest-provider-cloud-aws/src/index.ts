@@ -1,4 +1,8 @@
-import { BatchGetImageCommand, ECRClient, GetAuthorizationTokenCommand } from '@aws-sdk/client-ecr';
+import {
+  BatchGetImageCommand,
+  ECRClient,
+  GetAuthorizationTokenCommand,
+} from '@aws-sdk/client-ecr';
 import {
   GetObjectCommand,
   PutObjectCommand,
@@ -123,31 +127,29 @@ const HypertestProviderCloudAWS = (
       `JSON was successfully downloaded from key ${manifestKey} in bucket ${settings.bucketName}.`,
     );
 
-    return manifest
-  }
+    return manifest;
+  };
 
   const fetchEcrImageDigest = async () => {
     const batchImageCommand = new BatchGetImageCommand({
       repositoryName: config.imageName,
-      imageIds: [{ imageTag: "latest" }],
+      imageIds: [{ imageTag: 'latest' }],
       acceptedMediaTypes: [
-        "application/vnd.docker.distribution.manifest.v2+json",
-        "application/vnd.oci.image.manifest.v1+json"
-      ]
+        'application/vnd.docker.distribution.manifest.v2+json',
+        'application/vnd.oci.image.manifest.v1+json',
+      ],
     });
     const batchImageResponse = await ecrClient.send(batchImageCommand);
 
     if (batchImageResponse.images && batchImageResponse.images.length > 0) {
       const image = batchImageResponse.images[0];
       if (!image || !image.imageId) {
-        throw new Error(
-          'Failed to pull erc deployed image.',
-        );
+        throw new Error('Failed to pull erc deployed image.');
       }
 
-      return image.imageId.imageDigest
+      return image.imageId.imageDigest;
     }
-  }
+  };
 
   return {
     async pullBaseImage() {
@@ -265,9 +267,13 @@ const HypertestProviderCloudAWS = (
     },
     updateManifest: async (invokePayloadContexts, testDirHash) => {
       try {
-        const imageEcrId = runCommandAndGetOutput(`docker inspect --format="{{index .RepoDigests 0}}" ${config.localImageName}`);
+        const imageEcrId = runCommandAndGetOutput(
+          `docker inspect --format="{{index .RepoDigests 0}}" ${config.localImageName}`,
+        );
         if (!imageEcrId) {
-          config.logger.error(`Failed to find image ${config.localImageName} erc id. Try to push image to registry before creating manifest`);
+          config.logger.error(
+            `Failed to find image ${config.localImageName} erc id. Try to push image to registry before creating manifest`,
+          );
           process.exit(1);
         }
 
@@ -290,23 +296,25 @@ const HypertestProviderCloudAWS = (
           `File ${manifestKey} was successfully uploaded to bucket ${settings.bucketName}.`,
         );
       } catch (error) {
-        config.logger.error('Error uploading manifest:', error);
+        config.logger.error('Error while updating manifest:', error);
         process.exit(1);
       }
     },
     pullManifest: async () => {
       try {
-        const manifest = await fetchManifest()
-        const ecrPushedImageDigest = await fetchEcrImageDigest()
+        const manifest = await fetchManifest();
+        const ecrPushedImageDigest = await fetchEcrImageDigest();
 
         if (manifest.imageDigest !== ecrPushedImageDigest) {
-          config.logger.error(`Manifest drift detected. Deployed cloud function image is incompatible with current manifest. Please try to run "npx hypertest deploy" first to recreate the manifest`);
+          config.logger.error(
+            `Manifest drift detected. Deployed cloud function image is incompatible with current manifest. Please try to run "npx hypertest deploy" first to recreate the manifest`,
+          );
           process.exit(1);
         }
 
         return manifest;
       } catch (error) {
-        config.logger.error('Error downloading manifest:', error);
+        config.logger.error('Error while pulling manifest:', error);
         process.exit(1);
       }
     },
