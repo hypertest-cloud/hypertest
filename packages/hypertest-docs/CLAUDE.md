@@ -40,7 +40,7 @@ docs/
 │   └── aws-playwright.md         # AWS Playwright runner deep dive
 ├── developers/
 │   ├── architecture.md           # System architecture
-│   └── architecture-decisions.md # Architecture decisions and explanations
+│   └── manifest.md               # Manifest explained
 └── release-notes/
     └── 0.1.0.md                  # Version release notes
 ```
