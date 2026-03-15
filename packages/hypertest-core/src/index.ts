@@ -18,12 +18,9 @@ export const defineConfig = <T>(config: HypertestConfig<T>) => config;
 export const setupHypertest = async ({ dryRun }: CommandOptions) => {
   const { config, ...providers } = await loadConfig();
 
-  const cloudProvider = providers.cloudProvider.handler(
-    config,
-    {
-      dryRun,
-    },
-  );
+  const cloudProvider = providers.cloudProvider.handler(config, {
+    dryRun,
+  });
   const testRunner = providers.testRunner.handler(config, {
     dryRun,
   });
@@ -45,7 +42,6 @@ export const HypertestCore = <InvokePayloadContext>(options: {
   };
 
   return {
-    // TODO grep param is only for internal dev testing, remove later
     invoke: async () => {
       options.config.logger.info('Invoking cloud functions');
 
@@ -59,11 +55,13 @@ export const HypertestCore = <InvokePayloadContext>(options: {
         );
       }
 
-      const functionInvokePayloads = manifest.invokePayloadContexts.map((context) => ({
-        runId,
-        testId: crypto.randomUUID(),
-        context,
-      }));
+      const functionInvokePayloads = manifest.invokePayloadContexts.map(
+        (context) => ({
+          runId,
+          testId: crypto.randomUUID(),
+          context,
+        }),
+      );
 
       const results = await promiseMap(
         functionInvokePayloads,
