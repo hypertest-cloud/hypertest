@@ -50,8 +50,8 @@ export default {
         items: [
           { text: 'Architecture', link: '/developers/architecture' },
           {
-            text: 'Architecture decisions',
-            link: '/developers/architecture-decisions',
+            text: 'Manifest',
+            link: '/developers/manifest',
           },
         ],
       },
