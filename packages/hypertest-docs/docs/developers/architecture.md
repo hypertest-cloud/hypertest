@@ -106,7 +106,7 @@ The `hypertest deploy` command executes these steps:
 1. **Load configuration** - Read and validate `hypertest.config.js`
 2. **Pull base image** - Download pre-built image with test framework and dependencies
 3. **Build target image** - Layer your tests on top of the base image
-4. **Build manifest** - Snapshots currents state of tests existence in builded target image
+4. **Build manifest** - Snapshots current test state from the built target image
 5. **Push to registry** - Upload the image to cloud container registry (ECR)
 6. **Update function** - Point the Lambda function to the new image
 
