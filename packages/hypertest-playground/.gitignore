@@ -20,6 +20,3 @@ node_modules
 
 # Lambda env related
 /tmp
-
-# Hypertest core
-*.manifest.json
