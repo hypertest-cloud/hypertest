@@ -1,8 +1,10 @@
+# check=skip=InvalidDefaultArgInFrom
 ARG BASE_IMAGE
-ARG TEST_DIR
-ARG PLAYWRIGHT_CONFIG_FILEPATH
 
 FROM ${BASE_IMAGE}
+
+ARG TEST_DIR
+ARG PLAYWRIGHT_CONFIG_FILEPATH
 
 WORKDIR /tests
 # TODO: Think about keeping our sandbox more consistent,
