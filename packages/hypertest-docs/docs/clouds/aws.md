@@ -57,13 +57,14 @@ export default defineConfig({
 
 ## Configuration options
 
-| Option | Type | Required | Description |
-|--------|------|----------|-------------|
-| `baseImage` | string | Yes | ECR URI of the base image containing Playwright runner |
-| `region` | string | Yes | AWS region for all resources (e.g., `eu-central-1`) |
-| `ecrRegistry` | string | Yes | Your ECR registry URL |
-| `functionName` | string | Yes | Name of your Lambda function |
-| `bucketName` | string | Yes | S3 bucket for test artifacts |
+| Option | Type | Required | Default | Description |
+|--------|------|----------|---------|-------------|
+| `baseImage` | string | Yes | — | ECR URI of the base image containing Playwright runner |
+| `region` | string | Yes | — | AWS region for all resources (e.g., `eu-central-1`) |
+| `ecrRegistry` | string | Yes | — | Your ECR registry URL |
+| `functionName` | string | Yes | — | Name of your Lambda function |
+| `bucketName` | string | Yes | — | S3 bucket for test artifacts |
+| `lambdaUpdateMaxWaitTime` | number | No | `600` | Maximum time in seconds to wait for Lambda to finish updating after deploy |
 
 ## AWS resources
 

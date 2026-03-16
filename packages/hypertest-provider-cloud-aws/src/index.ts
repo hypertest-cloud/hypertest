@@ -18,9 +18,9 @@ import {
 } from '@hypertest/hypertest-types';
 import type winston from 'winston';
 import { z } from 'zod';
+import { isDockerRunning } from './isDockerRunning.js';
 import { runCommand } from './runCommand.js';
 import { isAwsSdkError } from './ts-guards.js';
-import { isDockerRunning } from './isDockerRunning.js';
 
 const getEcrAuth = async (ecrClient: ECRClient, logger: winston.Logger) => {
   const command = new GetAuthorizationTokenCommand({});
@@ -179,7 +179,7 @@ const HypertestProviderCloudAWS = (
 
         if (isAwsSdkError(error) && error.$metadata.httpStatusCode === 429) {
           config.logger.error(
-            'Lambda invocation failed with HTTP 429 (Too Many Requests). Your account\'s concurrent executions quota may be too low — see the AWS provider docs for steps to request a quota increase.',
+            "Lambda invocation failed with HTTP 429 (Too Many Requests). Your account's concurrent executions quota may be too low — see the AWS provider docs for steps to request a quota increase.",
           );
         }
 
@@ -191,8 +191,6 @@ const HypertestProviderCloudAWS = (
         FunctionName: settings.functionName,
         ImageUri: getTargetImageName(),
       });
-
-      const maxWaitTime = 600;
 
       try {
         const response = await lambdaClient.send(command);
@@ -208,7 +206,7 @@ const HypertestProviderCloudAWS = (
         await waitUntilFunctionUpdated(
           {
             client: lambdaClient,
-            maxWaitTime,
+            maxWaitTime: settings.lambdaUpdateMaxWaitTime,
           },
           {
             FunctionName: settings.functionName,
@@ -221,7 +219,7 @@ const HypertestProviderCloudAWS = (
       } catch (error) {
         if (error instanceof Error && error.name === 'TimeoutError') {
           config.logger.error(
-            `Lambda ${settings.functionName} update timed out after ${maxWaitTime} seconds. The function may still be updating — check the AWS Console for the current status.`,
+            `Lambda ${settings.functionName} update timed out after ${settings.lambdaUpdateMaxWaitTime} seconds. The function may still be updating — check the AWS Console for the current status.`,
           );
         } else {
           config.logger.error(`Error updating lambda by new image ${error}`);
@@ -239,6 +237,7 @@ export const HypertestProviderCloudAwsConfigSchema = z.object({
   ecrRegistry: z.string(),
   functionName: z.string(),
   bucketName: z.string(),
+  lambdaUpdateMaxWaitTime: z.number().int().positive().optional().default(600),
 });
 
 type HypertestProviderCloudAwsConfig = z.infer<
