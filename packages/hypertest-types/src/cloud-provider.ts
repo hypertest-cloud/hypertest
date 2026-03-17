@@ -26,6 +26,11 @@ export interface CloudProviderPlugin<InvokePayloadContext = unknown> {
   invoke: (
     payload: InvokePayload<InvokePayloadContext>,
   ) => Promise<TestInvokeResponse>;
+  /**
+   * Updates the cloud function to a newly pushed image and waits until
+   * the update is fully applied before resolving. Implementations should
+   * poll or subscribe until the function is confirmed active.
+   */
   updateLambdaImage: () => Promise<void>;
   updateManifest: (
     invokePayloadContexts: InvokePayloadContext[],

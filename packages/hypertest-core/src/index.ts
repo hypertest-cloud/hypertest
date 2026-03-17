@@ -105,7 +105,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
         testDirHash,
       );
 
-      options.config.logger.info('Updating lambda image');
+      options.config.logger.info('Updating lambda image and waiting for deployment to complete');
       await options.cloudProvider.updateLambdaImage();
 
       options.config.logger.info('Deploy successful');
