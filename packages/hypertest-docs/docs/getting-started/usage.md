@@ -38,8 +38,8 @@ The `deploy` command performs these operations:
 
 1. **Pulls base image** - Downloads the hypertest base image with Playwright and dependencies
 2. **Builds container** - Creates a Docker image containing your tests and configuration
-3. **Builds and stores manifest** - Creates invocation manifest file and stores it in cloud
-4. **Pushes container to registry** - Uploads the image to AWS ECR
+3. **Pushes container to registry** - Uploads the image to AWS ECR
+4. **Builds and stores manifest** - Creates invocation manifest file and stores it in cloud
 5. **Updates Lambda** - Points your Lambda function to the new image
 
 ::: tip When to redeploy
