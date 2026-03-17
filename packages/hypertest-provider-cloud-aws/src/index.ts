@@ -92,9 +92,6 @@ const HypertestProviderCloudAWS = (
     region: settings.region,
   });
 
-  const getManifestS3Key = () => {
-    return `${config.buildManifestName}`;
-  };
   const getTargetImageName = () => {
     return `${settings.ecrRegistry}/${config.imageName}:latest`;
   };
@@ -109,10 +106,9 @@ const HypertestProviderCloudAWS = (
   };
 
   const fetchManifest = async () => {
-    const manifestKey = getManifestS3Key();
     const getManifestCommand = new GetObjectCommand({
       Bucket: settings.bucketName,
-      Key: manifestKey,
+      Key: config.buildManifestName,
     });
 
     const manifestResponse = await s3Client.send(getManifestCommand);
@@ -124,7 +120,7 @@ const HypertestProviderCloudAWS = (
     const manifest = ImageBuildManifestSchema.parse(JSON.parse(bodyString));
 
     config.logger.verbose(
-      `JSON was successfully downloaded from key ${manifestKey} in bucket ${settings.bucketName}.`,
+      `JSON was successfully downloaded from key ${config.buildManifestName} in bucket ${settings.bucketName}.`,
     );
 
     return manifest;
@@ -285,17 +281,16 @@ const HypertestProviderCloudAWS = (
           invokePayloadContexts,
         };
 
-        const manifestKey = getManifestS3Key();
         const command = new PutObjectCommand({
           Bucket: settings.bucketName,
-          Key: manifestKey,
+          Key: config.buildManifestName,
           Body: JSON.stringify(manifest),
           ContentType: 'application/json',
         });
 
         await s3Client.send(command);
         config.logger.verbose(
-          `File ${manifestKey} was successfully uploaded to bucket ${settings.bucketName}.`,
+          `File ${config.buildManifestName} was successfully uploaded to bucket ${settings.bucketName}.`,
         );
       } catch (error) {
         config.logger.error('Error while updating manifest:', error);
