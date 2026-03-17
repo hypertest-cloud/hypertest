@@ -149,6 +149,8 @@ const HypertestProviderCloudAWS = (
 
       return image.imageId.imageDigest;
     }
+
+    throw new Error('Latest lambda image not found');
   };
 
   return {
