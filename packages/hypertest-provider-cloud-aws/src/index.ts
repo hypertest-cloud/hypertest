@@ -108,7 +108,7 @@ const HypertestProviderCloudAWS = (
   const fetchManifest = async () => {
     const getManifestCommand = new GetObjectCommand({
       Bucket: settings.bucketName,
-      Key: config.buildManifestName,
+      Key: config.buildManifestFileName,
     });
 
     const manifestResponse = await s3Client.send(getManifestCommand);
@@ -120,7 +120,7 @@ const HypertestProviderCloudAWS = (
     const manifest = ImageBuildManifestSchema.parse(JSON.parse(bodyString));
 
     config.logger.verbose(
-      `JSON was successfully downloaded from key ${config.buildManifestName} in bucket ${settings.bucketName}.`,
+      `JSON was successfully downloaded from key ${config.buildManifestFileName} in bucket ${settings.bucketName}.`,
     );
 
     return manifest;
@@ -283,14 +283,14 @@ const HypertestProviderCloudAWS = (
 
         const command = new PutObjectCommand({
           Bucket: settings.bucketName,
-          Key: config.buildManifestName,
+          Key: config.buildManifestFileName,
           Body: JSON.stringify(manifest),
           ContentType: 'application/json',
         });
 
         await s3Client.send(command);
         config.logger.verbose(
-          `File ${config.buildManifestName} was successfully uploaded to bucket ${settings.bucketName}.`,
+          `File ${config.buildManifestFileName} was successfully uploaded to bucket ${settings.bucketName}.`,
         );
       } catch (error) {
         config.logger.error('Error while updating manifest:', error);

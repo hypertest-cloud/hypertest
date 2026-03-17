@@ -30,7 +30,7 @@ To guarantee that the execution context matches the deployed code, the manifest 
 
 ## Configuration and Naming
 
-The name of the generated manifest file is customizable via the `buildManifestName` variable.
+The name of the generated manifest file is customizable via the `buildManifestFileName` variable.
 
 * **Default:** `hypertest.manifest`
 * **Recommendation:** If you choose to customize the filename, it is highly recommended to follow a convention that includes `.manifest` (e.g., `custom-name.manifest`) to clearly identify its purpose within the project.

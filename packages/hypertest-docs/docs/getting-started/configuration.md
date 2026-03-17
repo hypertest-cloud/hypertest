@@ -31,7 +31,7 @@ export default defineConfig({
   localBaseImageName: 'your-app/hypertest-base-playwright',
 
   // Custom hypertest build manifest filename
-  buildManifestName: 'hypertest.manifest',
+  buildManifestFileName: 'hypertest.manifest.json',
 
   // Test runner plugin configuration
   testRunner: playwright({}),
