@@ -30,5 +30,17 @@
   },
   "files": {
     "ignore": ["**/dist/**", "**/node_modules/**", "**/.vscode/**"]
-  }
+  },
+  "overrides": [
+    {
+      "include": ["packages/hypertest-provider-cloud-aws/src/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNamingConvention": "off"
+          }
+        }
+      }
+    }
+  ]
 }

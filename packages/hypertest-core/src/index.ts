@@ -90,7 +90,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       options.config.logger.info('Pushing image to the cloud');
       await options.cloudFunctionProvider.pushImage();
 
-      options.config.logger.info('Updating lambda image');
+      options.config.logger.info('Updating lambda image and waiting for deployment to complete');
       await options.cloudFunctionProvider.updateLambdaImage();
 
       options.config.logger.info('Deploy successful');

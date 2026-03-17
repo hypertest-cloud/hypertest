@@ -23,6 +23,11 @@ export interface CloudFunctionProviderPlugin {
   pullBaseImage: () => Promise<void>;
   pushImage: () => Promise<void>;
   invoke: (payload: InvokePayload<unknown>) => Promise<TestInvokeResponse>;
+  /**
+   * Updates the cloud function to a newly pushed image and waits until
+   * the update is fully applied before resolving. Implementations should
+   * poll or subscribe until the function is confirmed active.
+   */
   updateLambdaImage: () => Promise<void>;
 }
 

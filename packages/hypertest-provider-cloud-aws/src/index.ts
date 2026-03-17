@@ -3,6 +3,7 @@ import {
   InvokeCommand,
   LambdaClient,
   UpdateFunctionCodeCommand,
+  waitUntilFunctionUpdated,
 } from '@aws-sdk/client-lambda';
 import {
   GetServiceQuotaCommand,
@@ -17,9 +18,9 @@ import {
 } from '@hypertest/hypertest-types';
 import type winston from 'winston';
 import { z } from 'zod';
+import { isDockerRunning } from './isDockerRunning.js';
 import { runCommand } from './runCommand.js';
 import { isAwsSdkError } from './ts-guards.js';
-import { isDockerRunning } from './isDockerRunning.js';
 
 const getEcrAuth = async (ecrClient: ECRClient, logger: winston.Logger) => {
   const command = new GetAuthorizationTokenCommand({});
@@ -63,7 +64,6 @@ export const TestInvokeResponseSchema = z.discriminatedUnion('success', [
   }),
 ]);
 
-// biome-ignore lint/style/useNamingConvention: <explanation>
 const HypertestProviderCloudAWS = (
   settings: HypertestProviderCloudAwsConfig,
   config: ResolvedHypertestConfig,
@@ -179,8 +179,7 @@ const HypertestProviderCloudAWS = (
 
         if (isAwsSdkError(error) && error.$metadata.httpStatusCode === 429) {
           config.logger.error(
-            `Rate limit exceeded (HTTP 429) while invoking Lambda function.` +
-              `Refer to the README for instructions on how to increase the maximum number of allowed Lambda invocations for your account.`,
+            "Lambda invocation failed with HTTP 429 (Too Many Requests). Your account's concurrent executions quota may be too low — see the AWS provider docs for steps to request a quota increase.",
           );
         }
 
@@ -199,8 +198,33 @@ const HypertestProviderCloudAWS = (
         config.logger.verbose(
           `Lambda ${settings.functionName} image update has been started, status: ${response.LastUpdateStatus}`,
         );
+
+        config.logger.info(
+          `Waiting for Lambda ${settings.functionName} to finish updating...`,
+        );
+
+        await waitUntilFunctionUpdated(
+          {
+            client: lambdaClient,
+            maxWaitTime: settings.lambdaUpdateMaxWaitTime,
+          },
+          {
+            FunctionName: settings.functionName,
+          },
+        );
+
+        config.logger.info(
+          `Lambda ${settings.functionName} update completed successfully`,
+        );
       } catch (error) {
-        config.logger.error(`Error updating lambda by new image ${error}`);
+        if (error instanceof Error && error.name === 'TimeoutError') {
+          config.logger.error(
+            `Lambda ${settings.functionName} update timed out after ${settings.lambdaUpdateMaxWaitTime} seconds. The function may still be updating — check the AWS Console for the current status.`,
+          );
+        } else {
+          config.logger.error(`Error updating lambda by new image ${error}`);
+        }
+
         process.exit(1);
       }
     },
@@ -213,6 +237,7 @@ export const HypertestProviderCloudAwsConfigSchema = z.object({
   ecrRegistry: z.string(),
   functionName: z.string(),
   bucketName: z.string(),
+  lambdaUpdateMaxWaitTime: z.number().int().positive().optional().default(600),
 });
 
 type HypertestProviderCloudAwsConfig = z.infer<
