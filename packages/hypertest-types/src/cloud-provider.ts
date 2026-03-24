@@ -4,6 +4,7 @@ import type {
   PluginDefinition,
   ResolvedHypertestConfig,
 } from './index.js';
+import type { ImageBuildManifest } from './manifest.js';
 
 export type TestInvokeResponse =
   | {
@@ -19,22 +20,29 @@ export type TestInvokeResponse =
       filePath?: string;
       stackTrace?: string;
     };
-export interface CloudFunctionProviderPlugin {
+export interface CloudProviderPlugin<InvokePayloadContext = unknown> {
   pullBaseImage: () => Promise<void>;
   pushImage: () => Promise<void>;
-  invoke: (payload: InvokePayload<unknown>) => Promise<TestInvokeResponse>;
+  invoke: (
+    payload: InvokePayload<InvokePayloadContext>,
+  ) => Promise<TestInvokeResponse>;
   /**
    * Updates the cloud function to a newly pushed image and waits until
    * the update is fully applied before resolving. Implementations should
    * poll or subscribe until the function is confirmed active.
    */
   updateLambdaImage: () => Promise<void>;
+  updateManifest: (
+    invokePayloadContexts: InvokePayloadContext[],
+    testDirHash: string,
+  ) => Promise<void>;
+  pullManifest: () => Promise<ImageBuildManifest<InvokePayloadContext>>;
 }
 
-export type CloudFunctionProviderPluginFactory = (
+type CloudProviderPluginFactory = (
   config: ResolvedHypertestConfig,
   opts: CommandOptions,
-) => CloudFunctionProviderPlugin;
+) => CloudProviderPlugin;
 
-export type CloudFunctionProviderPluginDefinition =
-  PluginDefinition<CloudFunctionProviderPluginFactory>;
+export type CloudProviderPluginDefinition =
+  PluginDefinition<CloudProviderPluginFactory>;

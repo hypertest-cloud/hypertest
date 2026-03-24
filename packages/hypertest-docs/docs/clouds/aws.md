@@ -45,7 +45,7 @@ export default defineConfig({
   localImageName: 'my-app/hypertest-playwright',
   localBaseImageName: 'my-app/hypertest-base-playwright',
   testRunner: playwright({}),
-  cloudFunctionProvider: aws({
+  cloudProvider: aws({
     baseImage: '123456789.dkr.ecr.eu-central-1.amazonaws.com/hypertest/base-playwright:latest',
     region: 'eu-central-1',
     ecrRegistry: '123456789.dkr.ecr.eu-central-1.amazonaws.com',

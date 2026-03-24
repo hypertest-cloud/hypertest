@@ -46,29 +46,29 @@ const QUESTIONS: Question[] = [
   },
   {
     type: 'input',
-    name: 'awsCloudFunctionProvider_baseImage',
+    name: 'awsCloudProvider_baseImage',
     message: 'Cloud function base image:',
   },
   {
     type: 'input',
-    name: 'awsCloudFunctionProvider_region',
+    name: 'awsCloudProvider_region',
     message: 'Cloud function region:',
     default: 'eu-central-1',
   },
   {
     type: 'input',
-    name: 'awsCloudFunctionProvider_ecrRegistry',
+    name: 'awsCloudProvider_ecrRegistry',
     message: 'Cloud ECR registry URL:',
     default: 'dkr.ecr.eu-central-1.amazonaws.com',
   },
   {
     type: 'input',
-    name: 'awsCloudFunctionProvider_functionName',
+    name: 'awsCloudProvider_functionName',
     message: 'Cloud function name:',
   },
   {
     type: 'input',
-    name: 'awsCloudFunctionProvider_bucketName',
+    name: 'awsCloudProvider_bucketName',
     message: 'Cloud storage bucket name:',
   },
 ];

@@ -62,40 +62,6 @@ const PlaywrightRunnerPlugin = (options: {
   dryRun?: boolean;
 }): TestRunnerPlugin<PlaywrightCloudFunctionContext> => {
   return {
-    getCloudFunctionContexts: async (runId: string) => {
-      const { config: pwConfig } = await getPlaywrightConfig(
-        options.config.logger,
-      );
-      const projectName = getProjectName(pwConfig);
-      const testDir = getTestDir(pwConfig);
-      options.config.logger.verbose(`Playwright tests directory: ${testDir}`);
-
-      const specFilePaths = getSpecFilePaths(testDir);
-      options.config.logger.verbose(
-        `Playwright test spec file paths: ${specFilePaths.join(', ')}`,
-      );
-
-      const fileContexts = await Promise.all(
-        specFilePaths.map(async (specFilePath) => {
-          const testContextPaths = await getTestContextPaths(specFilePath);
-
-          return testContextPaths.map((testContextPath) => ({
-            grep: getGrepString(
-              projectName,
-              testDir,
-              specFilePath,
-              testContextPath,
-            ),
-          }));
-        }),
-      );
-
-      return fileContexts.flat().map((context) => ({
-        runId,
-        testId: crypto.randomUUID(),
-        context,
-      }));
-    },
     buildImage: async () => {
       const { config: pwConfig, playwrightConfigFilepath } =
         await getPlaywrightConfig(options.config.logger);
@@ -124,6 +90,36 @@ const PlaywrightRunnerPlugin = (options: {
         );
         process.exit(1);
       }
+    },
+    getInvokePayloadContext: async () => {
+      const { config: pwConfig } = await getPlaywrightConfig(
+        options.config.logger,
+      );
+      const projectName = getProjectName(pwConfig);
+      const testDir = getTestDir(pwConfig);
+      options.config.logger.verbose(`Playwright tests directory: ${testDir}`);
+
+      const specFilePaths = getSpecFilePaths(testDir);
+      options.config.logger.verbose(
+        `Playwright test spec file paths: ${specFilePaths.join(', ')}`,
+      );
+
+      const fileContexts = await Promise.all(
+        specFilePaths.map(async (specFilePath) => {
+          const testContextPaths = await getTestContextPaths(specFilePath);
+
+          return testContextPaths.map((testContextPath) => ({
+            grep: getGrepString(
+              projectName,
+              testDir,
+              specFilePath,
+              testContextPath,
+            ),
+          }));
+        }),
+      );
+
+      return fileContexts.flat();
     },
   };
 };

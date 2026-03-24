@@ -38,8 +38,9 @@ The `deploy` command performs these operations:
 
 1. **Pulls base image** - Downloads the hypertest base image with Playwright and dependencies
 2. **Builds container** - Creates a Docker image containing your tests and configuration
-3. **Pushes to registry** - Uploads the image to AWS ECR
-4. **Updates Lambda** - Points your Lambda function to the new image
+3. **Pushes container to registry** - Uploads the image to AWS ECR
+4. **Builds and stores manifest** - Creates invocation manifest file and stores it in cloud
+5. **Updates Lambda** - Points your Lambda function to the new image
 
 ::: tip When to redeploy
 You only need to run `deploy` when your test files or Playwright configuration change. If you're just re-running existing tests, skip straight to `invoke`.
@@ -55,10 +56,10 @@ npx hypertest invoke
 
 The `invoke` command:
 
-1. **Analyzes tests** - Scans your test directory and identifies individual test files
-2. **Creates payloads** - Generates execution context for each test
-3. **Invokes functions** - Launches Lambda functions in parallel (up to your `concurrency` limit)
-4. **Collects results** - Gathers test results and artifacts from S3
+1. **Analyzes tests** - Scans the test directory and generates a content hash.
+2. **Validates state** - Compares the local hash and deployed image digest against the manifest (mismatch handling is TODO).
+3. **Invokes functions** - Builds payloads based on the manifest and launches cloud functions in parallel (up to `concurrency` limit).
+4. **Collects results** - Gathers test results and artifacts from bucket (like S3 for AWS).
 
 ## Development workflow
 

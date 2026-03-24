@@ -1,7 +1,7 @@
 import type winston from 'winston';
 import type { z } from 'zod';
 import type { Check } from './cli-doctor.js';
-import type { CloudFunctionProviderPluginDefinition } from './cloud-function-provider.js';
+import type { CloudProviderPluginDefinition } from './cloud-provider.js';
 import type { ConfigSchema } from './config-schema.js';
 import type { TestRunnerPluginDefinition } from './test-runner-plugin.js';
 
@@ -13,16 +13,18 @@ export interface HypertestConfig<InvokePayloadContext> {
   imageName: string;
   localImageName?: string;
   localBaseImageName?: string;
+  buildManifestFileName?: string;
   concurrency?: number;
   loggerOptions?: winston.LoggerOptions;
   testRunner: TestRunnerPluginDefinition<InvokePayloadContext>;
-  cloudFunctionProvider: CloudFunctionProviderPluginDefinition;
+  cloudProvider: CloudProviderPluginDefinition;
 }
 
 export interface ResolvedHypertestConfig {
   imageName: string;
   localImageName: string;
   localBaseImageName: string;
+  buildManifestFileName: string;
   concurrency: number;
   logger: winston.Logger;
 }
@@ -47,7 +49,7 @@ export interface PluginDefinition<T extends (...args: any[]) => any> {
 }
 
 // biome-ignore lint/performance/noReExportAll: <explanation>
-export * from './cloud-function-provider.js';
+export * from './cloud-provider.js';
 // biome-ignore lint/performance/noReExportAll: <explanation>
 export * from './test-runner-plugin.js';
 // biome-ignore lint/performance/noReExportAll: <explanation>
@@ -56,3 +58,7 @@ export * from './config-schema.js';
 export * from './docker.js';
 // biome-ignore lint/performance/noReExportAll: <explanation>
 export * from './cli-doctor.js';
+// biome-ignore lint/performance/noReExportAll: <explanation>
+export * from './manifest-schema.js';
+// biome-ignore lint/performance/noReExportAll: <explanation>
+export * from './manifest.js';

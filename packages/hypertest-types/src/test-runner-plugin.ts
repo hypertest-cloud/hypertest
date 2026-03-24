@@ -1,14 +1,11 @@
 import type {
   CommandOptions,
-  InvokePayload,
   PluginDefinition,
   ResolvedHypertestConfig,
 } from './index.js';
 
 export interface TestRunnerPlugin<InvokePayloadContext> {
-  getCloudFunctionContexts: (
-    runId: string,
-  ) => Promise<InvokePayload<InvokePayloadContext>[]>;
+  getInvokePayloadContext: () => Promise<InvokePayloadContext[]>;
   buildImage: () => Promise<void>;
 }
 

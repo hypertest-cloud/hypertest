@@ -47,7 +47,13 @@ export default {
       {
         text: 'Developers',
         collapsed: true,
-        items: [{ text: 'Architecture', link: '/developers/architecture' }],
+        items: [
+          { text: 'Architecture', link: '/developers/architecture' },
+          {
+            text: 'Manifest',
+            link: '/developers/manifest',
+          },
+        ],
       },
       {
         text: 'License',

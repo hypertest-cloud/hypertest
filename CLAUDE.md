@@ -28,7 +28,6 @@ npm run docker
 ```bash
 npx hypertest deploy              # Deploy tests to cloud (builds + pushes image to ECR + updates Lambda)
 npx hypertest invoke              # Run tests in cloud
-npx hypertest invoke --grep <pattern>  # Run specific tests matching pattern
 npx hypertest doctor              # Validate configuration and cloud provider setup
 ```
 
@@ -38,7 +37,7 @@ Hypertest is a cloud-based test distribution system that runs each test file in 
 
 ### Package Structure
 - **hypertest-core**: CLI entry point (`hypertest` binary) and orchestration logic
-- **hypertest-types**: Shared TypeScript interfaces (`TestRunnerPluginDefinition`, `CloudFunctionProviderPluginDefinition`)
+- **hypertest-types**: Shared TypeScript interfaces (`TestRunnerPluginDefinition`, `CloudProviderPluginDefinition`)
 - **hypertest-plugin-playwright**: Playwright test framework integration
 - **hypertest-runner-aws-playwright**: Lambda handler code that executes Playwright tests
 - **hypertest-provider-cloud-aws**: AWS cloud provider (ECR, Lambda, S3)
@@ -52,10 +51,10 @@ Note: `hypertest-types` must build first (see workspace ordering in root `packag
 Two plugin interfaces in `hypertest-types`:
 
 **TestRunnerPlugin** (`test-runner-plugin.ts`):
-- `getCloudFunctionContexts(runId)`: Returns invoke payloads (one per test file)
+- `getInvokePayloads(runId)`: Returns invoke payloads (one per test file)
 - `buildImage()`: Builds Docker image with tests
 
-**CloudFunctionProviderPlugin** (`cloud-function-provider.ts`):
+**CloudProviderPlugin** (`cloud-provider.ts`):
 - `pullBaseImage()`: Pull pre-built base image
 - `pushImage()`: Push built image to registry
 - `invoke(payload)`: Invoke cloud function
@@ -92,7 +91,7 @@ export default defineConfig({
   concurrency: 30,
   imageName: 'your-app/hypertest-playwright',
   testRunner: playwright({}),
-  cloudFunctionProvider: aws({
+  cloudProvider: aws({
     baseImage: 'account.dkr.ecr.region.amazonaws.com/hypertest/base-playwright:latest',
     region: 'eu-central-1',
     ecrRegistry: 'account.dkr.ecr.region.amazonaws.com',

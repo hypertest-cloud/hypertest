@@ -1,8 +1,7 @@
 import type {
-  CloudFunctionProviderPlugin,
+  CloudProviderPlugin,
   CommandOptions,
   HypertestConfig,
-  InvokePayload,
   ResolvedHypertestConfig,
   TestRunnerPlugin,
 } from '@hypertest/hypertest-types';
@@ -19,19 +18,16 @@ export const defineConfig = <T>(config: HypertestConfig<T>) => config;
 export const setupHypertest = async ({ dryRun }: CommandOptions) => {
   const { config, ...providers } = await loadConfig();
 
-  const cloudFunctionProvider = providers.cloudFunctionProvider.handler(
-    config,
-    {
-      dryRun,
-    },
-  );
+  const cloudProvider = providers.cloudProvider.handler(config, {
+    dryRun,
+  });
   const testRunner = providers.testRunner.handler(config, {
     dryRun,
   });
 
   return HypertestCore({
     config,
-    cloudFunctionProvider,
+    cloudProvider,
     testRunner,
   });
 };
@@ -39,29 +35,39 @@ export const setupHypertest = async ({ dryRun }: CommandOptions) => {
 export const HypertestCore = <InvokePayloadContext>(options: {
   config: ResolvedHypertestConfig;
   testRunner: TestRunnerPlugin<InvokePayloadContext>;
-  cloudFunctionProvider: CloudFunctionProviderPlugin;
+  cloudProvider: CloudProviderPlugin<InvokePayloadContext>;
 }): HypertestCore => {
+  const getTestDirHash = () => {
+    return 'TODO This needs to be implemented in separated PR';
+  };
+
   return {
-    // TODO grep param is only for internal dev testing, remove later
-    invoke: async (grep?: string) => {
+    invoke: async () => {
       options.config.logger.info('Invoking cloud functions');
 
       const runId = crypto.randomUUID();
-      const functionInvokePayloads = grep
-        ? ([
-            {
-              runId,
-              testId: crypto.randomUUID(),
-              context: { grep },
-            },
-          ] as InvokePayload<InvokePayloadContext>[])
-        : await options.testRunner.getCloudFunctionContexts(runId);
+      const manifest = await options.cloudProvider.pullManifest();
+      const testDirHash = getTestDirHash();
+
+      if (manifest.testDirHash !== testDirHash) {
+        options.config.logger.warning(
+          'Your local test code differ from what is deploying in cloud infrastructure',
+        );
+      }
+
+      const functionInvokePayloads = manifest.invokePayloadContexts.map(
+        (context) => ({
+          runId,
+          testId: crypto.randomUUID(),
+          context,
+        }),
+      );
 
       const results = await promiseMap(
         functionInvokePayloads,
         async (payload) => ({
           ...payload,
-          result: await options.cloudFunctionProvider.invoke(payload),
+          result: await options.cloudProvider.invoke(payload),
         }),
         { concurrency: options.config.concurrency },
       );
@@ -82,16 +88,25 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       );
 
       options.config.logger.info('Pulling base image');
-      await options.cloudFunctionProvider.pullBaseImage();
+      await options.cloudProvider.pullBaseImage();
 
       options.config.logger.info('Building container image');
       await options.testRunner.buildImage();
 
       options.config.logger.info('Pushing image to the cloud');
-      await options.cloudFunctionProvider.pushImage();
+      await options.cloudProvider.pushImage();
+
+      options.config.logger.info('Building and storing manifest');
+      const invokePayloadContext =
+        await options.testRunner.getInvokePayloadContext();
+      const testDirHash = getTestDirHash();
+      await options.cloudProvider.updateManifest(
+        invokePayloadContext,
+        testDirHash,
+      );
 
       options.config.logger.info('Updating lambda image and waiting for deployment to complete');
-      await options.cloudFunctionProvider.updateLambdaImage();
+      await options.cloudProvider.updateLambdaImage();
 
       options.config.logger.info('Deploy successful');
     },

@@ -107,13 +107,14 @@ The `hypertest deploy` command executes these steps:
 2. **Pull base image** - Download pre-built image with test framework and dependencies
 3. **Build target image** - Layer your tests on top of the base image
 4. **Push to registry** - Upload the image to cloud container registry (ECR)
-5. **Update function** - Point the Lambda function to the new image
+5. **Build manifest** - Snapshots current test state from the built target image
+6. **Update function** - Point the Lambda function to the new image
 
 ```
-┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
-│  Pull    │───►│  Build   │───►│  Push    │───►│  Update  │
-│  Base    │    │  Image   │    │  to ECR  │    │  Lambda  │
-└──────────┘    └──────────┘    └──────────┘    └──────────┘
+┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
+│  Pull    │───►│  Build   │───►| Build    │───►│  Push    │───►│  Update  │
+│  Base    │    │  Image   │    | Manifest │    │  to ECR  │    │  Lambda  │
+└──────────┘    └──────────┘    └──────────┘    └──────────┘    └──────────┘
 ```
 
 ### Invoke flow
@@ -121,15 +122,15 @@ The `hypertest deploy` command executes these steps:
 The `hypertest invoke` command executes these steps:
 
 1. **Generate run ID** - Create unique identifier for this test run
-2. **Discover tests** - Plugin scans for test files and creates payloads
+2. **Read manifest tests** - Plugin fetches previously stored manifest file where are stored all invocation payloads
 3. **Invoke functions** - Cloud provider triggers Lambda functions concurrently
 4. **Execute tests** - Runner executes tests and uploads artifacts to S3
 5. **Collect results** - Aggregate results from all function invocations
 
 ```
 ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
-│ Generate │───►│ Discover │───►│  Invoke  │───►│ Collect  │
-│  Run ID  │    │  Tests   │    │ Functions│    │ Results  │
+│ Generate │───►│ Read     │───►│  Invoke  │───►│ Collect  │
+│  Run ID  │    │ Manifest │    │ Functions│    │ Results  │
 └──────────┘    └──────────┘    └──────────┘    └──────────┘
                                       │
                                       ▼
@@ -160,7 +161,7 @@ hypertest is organized as a monorepo with these packages:
 The plugin architecture allows adding support for:
 
 - **New test frameworks** - Implement `TestRunnerPluginDefinition` interface
-- **New cloud providers** - Implement `CloudFunctionProviderPluginDefinition` interface
+- **New cloud providers** - Implement `CloudProviderPluginDefinition` interface
 - **New runners** - Create Lambda handler for your framework + cloud combination
 
 ![Infrastructure graph](./intrastracture-graph.png)
