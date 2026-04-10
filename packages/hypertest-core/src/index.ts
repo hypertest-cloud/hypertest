@@ -39,7 +39,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
   cloudProvider: CloudProviderPlugin<InvokePayloadContext>;
 }): HypertestCore => {
   const getTestDirHash = async () =>
-    hashDirectory(await options.testRunner.getTestDir());
+    hashDirectory(await options.testRunner.getTestDir(), ['.spec.ts']);
 
   return {
     invoke: async () => {

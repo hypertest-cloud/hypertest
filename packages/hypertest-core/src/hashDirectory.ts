@@ -2,7 +2,15 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
-const getTestFiles = async (dirPath: string): Promise<string[]> => {
+/**
+ * Recursively gets files from a directory based on allowed extensions.
+ * @param dirPath - The starting directory
+ * @param extensions - Array of suffixes to match (e.g., ['.spec.ts', '.test.ts'])
+ */
+const getTestFiles = async (
+  dirPath: string,
+  extensions?: string[], // Default value if none provided
+): Promise<string[]> => {
   const dirents = await fs.readdir(dirPath, { withFileTypes: true });
 
   const files = await Promise.all(
@@ -10,21 +18,24 @@ const getTestFiles = async (dirPath: string): Promise<string[]> => {
       const res = path.resolve(dirPath, dirent.name);
 
       if (dirent.isDirectory()) {
-        return getTestFiles(res);
+        return getTestFiles(res, extensions);
       }
 
-      return res.endsWith('.spec.ts') ? res : null;
+      const isMatch =
+        !extensions || extensions.some((ext) => res.endsWith(ext));
+
+      return isMatch ? res : null;
     }),
   );
 
   return files.flat().filter((file): file is string => Boolean(file));
 };
 
-export const hashDirectory = async (dirPath: string) => {
+export const hashDirectory = async (dirPath: string, extensions?: string[]) => {
   const hash = crypto.createHash('sha256');
 
   try {
-    const allFiles = await getTestFiles(dirPath);
+    const allFiles = await getTestFiles(dirPath, extensions);
     const relativeFiles = allFiles
       .map((file) => path.relative(dirPath, file))
       .sort();
