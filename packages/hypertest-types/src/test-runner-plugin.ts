@@ -6,6 +6,7 @@ import type {
 
 export interface TestRunnerPlugin<InvokePayloadContext> {
   getInvokePayloadContext: () => Promise<InvokePayloadContext[]>;
+  getTestDir: () => Promise<string>;
   buildImage: () => Promise<void>;
 }
 
