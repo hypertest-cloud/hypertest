@@ -351,7 +351,7 @@ export const HypertestProviderCloudAwsConfigSchema = z.object({
   lambdaUpdateMaxWaitTime: z.number().int().positive().optional().default(600),
 });
 
-type HypertestProviderCloudAwsConfig = z.infer<
+type HypertestProviderCloudAwsConfig = z.input<
   typeof HypertestProviderCloudAwsConfigSchema
 >;
 
