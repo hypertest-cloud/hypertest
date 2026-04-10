@@ -121,6 +121,13 @@ const PlaywrightRunnerPlugin = (options: {
 
       return fileContexts.flat();
     },
+    getTestDir: async () => {
+      const { config: pwConfig } = await getPlaywrightConfig(
+        options.config.logger,
+      );
+
+      return getTestDir(pwConfig);
+    },
   };
 };
 
