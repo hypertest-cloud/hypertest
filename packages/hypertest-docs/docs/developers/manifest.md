@@ -40,7 +40,7 @@ The name of the generated manifest file is customizable via the `buildManifestFi
 ```json
 {
   "imageDigest": "sha256:77fe3a37721a5d5bd20d0cafe6946c5980201a8975b70dfba56a83d4e488e13b",
-  "testDirHash": "TODO Update with real example",
+  "testDirHash": "74811828510f638d62d67d9bca795862010f05b52ef0e8ec9623c9697b318f26",
   "invokePayloadContexts": [
     {
       "grep": "^chromium foo/playwright\\\\x2dweb\\\\.spec\\\\.ts get started link$"
