@@ -56,7 +56,7 @@ export const ConfigSchema = z
     buildManifestFileName: ensureExtension(
       config.buildManifestFileName ?? MANIFEST_FILE_NAME,
     ),
-    driftDetectionPolicy: 'warning' as const,
+    driftDetectionPolicy: config.driftDetectionPolicy ?? ('warning' as const),
   }));
 
 /**
