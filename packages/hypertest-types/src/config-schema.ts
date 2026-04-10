@@ -41,6 +41,9 @@ export const ConfigSchema = z
     localImageName: z.string().optional(),
     localBaseImageName: z.string().optional(),
     buildManifestFileName: z.string().optional(),
+    driftDetectionPolicy: z
+      .union([z.literal('warning'), z.literal('error'), z.literal('salience')])
+      .optional(),
     concurrency: z.number().int().default(1),
     loggerOptions: WinstonLoggerOptions.optional(),
     testRunner: PluginDefinitionSchema,
@@ -53,6 +56,7 @@ export const ConfigSchema = z
     buildManifestFileName: ensureExtension(
       config.buildManifestFileName ?? MANIFEST_FILE_NAME,
     ),
+    driftDetectionPolicy: 'warning' as const,
   }));
 
 /**
