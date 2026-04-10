@@ -50,9 +50,19 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       const testDirHash = await getTestDirHash();
 
       if (manifest.testDirHash !== testDirHash) {
-        options.config.logger.warn(
-          'Your local test code differ from what is deploying in cloud infrastructure',
-        );
+        const message =
+          'Your local test code differ from what is deploying in cloud infrastructure';
+
+        const policyActions = {
+          warning: () => options.config.logger.warn(message),
+          error: () => {
+            throw new Error(message);
+          },
+          // biome-ignore lint/suspicious/noEmptyBlockStatements: <explanation>
+          salience: () => {},
+        };
+
+        policyActions[options.config.driftDetectionPolicy]();
       }
 
       const functionInvokePayloads = manifest.invokePayloadContexts.map(
