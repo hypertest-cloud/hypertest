@@ -9,7 +9,7 @@ import crypto from 'node:crypto';
  */
 const getTestFiles = async (
   dirPath: string,
-  extensions?: string[], // Default value if none provided
+  extensions?: string[],
 ): Promise<string[]> => {
   const dirents = await fs.readdir(dirPath, { withFileTypes: true });
 
