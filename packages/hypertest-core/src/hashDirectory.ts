@@ -48,8 +48,8 @@ export const hashDirectory = async (dirPath: string, extensions?: string[]) => {
         .toString('utf8')
         .replace(/\r\n/g, '\n');
 
-      hash.update(relPath);
-      hash.update(normalizedContent);
+      hash.update(`${relPath}\0`);
+      hash.update(`${normalizedContent}\0`);
     }
 
     return hash.digest('hex');
