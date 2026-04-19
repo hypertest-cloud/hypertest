@@ -409,8 +409,8 @@ const plugin = (
   handler: (config) => {
     return HypertestProviderCloudAWS(
       {
-        ...options,
         lambdaUpdateMaxWaitTime: 600,
+        ...options,
       },
       config,
     );
