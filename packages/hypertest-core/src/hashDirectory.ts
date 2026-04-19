@@ -36,6 +36,12 @@ export const hashDirectory = async (dirPath: string, extensions?: string[]) => {
 
   try {
     const allFiles = await getTestFiles(dirPath, extensions);
+    if (!allFiles.length) {
+      throw new Error(
+        `Directory is empty or no files match the extensions in: ${dirPath}`,
+      );
+    }
+
     const relativeFiles = allFiles
       .map((file) => path.relative(dirPath, file))
       .sort();
