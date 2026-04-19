@@ -33,7 +33,7 @@ export default defineConfig({
   // Custom hypertest build manifest filename
   buildManifestFileName: 'hypertest.manifest.json',
 
-  // TODO After code review (warning | error | salience)
+  // TODO After code review (warning | error | silence)
   driftDetectionPolicy: 'warning',
 
   // Test runner plugin configuration

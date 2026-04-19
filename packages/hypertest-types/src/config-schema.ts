@@ -42,7 +42,7 @@ export const ConfigSchema = z
     localBaseImageName: z.string().optional(),
     buildManifestFileName: z.string().optional(),
     driftDetectionPolicy: z
-      .union([z.literal('warning'), z.literal('error'), z.literal('salience')])
+      .union([z.literal('warning'), z.literal('error'), z.literal('silence')])
       .optional(),
     concurrency: z.number().int().default(1),
     loggerOptions: WinstonLoggerOptions.optional(),

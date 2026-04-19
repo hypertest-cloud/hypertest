@@ -59,7 +59,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
             throw new Error(message);
           },
           // biome-ignore lint/suspicious/noEmptyBlockStatements: <explanation>
-          salience: () => {},
+          silence: () => {},
         };
 
         policyActions[options.config.driftDetectionPolicy]();
