@@ -62,3 +62,5 @@ export * from './cli-doctor.js';
 export * from './manifest-schema.js';
 // biome-ignore lint/performance/noReExportAll: <explanation>
 export * from './manifest.js';
+// biome-ignore lint/performance/noReExportAll: <explanation>
+export * from './run-result.js';
