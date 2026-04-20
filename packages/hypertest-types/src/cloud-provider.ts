@@ -11,7 +11,12 @@ export type TestInvokeResponse =
       success: true;
       name: string;
       filePath: string;
-      duration: number; //in ms
+      duration: number; // in ms
+    }
+  | {
+      success: 'skipped';
+      name: string;
+      filePath: string;
     }
   | {
       success: false;
