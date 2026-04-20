@@ -1,8 +1,8 @@
 ---
 outline: deep
 next:
-  text: Plugins overview
-  link: /plugins/overview
+  text: Results
+  link: /getting-started/results
 prev:
   text: Configuration
   link: /getting-started/configuration
@@ -59,7 +59,10 @@ The `invoke` command:
 1. **Analyzes tests** - Scans the test directory and generates a content hash.
 2. **Validates state** - Compares the local hash and deployed image digest against the manifest (mismatch handling is TODO).
 3. **Invokes functions** - Builds payloads based on the manifest and launches cloud functions in parallel (up to `concurrency` limit).
-4. **Collects results** - Gathers test results and artifacts from bucket (like S3 for AWS).
+4. **Collects results** - Gathers test results and artifacts from cloud storage (like S3 for AWS).
+5. **Writes results file** - Saves `hypertest.results.json` locally and uploads it to cloud storage.
+
+See [Results](/getting-started/results) for the full file structure.
 
 ## Development workflow
 
@@ -76,7 +79,7 @@ npx hypertest deploy
 # 4. Run tests in cloud
 npx hypertest invoke
 
-# 5. Check results in S3 bucket
+# 5. Inspect hypertest.results.json
 ```
 
 ::: tip Local testing first
@@ -85,13 +88,14 @@ Always run your tests locally with `npx playwright test` before deploying to cat
 
 ## Working with test artifacts
 
-hypertest automatically handles test artifacts like screenshots, videos, and reports. Artifacts are saved to your configured S3 bucket organized by run ID.
+hypertest automatically handles test artifacts like screenshots, videos, and reports. Artifacts are saved to your configured cloud storage (like S3 for AWS) organized by run ID.
 
-### Artifact structure in S3
+### Artifact structure in cloud storage
 
 ```
-s3://your-bucket/
+{cloud-bucket}/
 └── {runId}/
+    ├── hypertest.results.json
     └── {testId}/
         ├── playwright-results.json
         ├── screenshots/
@@ -162,6 +166,13 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: eu-central-1
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hypertest-results
+          path: hypertest.results.json
 ```
 
 ::: warning
