@@ -59,6 +59,7 @@ Two plugin interfaces in `hypertest-types`:
 - `pushImage()`: Push built image to registry
 - `invoke(payload)`: Invoke cloud function
 - `updateLambdaImage()`: Update Lambda with new image
+- `uploadRunResult(runId, content)`: Upload serialized `hypertest.results.json` to cloud storage at `{runId}/hypertest.results.json`
 
 ### Execution Flow
 
@@ -72,13 +73,16 @@ Two plugin interfaces in `hypertest-types`:
 1. Generate unique `runId`
 2. Test runner creates payloads (one per test file)
 3. Invoke Lambdas concurrently (up to `concurrency` limit)
-4. Collect results from S3
+4. Collect results from cloud storage
+5. Write `hypertest.results.json` locally (CWD) and upload to cloud storage at `{runId}/hypertest.results.json`
 
 ### Key Files
 - CLI entry: `packages/hypertest-core/src/cli.ts`
 - Core orchestration: `packages/hypertest-core/src/index.ts`
 - Type definitions: `packages/hypertest-types/src/index.ts`
+- Run result types: `packages/hypertest-types/src/run-result.ts` (`HypertestRunResult`, `HypertestTestResult`)
 - Lambda handler: `packages/hypertest-runner-aws-playwright/src/index.ts`
+- Playwright report parser: `packages/hypertest-runner-aws-playwright/src/utils/parsePlaywrightReport.ts`
 
 ### Configuration
 Projects use `hypertest.config.js`:
