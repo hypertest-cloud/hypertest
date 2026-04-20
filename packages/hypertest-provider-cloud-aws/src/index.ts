@@ -67,6 +67,11 @@ export const TestInvokeResponseSchema = z.discriminatedUnion('success', [
     duration: z.number(),
   }),
   z.object({
+    success: z.literal('skipped'),
+    name: z.string(),
+    filePath: z.string(),
+  }),
+  z.object({
     success: z.literal(false),
     message: z.string(),
     name: z.string().optional(),
@@ -318,6 +323,24 @@ const HypertestProviderCloudAWS = (
         );
       } catch (error) {
         config.logger.error('Error while updating manifest:', error);
+        process.exit(1);
+      }
+    },
+    uploadRunResult: async (runId, content) => {
+      try {
+        const command = new PutObjectCommand({
+          Bucket: settings.bucketName,
+          Key: `${runId}/hypertest.results.json`,
+          Body: content,
+          ContentType: 'application/json',
+        });
+
+        await s3Client.send(command);
+        config.logger.verbose(
+          `hypertest.results.json was successfully uploaded to bucket ${settings.bucketName} at ${runId}/hypertest.results.json.`,
+        );
+      } catch (error) {
+        config.logger.error('Error while uploading run result:', error);
         process.exit(1);
       }
     },

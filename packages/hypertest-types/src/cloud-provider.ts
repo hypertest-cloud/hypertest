@@ -32,6 +32,15 @@ export interface CloudProviderPlugin<InvokePayloadContext = unknown> {
     payload: InvokePayload<InvokePayloadContext>,
   ) => Promise<TestInvokeResponse>;
   /**
+   * Uploads the serialized `hypertest.results.json` content to cloud storage
+   * for durable, cross-run access. The file is stored alongside per-test
+   * artifacts at `{runId}/hypertest.results.json`.
+   *
+   * @param runId - The unique identifier for the invoke run.
+   * @param content - The serialized JSON string of {@link HypertestRunResult}.
+   */
+  uploadRunResult: (runId: string, content: string) => Promise<void>;
+  /**
    * Updates the cloud function to a newly pushed image and waits until
    * the update is fully applied before resolving. Implementations should
    * poll or subscribe until the function is confirmed active.

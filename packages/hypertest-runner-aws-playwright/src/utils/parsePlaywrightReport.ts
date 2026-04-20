@@ -60,6 +60,12 @@ export const parsePlaywrightReport = (
               stackTrace:
                 result?.error?.stack || 'Unable to retrieve stack trace',
             });
+          } else if (result?.status === 'skipped') {
+            extractedData.push({
+              success: 'skipped',
+              name: responseBase.name,
+              filePath: responseBase.filePath,
+            });
           } else {
             extractedData.push({
               ...responseBase,
