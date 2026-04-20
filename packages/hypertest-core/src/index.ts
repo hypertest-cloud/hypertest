@@ -1,7 +1,11 @@
+import { writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import type {
   CloudProviderPlugin,
   CommandOptions,
   HypertestConfig,
+  HypertestRunResult,
+  HypertestTestResult,
   ResolvedHypertestConfig,
   TestRunnerPlugin,
 } from '@hypertest/hypertest-types';
@@ -46,6 +50,8 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       options.config.logger.info('Invoking cloud functions');
 
       const runId = crypto.randomUUID();
+      const runStartDate = new Date();
+
       const manifest = await options.cloudProvider.pullManifest();
       const testDirHash = getTestDirHash();
 
@@ -65,11 +71,65 @@ export const HypertestCore = <InvokePayloadContext>(options: {
 
       const results = await promiseMap(
         functionInvokePayloads,
-        async (payload) => ({
-          ...payload,
-          result: await options.cloudProvider.invoke(payload),
-        }),
+        async (payload) => {
+          const invokeStart = new Date();
+          const result = await options.cloudProvider.invoke(payload);
+          const invokeEnd = new Date();
+          return { ...payload, result, invokeStart, invokeEnd };
+        },
         { concurrency: options.config.concurrency },
+      );
+
+      const runEndDate = new Date();
+
+      const testResults: HypertestTestResult[] = results.map(
+        ({ testId, result, invokeStart, invokeEnd }) => {
+          return {
+            testId,
+            name: result.name ?? 'unknown',
+            filePath: result.filePath ?? 'unknown',
+            status:
+              result.success === true
+                ? 'success'
+                : result.success === 'skipped'
+                  ? 'skipped'
+                  : 'failed',
+            startDate: invokeStart.toISOString(),
+            endDate: invokeEnd.toISOString(),
+            duration:
+              result.success === true
+                ? result.duration
+                : invokeEnd.getTime() - invokeStart.getTime(),
+            error:
+              result.success === false
+                ? { message: result.message, stackTrace: result.stackTrace }
+                : undefined,
+          };
+        },
+      );
+
+      const runResult: HypertestRunResult = {
+        runId,
+        startDate: runStartDate.toISOString(),
+        endDate: runEndDate.toISOString(),
+        duration: runEndDate.getTime() - runStartDate.getTime(),
+        tests: {
+          total: testResults.length,
+          success: testResults.filter((t) => t.status === 'success').length,
+          skipped: testResults.filter((t) => t.status === 'skipped').length,
+          failed: testResults.filter((t) => t.status === 'failed').length,
+        },
+        results: testResults,
+      };
+
+      const json = JSON.stringify(runResult, null, 2);
+      const localPath = path.join(process.cwd(), 'hypertest.results.json');
+
+      await writeFile(localPath, json, 'utf-8');
+      await options.cloudProvider.uploadRunResult(runId, json);
+
+      options.config.logger.info(
+        `Results written to ${localPath} and uploaded to cloud storage at ${runId}/hypertest.results.json`,
       );
 
       options.config.logger.info(
