@@ -21,12 +21,12 @@ To guarantee that the execution context matches the deployed code, the manifest 
 * **Image Digest Comparison:** When attempting to use the manifest (via the `invoke` method), the application compares the image digest recorded in the manifest with the image digest of the currently deployed cloud function.
 * **Validation Flow:** Using the directory hash and the image digest, the application flow checks whether current local changes and the deployment target are consistent with what has been pushed to the cloud (i.e., the exact code that is scheduled to be run).
 
-### Handling Inconsistencies (TODO)
+### Handling Inconsistencies
 
-*Future Feature:* We are implementing a configurable response system for when the application detects an inconsistency (e.g., a mismatch between the local test directory hash and the manifest's deployed hash, or differing image digests). Once implemented, developers will be able to configure the application to do one of the following in the event of a mismatch:
-* **Remain silent** (ignore the mismatch)
-* **Issue a warning** (alert the user but continue)
-* **Terminate operation** (block execution to prevent errors)
+The system's response can be configured in the event that the application detects an inconsistency (e.g., a mismatch between the local test directory hash and the manifest's deployed hash). Developers are able to configure the application to do one of the following in the event of a mismatch:
+* `silence` - Remain silent, ignore the mismatch,
+* `warning` - Display a warning, notify the user, but continue,
+* `error` - Throw an error and stop execution.
 
 ## Configuration and Naming
 
@@ -40,7 +40,7 @@ The name of the generated manifest file is customizable via the `buildManifestFi
 ```json
 {
   "imageDigest": "sha256:77fe3a37721a5d5bd20d0cafe6946c5980201a8975b70dfba56a83d4e488e13b",
-  "testDirHash": "TODO Update with real example",
+  "testDirHash": "74811828510f638d62d67d9bca795862010f05b52ef0e8ec9623c9697b318f26",
   "invokePayloadContexts": [
     {
       "grep": "^chromium foo/playwright\\\\x2dweb\\\\.spec\\\\.ts get started link$"

@@ -9,6 +9,7 @@ export default defineConfig({
   imageName: 'hypertest/playground-playwright',
   localImageName: 'hypertest/playground-playwright',
   localBaseImageName: 'hypertest/local-base-playwright',
+  driftDetectionPolicy: 'warning',
   testRunner: playwright({}),
   loggerOptions: {
     level: 'verbose',
