@@ -14,6 +14,7 @@ export interface HypertestConfig<InvokePayloadContext> {
   localImageName?: string;
   localBaseImageName?: string;
   buildManifestFileName?: string;
+  driftDetectionPolicy?: 'warning' | 'error' | 'silence';
   concurrency?: number;
   loggerOptions?: winston.LoggerOptions;
   testRunner: TestRunnerPluginDefinition<InvokePayloadContext>;
@@ -25,6 +26,7 @@ export interface ResolvedHypertestConfig {
   localImageName: string;
   localBaseImageName: string;
   buildManifestFileName: string;
+  driftDetectionPolicy: 'warning' | 'error' | 'silence';
   concurrency: number;
   logger: winston.Logger;
 }

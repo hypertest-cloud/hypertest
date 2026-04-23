@@ -11,6 +11,7 @@ import type {
 } from '@hypertest/hypertest-types';
 import { loadConfig } from './config.js';
 import { promiseMap } from './utils.js';
+import { hashDirectory } from './hashDirectory.js';
 
 interface HypertestCore {
   deploy: () => Promise<void>;
@@ -41,9 +42,8 @@ export const HypertestCore = <InvokePayloadContext>(options: {
   testRunner: TestRunnerPlugin<InvokePayloadContext>;
   cloudProvider: CloudProviderPlugin<InvokePayloadContext>;
 }): HypertestCore => {
-  const getTestDirHash = () => {
-    return 'TODO This needs to be implemented in separated PR';
-  };
+  const getTestDirHash = async () =>
+    hashDirectory(await options.testRunner.getTestDir());
 
   return {
     invoke: async () => {
@@ -53,12 +53,22 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       const runStartDate = new Date();
 
       const manifest = await options.cloudProvider.pullManifest();
-      const testDirHash = getTestDirHash();
+      const testDirHash = await getTestDirHash();
 
       if (manifest.testDirHash !== testDirHash) {
-        options.config.logger.warning(
-          'Your local test code differ from what is deploying in cloud infrastructure',
-        );
+        const message =
+          'Your local test code differ from what is deploying in cloud infrastructure';
+
+        const policyActions = {
+          warning: () => options.config.logger.warn(message),
+          error: () => {
+            throw new Error(message);
+          },
+          // biome-ignore lint/suspicious/noEmptyBlockStatements: <explanation>
+          silence: () => {},
+        };
+
+        policyActions[options.config.driftDetectionPolicy]();
       }
 
       const functionInvokePayloads = manifest.invokePayloadContexts.map(
@@ -159,13 +169,15 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       options.config.logger.info('Building and storing manifest');
       const invokePayloadContext =
         await options.testRunner.getInvokePayloadContext();
-      const testDirHash = getTestDirHash();
+      const testDirHash = await getTestDirHash();
       await options.cloudProvider.updateManifest(
         invokePayloadContext,
         testDirHash,
       );
 
-      options.config.logger.info('Updating lambda image and waiting for deployment to complete');
+      options.config.logger.info(
+        'Updating lambda image and waiting for deployment to complete',
+      );
       await options.cloudProvider.updateLambdaImage();
 
       options.config.logger.info('Deploy successful');

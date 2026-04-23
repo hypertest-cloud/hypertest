@@ -81,7 +81,7 @@ export const TestInvokeResponseSchema = z.discriminatedUnion('success', [
 ]);
 
 const HypertestProviderCloudAWS = (
-  settings: HypertestProviderCloudAwsConfig,
+  settings: ResolvedHypertestProviderCloudAwsConfig,
   config: ResolvedHypertestConfig,
 ): CloudProviderPlugin => {
   const lambdaClient = new LambdaClient({
@@ -371,12 +371,17 @@ export const HypertestProviderCloudAwsConfigSchema = z.object({
   ecrRegistry: z.string(),
   functionName: z.string(),
   bucketName: z.string(),
-  lambdaUpdateMaxWaitTime: z.number().int().positive().optional().default(600),
+  lambdaUpdateMaxWaitTime: z.number().int().positive().optional(),
 });
 
-type HypertestProviderCloudAwsConfig = z.infer<
+type HypertestProviderCloudAwsConfig = z.input<
   typeof HypertestProviderCloudAwsConfigSchema
 >;
+
+type ResolvedHypertestProviderCloudAwsConfig =
+  HypertestProviderCloudAwsConfig & {
+    lambdaUpdateMaxWaitTime: number;
+  };
 
 const plugin = (
   options: HypertestProviderCloudAwsConfig,
@@ -425,7 +430,13 @@ const plugin = (
     },
   ],
   handler: (config) => {
-    return HypertestProviderCloudAWS(options, config);
+    return HypertestProviderCloudAWS(
+      {
+        lambdaUpdateMaxWaitTime: 600,
+        ...options,
+      },
+      config,
+    );
   },
 });
 

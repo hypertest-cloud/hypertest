@@ -18,22 +18,30 @@ import type {
   PlaywrightPluginOptions,
 } from './types.js';
 
-const getPlaywrightConfig = async (
+const CONFIG_FILE_PATH = './playwright.config.js';
+
+const getPlaywrightConfigFactory = (
   logger: winston.Logger,
-): Promise<{
-  playwrightConfigFilepath: string;
-  config: PlaywrightTestConfig;
-}> => {
-  const configFilepath = './playwright.config.js';
-  logger.verbose(`Loading PW config from: ${configFilepath}`);
+): (() => Promise<PlaywrightTestConfig>) => {
+  let pwConfig: PlaywrightTestConfig | null = null;
 
-  const fileUrl = pathToFileURL(
-    path.resolve(process.cwd(), configFilepath),
-  ).href;
+  return async () => {
+    if (pwConfig) {
+      return pwConfig;
+    }
 
-  return {
-    playwrightConfigFilepath: configFilepath,
-    config: await import(fileUrl).then((mod) => mod.default),
+    logger.verbose(`Loading PW config from: ${CONFIG_FILE_PATH}`);
+    const fileUrl = pathToFileURL(
+      path.resolve(process.cwd(), CONFIG_FILE_PATH),
+    ).href;
+
+    pwConfig = await import(fileUrl).then((mod) => mod.default);
+
+    if (pwConfig) {
+      return pwConfig;
+    }
+
+    throw new Error(`Failed to load config from: ${CONFIG_FILE_PATH}`);
   };
 };
 
@@ -61,10 +69,11 @@ const PlaywrightRunnerPlugin = (options: {
   config: ResolvedHypertestConfig;
   dryRun?: boolean;
 }): TestRunnerPlugin<PlaywrightCloudFunctionContext> => {
+  const getPlaywrightConfig = getPlaywrightConfigFactory(options.config.logger);
+
   return {
     buildImage: async () => {
-      const { config: pwConfig, playwrightConfigFilepath } =
-        await getPlaywrightConfig(options.config.logger);
+      const pwConfig = await getPlaywrightConfig();
       const testDir = getTestDir(pwConfig);
       const { localImageName, localBaseImageName } = options.config;
 
@@ -80,7 +89,7 @@ const PlaywrightRunnerPlugin = (options: {
             // biome-ignore lint/style/useNamingConvention: <explanation>
             TEST_DIR: testDir,
             // biome-ignore lint/style/useNamingConvention: <explanation>
-            PLAYWRIGHT_CONFIG_FILEPATH: playwrightConfigFilepath,
+            PLAYWRIGHT_CONFIG_FILEPATH: CONFIG_FILE_PATH,
           },
           env: {},
         });
@@ -92,9 +101,7 @@ const PlaywrightRunnerPlugin = (options: {
       }
     },
     getInvokePayloadContext: async () => {
-      const { config: pwConfig } = await getPlaywrightConfig(
-        options.config.logger,
-      );
+      const pwConfig = await getPlaywrightConfig();
       const projectName = getProjectName(pwConfig);
       const testDir = getTestDir(pwConfig);
       options.config.logger.verbose(`Playwright tests directory: ${testDir}`);
@@ -120,6 +127,11 @@ const PlaywrightRunnerPlugin = (options: {
       );
 
       return fileContexts.flat();
+    },
+    getTestDir: async () => {
+      const pwConfig = await getPlaywrightConfig();
+
+      return getTestDir(pwConfig);
     },
   };
 };
