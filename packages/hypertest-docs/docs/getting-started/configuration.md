@@ -33,7 +33,7 @@ export default defineConfig({
   // Custom hypertest build manifest filename
   buildManifestFileName: 'hypertest.manifest.json',
 
-  // Specifies the follow-up actions to be taken if data drift are detected between the deployed manifest and the local test suite. Can be: silence, warning or error
+  // Specifies the action to take if drift is detected between the deployed manifest and the local test suite. Can be: 'silence', 'warning', or 'error'. Defaults to 'warning'.
   driftDetectionPolicy: 'warning',
 
   // Test runner plugin configuration
