@@ -24,9 +24,9 @@ To guarantee that the execution context matches the deployed code, the manifest 
 ### Handling Inconsistencies
 
 The system's response can be configured in the event that the application detects an inconsistency (e.g., a mismatch between the local test directory hash and the manifest's deployed hash). Developers are able to configure the application to do one of the following in the event of a mismatch:
-* **silence** - Remain silent, ignore the mismatch.
-* **warning** - Display a warning, notify the user, but continue
-* **error** - Terminate operation, stop the execution by throwing an error
+* `silence` - Remain silent, ignore the mismatch,
+* `warning` - Display a warning, notify the user, but continue,
+* `error` - Throw an error and stop execution.
 
 ## Configuration and Naming
 
