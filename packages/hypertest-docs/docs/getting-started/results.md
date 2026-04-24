@@ -37,7 +37,7 @@ The filename defaults to `hypertest.results.json` and can be customised via the 
     "skipped": 1,
     "failed": 3
   },
-  "results": [
+  "testResults": [
     {
       "testId": "e5f6g7h8-...",
       "name": "Todo App > should add a new item",
@@ -87,7 +87,7 @@ The filename defaults to `hypertest.results.json` and can be customised via the 
 | `tests.success` | `number` | Number of tests that passed. |
 | `tests.skipped` | `number` | Number of tests that were skipped. |
 | `tests.failed` | `number` | Number of tests that failed. |
-| `results` | `array` | Per-test result entries (one per test invocation). |
+| `testResults` | `array` | Per-test result entries (one per test invocation). |
 
 ### Per-test fields
 

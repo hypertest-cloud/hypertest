@@ -125,6 +125,14 @@ export const HypertestCore = <InvokePayloadContext>(options: {
           parseTestResult(testId, invokeResponse, invokeStart, invokeEnd),
       );
 
+      const counts = testResults.reduce(
+        (counts, testResult) => {
+          counts[testResult.status]++;
+          return counts;
+        },
+        { success: 0, skipped: 0, failed: 0 },
+      );
+
       const runResult: HypertestRunResult = {
         runId,
         startDate: runStartDate.toISOString(),
@@ -132,11 +140,9 @@ export const HypertestCore = <InvokePayloadContext>(options: {
         duration: runEndDate.getTime() - runStartDate.getTime(),
         tests: {
           total: testResults.length,
-          success: testResults.filter((t) => t.status === 'success').length,
-          skipped: testResults.filter((t) => t.status === 'skipped').length,
-          failed: testResults.filter((t) => t.status === 'failed').length,
+          ...counts,
         },
-        results: testResults,
+        testResults,
       };
 
       const json = JSON.stringify(runResult, null, 2);
@@ -150,7 +156,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       );
 
       options.config.logger.info(
-        `Functions invoked successfully. Run id: ${invokeResponses[0].runId}`,
+        `Functions invoked successfully. Run id: ${runId}`,
       );
       for (const { invokeResponse, testId } of invokeResponses) {
         options.config.logger.verbose(`TestId: ${testId}`);

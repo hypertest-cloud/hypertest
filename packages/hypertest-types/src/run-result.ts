@@ -23,5 +23,5 @@ export interface HypertestRunResult {
     skipped: number;
     failed: number;
   };
-  results: HypertestTestResult[];
+  testResults: HypertestTestResult[];
 }

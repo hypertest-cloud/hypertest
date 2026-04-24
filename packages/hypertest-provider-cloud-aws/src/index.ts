@@ -60,7 +60,6 @@ const getEcrAuth = async (ecrClient: ECRClient, logger: winston.Logger) => {
   };
 };
 
-
 const HypertestProviderCloudAWS = (
   settings: ResolvedHypertestProviderCloudAwsConfig,
   config: ResolvedHypertestConfig,

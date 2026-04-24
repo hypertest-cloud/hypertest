@@ -59,7 +59,7 @@ Two plugin interfaces in `hypertest-types`:
 - `pushImage()`: Push built image to registry
 - `invoke(payload)`: Invoke cloud function
 - `updateLambdaImage()`: Update Lambda with new image
-- `uploadRunResult(runId, content)`: Upload serialized `hypertest.results.json` to cloud storage at `{runId}/hypertest.results.json`
+- `uploadRunResult(runId, content)`: Upload serialized results file to cloud storage at `{runId}/{resultsFileName}` (default: `hypertest.results.json`)
 
 ### Execution Flow
 
@@ -74,7 +74,7 @@ Two plugin interfaces in `hypertest-types`:
 2. Test runner creates payloads (one per test file)
 3. Invoke Lambdas concurrently (up to `concurrency` limit)
 4. Collect results from cloud storage
-5. Write `hypertest.results.json` locally (CWD) and upload to cloud storage at `{runId}/hypertest.results.json`
+5. Write results file locally (CWD) and upload to cloud storage at `{runId}/{resultsFileName}` (default: `hypertest.results.json`)
 
 ### Key Files
 - CLI entry: `packages/hypertest-core/src/cli.ts`
