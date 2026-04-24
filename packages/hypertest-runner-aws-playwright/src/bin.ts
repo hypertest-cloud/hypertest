@@ -4,12 +4,16 @@ import { handler } from './index.js';
 // TODO: Remove later on or replace with localstack.
 // This is a temporary workaround to run Lambda handler locally.
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 handler(
   {
-    grep:
-      process.env.GREP ??
-      '^chromium\\splaywright/tests/demo-todo-app\\.spec\\.ts\\sdesc\\stest2$',
-  } as any,
+    runId: process.env.RUN_ID ?? 'local',
+    testId: process.env.TEST_ID ?? 'local',
+    bucketName: process.env.BUCKET_NAME ?? '',
+    context: {
+      grep:
+        process.env.GREP ??
+        '^chromium\\splaywright/tests/demo-todo-app\\.spec\\.ts\\sdesc\\stest2$',
+    },
+  },
   {} as Context,
 );

@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import util from 'node:util';
 import { Command } from '@commander-js/extra-typings';
 import { ZodError } from 'zod';
-import { getConfigFileURL, loadConfig } from './config.js';
+import { getConfigFileUrl, loadConfig } from './config.js';
 import { setupHypertest } from './index.js';
 import { promiseMap } from './utils.js';
 import { CheckError, type Check } from '@hypertest/hypertest-types';
@@ -17,7 +17,7 @@ const CORE_CHECKS: Check[] = [
     description: 'Check for valid config',
     run: async () => {
       try {
-        if (!fs.existsSync(fileURLToPath(getConfigFileURL()))) {
+        if (!fs.existsSync(fileURLToPath(getConfigFileUrl()))) {
           throw new CheckError('hypertest.config.js is missing');
         }
         const { config } = await loadConfig();
@@ -51,7 +51,7 @@ const iconMap = {
 };
 
 const processCheck = async (check: Check) => {
-  console.log(check.title, '>', check.description, '\n');
+  console.info(check.title, '>', check.description, '\n');
 
   const result = await check
     .run()
@@ -62,7 +62,7 @@ const processCheck = async (check: Check) => {
       }
       return { status: 'error' as const, message: err.message, data: null };
     });
-  console.log(
+  console.info(
     `${iconMap[result.status]} ${result.message}
 ${util.inspect(result?.data, false, null, true)} \n`,
   );
@@ -88,7 +88,7 @@ program
   .command('deploy')
   .option('--dry-run')
   .action(async (opts) => {
-    console.log(opts);
+    console.info(opts);
     const core = await setupHypertest(opts);
     await core.deploy();
   });
@@ -98,7 +98,7 @@ program
   .command('invoke')
   .option('--dry-run')
   .action(async (opts) => {
-    console.log(opts);
+    console.info(opts);
     const core = await setupHypertest(opts);
     await core.invoke();
   });

@@ -10,7 +10,7 @@ import { pathToFileURL } from 'node:url';
 import { z } from 'zod';
 import { initializeLogger } from './logger.js';
 
-export const getConfigFileURL= () =>
+export const getConfigFileUrl = () =>
   pathToFileURL(path.resolve(process.cwd(), 'hypertest.config.js')).href;
 
 export const loadConfig = async <T>(): Promise<{
@@ -18,7 +18,7 @@ export const loadConfig = async <T>(): Promise<{
   testRunner: TestRunnerPluginDefinition<T>;
   cloudProvider: CloudProviderPluginDefinition;
 }> => {
-  const config: unknown = await import(getConfigFileURL());
+  const config: unknown = await import(getConfigFileUrl());
 
   const module = await z
     .object({

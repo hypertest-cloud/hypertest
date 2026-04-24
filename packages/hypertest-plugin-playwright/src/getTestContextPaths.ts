@@ -1,14 +1,15 @@
-import * as fs from 'node:fs';
-import * as ts from 'typescript';
+import { readFileSync } from 'node:fs';
+import { transpileModule } from 'typescript';
 
 const globalFunctionProxyFactory = (names: string[][]) => {
   const currentDescription: string[] = [];
 
+  // biome-ignore lint/suspicious/noEmptyBlockStatements: intentional no-op proxy target
   const proxy = new Proxy(() => {}, {
     apply: () => {
       return;
     },
-    get: (target, prop) => {
+    get: (_target, prop) => {
       if (Symbol.unscopables === prop) {
         return undefined;
       }
@@ -26,7 +27,7 @@ const globalFunctionProxyFactory = (names: string[][]) => {
         };
 
         return new Proxy(fn, {
-          get: (target, prop) => {
+          get: (_target, prop) => {
             if (Symbol.unscopables === prop) {
               return undefined;
             }
@@ -54,11 +55,12 @@ const globalFunctionProxyFactory = (names: string[][]) => {
 
 export const getTestContextPaths = (filePath: string): string[] => {
   // TODO handle other types of imports
-  const fileContent = fs
-    .readFileSync(filePath, 'utf8')
-    .replace('import', '// import');
+  const fileContent = readFileSync(filePath, 'utf8').replace(
+    'import',
+    '// import',
+  );
 
-  const result = ts.transpileModule(fileContent, {});
+  const result = transpileModule(fileContent, {});
 
   const contextPaths: string[][] = [];
   const globalFunctionProxy = globalFunctionProxyFactory(contextPaths);

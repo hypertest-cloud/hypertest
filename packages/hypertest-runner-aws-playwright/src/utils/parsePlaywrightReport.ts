@@ -31,6 +31,32 @@ interface PlaywrightReport {
   suites: Suite[];
 }
 
+const buildInvokeResponse = (
+  spec: Spec,
+  test: PlaywrightTest,
+  currentPath: string[],
+): TestInvokeResponse => {
+  const result = test.results[0];
+  const name = [...currentPath, spec.title].join(' > ');
+  const filePath = spec.file;
+
+  if (result?.status === 'failed') {
+    return {
+      success: false,
+      name,
+      filePath,
+      message: result.error?.message ?? 'Unable to retrieve message',
+      stackTrace: result.error?.stack ?? 'Unable to retrieve stack trace',
+    };
+  }
+
+  if (result?.status === 'skipped') {
+    return { success: 'skipped', name, filePath };
+  }
+
+  return { success: true, name, filePath, duration: result?.duration ?? 0 };
+};
+
 export const parsePlaywrightReport = (
   report: PlaywrightReport,
 ): TestInvokeResponse => {
@@ -41,39 +67,14 @@ export const parsePlaywrightReport = (
       ? [...parentTitles, suite.title]
       : parentTitles;
 
-    if (suite.specs) {
-      for (const spec of suite.specs) {
-        for (const test of spec.tests) {
-          const result = test.results[0];
-
-          const fullTestName = [...currentPath, spec.title].join(' > ');
-          const responseBase = {
-            name: fullTestName,
-            filePath: spec.file,
-            duration: result?.duration || 0,
-          };
-          if (result?.status === 'failed') {
-            extractedData.push({
-              ...responseBase,
-              success: false,
-              message: result.error?.message || 'Unable to retrieve message',
-              stackTrace:
-                result?.error?.stack || 'Unable to retrieve stack trace',
-            });
-          } else {
-            extractedData.push({
-              ...responseBase,
-              success: true,
-            });
-          }
-        }
+    for (const spec of suite.specs ?? []) {
+      for (const test of spec.tests) {
+        extractedData.push(buildInvokeResponse(spec, test, currentPath));
       }
     }
 
-    if (suite.suites) {
-      for (const subSuite of suite.suites) {
-        walk(subSuite, currentPath);
-      }
+    for (const subSuite of suite.suites ?? []) {
+      walk(subSuite, currentPath);
     }
   };
 
