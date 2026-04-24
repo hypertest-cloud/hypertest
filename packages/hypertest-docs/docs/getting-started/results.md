@@ -10,7 +10,7 @@ next:
 
 # Results
 
-After every `hypertest invoke` run, hypertest writes a `hypertest.results.json` file summarising the entire run and each individual test outcome.
+After every `hypertest invoke` run, hypertest writes a results file (default: `hypertest.results.json`) summarising the entire run and each individual test outcome.
 
 ## Where results are saved
 
@@ -18,8 +18,10 @@ Results are saved in two places automatically:
 
 | Location | Path | Purpose |
 |---|---|---|
-| **Local** | `./hypertest.results.json` (your working directory) | Immediate access — readable by CI systems, developers, and reporting tools |
-| **Cloud storage** | `{runId}/hypertest.results.json` | Durable storage alongside per-test artifacts for cross-run history and future tooling |
+| **Local** | `./{resultsFileName}` (your working directory) | Immediate access — readable by CI systems, developers, and reporting tools |
+| **Cloud storage** | `{runId}/{resultsFileName}` | Durable storage alongside per-test artifacts for cross-run history and future tooling |
+
+The filename defaults to `hypertest.results.json` and can be customised via the [`resultsFileName`](/getting-started/configuration#core-settings) config option.
 
 ## File structure
 
@@ -103,7 +105,7 @@ Results are saved in two places automatically:
 
 ## Using results in CI/CD
 
-The local `hypertest.results.json` file is available immediately after `invoke` completes. You can upload it as a CI artifact for inspection or feed it into reporting tools.
+The local results file is available immediately after `invoke` completes. You can upload it as a CI artifact for inspection or feed it into reporting tools.
 
 ### GitHub Actions example
 
@@ -116,7 +118,7 @@ The local `hypertest.results.json` file is available immediately after `invoke` 
   uses: actions/upload-artifact@v4
   with:
     name: hypertest-results
-    path: hypertest.results.json
+    path: hypertest.results.json  # update if you set a custom resultsFileName
 ```
 
 ::: tip Use `if: always()`
@@ -130,7 +132,7 @@ Each test entry in `results` carries a `testId` that matches the path structure 
 ```
 {cloud-bucket}/
 └── {runId}/
-    ├── hypertest.results.json
+    ├── {resultsFileName}   (default: hypertest.results.json)
     └── {testId}/
         └── .../
 ```

@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 const LOCAL_BASE_IMAGE_NAME = 'hypertest/local-base-playwright';
 const MANIFEST_FILE_NAME = 'hypertest.manifest.json';
+const RESULTS_FILE_NAME = 'hypertest.results.json';
 
 const PluginDefinitionSchema = z.object({
   name: z.string(),
@@ -41,6 +42,7 @@ export const ConfigSchema = z
     localImageName: z.string().optional(),
     localBaseImageName: z.string().optional(),
     buildManifestFileName: z.string().optional(),
+    resultsFileName: z.string().optional(),
     driftDetectionPolicy: z
       .union([z.literal('warning'), z.literal('error'), z.literal('silence')])
       .optional(),
@@ -55,6 +57,9 @@ export const ConfigSchema = z
     localBaseImageName: config.localBaseImageName ?? LOCAL_BASE_IMAGE_NAME,
     buildManifestFileName: ensureExtension(
       config.buildManifestFileName ?? MANIFEST_FILE_NAME,
+    ),
+    resultsFileName: ensureExtension(
+      config.resultsFileName ?? RESULTS_FILE_NAME,
     ),
     driftDetectionPolicy: config.driftDetectionPolicy ?? ('warning' as const),
   }));

@@ -26,6 +26,7 @@ import {
   type ResolvedHypertestConfig,
   type ImageBuildManifest,
   ImageBuildManifestSchema,
+  TestInvokeResponseSchema,
 } from '@hypertest/hypertest-types';
 import type winston from 'winston';
 import { z } from 'zod';
@@ -59,26 +60,6 @@ const getEcrAuth = async (ecrClient: ECRClient, logger: winston.Logger) => {
   };
 };
 
-export const TestInvokeResponseSchema = z.discriminatedUnion('success', [
-  z.object({
-    success: z.literal(true),
-    name: z.string(),
-    filePath: z.string(),
-    duration: z.number(),
-  }),
-  z.object({
-    success: z.literal('skipped'),
-    name: z.string(),
-    filePath: z.string(),
-  }),
-  z.object({
-    success: z.literal(false),
-    message: z.string(),
-    name: z.string().optional(),
-    filePath: z.string().optional(),
-    stackTrace: z.string().optional(),
-  }),
-]);
 
 const HypertestProviderCloudAWS = (
   settings: ResolvedHypertestProviderCloudAwsConfig,
@@ -328,16 +309,17 @@ const HypertestProviderCloudAWS = (
     },
     uploadRunResult: async (runId, content) => {
       try {
+        const s3Key = `${runId}/${config.resultsFileName}`;
         const command = new PutObjectCommand({
           Bucket: settings.bucketName,
-          Key: `${runId}/hypertest.results.json`,
+          Key: s3Key,
           Body: content,
           ContentType: 'application/json',
         });
 
         await s3Client.send(command);
         config.logger.verbose(
-          `hypertest.results.json was successfully uploaded to bucket ${settings.bucketName} at ${runId}/hypertest.results.json.`,
+          `${config.resultsFileName} was successfully uploaded to bucket ${settings.bucketName} at ${s3Key}.`,
         );
       } catch (error) {
         config.logger.error('Error while uploading run result:', error);

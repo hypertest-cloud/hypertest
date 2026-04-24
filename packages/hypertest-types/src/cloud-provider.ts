@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import type {
   CommandOptions,
   InvokePayload,
@@ -6,25 +7,29 @@ import type {
 } from './index.js';
 import type { ImageBuildManifest } from './manifest.js';
 
-export type TestInvokeResponse =
-  | {
-      success: true;
-      name: string;
-      filePath: string;
-      duration: number; // in ms
-    }
-  | {
-      success: 'skipped';
-      name: string;
-      filePath: string;
-    }
-  | {
-      success: false;
-      message: string;
-      name?: string;
-      filePath?: string;
-      stackTrace?: string;
-    };
+export const TestInvokeResponseSchema = z.discriminatedUnion('success', [
+  z.object({
+    success: z.literal(true),
+    name: z.string(),
+    filePath: z.string(),
+    duration: z.number(),
+  }),
+  z.object({
+    success: z.literal('skipped'),
+    name: z.string(),
+    filePath: z.string(),
+  }),
+  z.object({
+    success: z.literal(false),
+    message: z.string(),
+    name: z.string().optional(),
+    filePath: z.string().optional(),
+    stackTrace: z.string().optional(),
+  }),
+]);
+
+export type TestInvokeResponse = z.infer<typeof TestInvokeResponseSchema>;
+
 export interface CloudProviderPlugin<InvokePayloadContext = unknown> {
   pullBaseImage: () => Promise<void>;
   pushImage: () => Promise<void>;
@@ -32,9 +37,9 @@ export interface CloudProviderPlugin<InvokePayloadContext = unknown> {
     payload: InvokePayload<InvokePayloadContext>,
   ) => Promise<TestInvokeResponse>;
   /**
-   * Uploads the serialized `hypertest.results.json` content to cloud storage
-   * for durable, cross-run access. The file is stored alongside per-test
-   * artifacts at `{runId}/hypertest.results.json`.
+   * Uploads the serialized results file content to cloud storage for durable,
+   * cross-run access. The file is stored alongside per-test artifacts at
+   * `{runId}/{resultsFileName}`.
    *
    * @param runId - The unique identifier for the invoke run.
    * @param content - The serialized JSON string of {@link HypertestRunResult}.

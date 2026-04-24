@@ -7,6 +7,7 @@ import type {
   HypertestRunResult,
   HypertestTestResult,
   ResolvedHypertestConfig,
+  TestInvokeResponse,
   TestRunnerPlugin,
 } from '@hypertest/hypertest-types';
 import { loadConfig } from './config.js';
@@ -19,6 +20,33 @@ interface HypertestCore {
 }
 
 export const defineConfig = <T>(config: HypertestConfig<T>) => config;
+
+const parseTestResult = (
+  testId: string,
+  invokeResponse: TestInvokeResponse,
+  invokeStart: Date,
+  invokeEnd: Date,
+): HypertestTestResult => ({
+  testId,
+  name: invokeResponse.name ?? 'unknown',
+  filePath: invokeResponse.filePath ?? 'unknown',
+  status:
+    invokeResponse.success === true
+      ? 'success'
+      : invokeResponse.success === 'skipped'
+        ? 'skipped'
+        : 'failed',
+  startDate: invokeStart.toISOString(),
+  endDate: invokeEnd.toISOString(),
+  duration:
+    invokeResponse.success === true
+      ? invokeResponse.duration
+      : invokeEnd.getTime() - invokeStart.getTime(),
+  error:
+    invokeResponse.success === false
+      ? { message: invokeResponse.message, stackTrace: invokeResponse.stackTrace }
+      : undefined,
+});
 
 export const setupHypertest = async ({ dryRun }: CommandOptions) => {
   const { config, ...providers } = await loadConfig();
@@ -79,43 +107,22 @@ export const HypertestCore = <InvokePayloadContext>(options: {
         }),
       );
 
-      const results = await promiseMap(
+      const invokeResponses = await promiseMap(
         functionInvokePayloads,
         async (payload) => {
           const invokeStart = new Date();
-          const result = await options.cloudProvider.invoke(payload);
+          const invokeResponse = await options.cloudProvider.invoke(payload);
           const invokeEnd = new Date();
-          return { ...payload, result, invokeStart, invokeEnd };
+          return { ...payload, invokeResponse, invokeStart, invokeEnd };
         },
         { concurrency: options.config.concurrency },
       );
 
       const runEndDate = new Date();
 
-      const testResults: HypertestTestResult[] = results.map(
-        ({ testId, result, invokeStart, invokeEnd }) => {
-          return {
-            testId,
-            name: result.name ?? 'unknown',
-            filePath: result.filePath ?? 'unknown',
-            status:
-              result.success === true
-                ? 'success'
-                : result.success === 'skipped'
-                  ? 'skipped'
-                  : 'failed',
-            startDate: invokeStart.toISOString(),
-            endDate: invokeEnd.toISOString(),
-            duration:
-              result.success === true
-                ? result.duration
-                : invokeEnd.getTime() - invokeStart.getTime(),
-            error:
-              result.success === false
-                ? { message: result.message, stackTrace: result.stackTrace }
-                : undefined,
-          };
-        },
+      const testResults: HypertestTestResult[] = invokeResponses.map(
+        ({ testId, invokeResponse, invokeStart, invokeEnd }) =>
+          parseTestResult(testId, invokeResponse, invokeStart, invokeEnd),
       );
 
       const runResult: HypertestRunResult = {
@@ -133,22 +140,22 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       };
 
       const json = JSON.stringify(runResult, null, 2);
-      const localPath = path.join(process.cwd(), 'hypertest.results.json');
+      const localPath = path.join(process.cwd(), options.config.resultsFileName);
 
       await writeFile(localPath, json, 'utf-8');
       await options.cloudProvider.uploadRunResult(runId, json);
 
       options.config.logger.info(
-        `Results written to ${localPath} and uploaded to cloud storage at ${runId}/hypertest.results.json`,
+        `Results written to ${localPath} and uploaded to cloud storage at ${runId}/${options.config.resultsFileName}`,
       );
 
       options.config.logger.info(
-        `Functions invoked successfully. Run id: ${results[0].runId}`,
+        `Functions invoked successfully. Run id: ${invokeResponses[0].runId}`,
       );
-      for (const { result, testId } of results) {
+      for (const { invokeResponse, testId } of invokeResponses) {
         options.config.logger.verbose(`TestId: ${testId}`);
         options.config.logger.verbose(
-          `Test results: ${JSON.stringify(result, null, 2)}`,
+          `Invoke response: ${JSON.stringify(invokeResponse, null, 2)}`,
         );
       }
     },
