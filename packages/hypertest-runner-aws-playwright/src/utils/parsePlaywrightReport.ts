@@ -70,31 +70,7 @@ export const parsePlaywrightReport = (
     if (suite.specs) {
       for (const spec of suite.specs) {
         for (const test of spec.tests) {
-          const result = test.results[0];
-
-          const fullTestName = [...currentPath, spec.title].join(' > ');
-          const responseBase = {
-            name: fullTestName,
-            filePath: spec.file,
-            duration: result?.duration || 0,
-          };
-          if (result?.status === 'failed') {
-            extractedData.push({
-              ...responseBase,
-              success: false,
-              message: result.error?.message || 'Unable to retrieve message',
-              stackTrace:
-                result?.error?.stack || 'Unable to retrieve stack trace',
-            });
-          } else if (result?.status === 'skipped') {
-            const { name, filePath } = responseBase;
-            extractedData.push({ success: 'skipped', name, filePath });
-          } else {
-            extractedData.push({
-              ...responseBase,
-              success: true,
-            });
-          }
+          extractedData.push(buildInvokeResponse(spec, test, currentPath));
         }
       }
     }
