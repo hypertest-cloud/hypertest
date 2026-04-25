@@ -18,6 +18,7 @@ export default {
           { text: 'Installation', link: '/getting-started/installation' },
           { text: 'Configuration', link: '/getting-started/configuration' },
           { text: 'Usage', link: '/getting-started/usage' },
+          { text: 'Results', link: '/getting-started/results' },
         ],
       },
       {

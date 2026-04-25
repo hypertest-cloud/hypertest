@@ -1,8 +1,13 @@
+import { writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import type {
   CloudProviderPlugin,
   CommandOptions,
   HypertestConfig,
+  HypertestRunResult,
+  HypertestTestResult,
   ResolvedHypertestConfig,
+  TestInvokeResponse,
   TestRunnerPlugin,
 } from '@hypertest/hypertest-types';
 import { loadConfig } from './config.js';
@@ -15,6 +20,33 @@ interface HypertestCore {
 }
 
 export const defineConfig = <T>(config: HypertestConfig<T>) => config;
+
+const parseTestResult = (
+  testId: string,
+  invokeResponse: TestInvokeResponse,
+  invokeStart: Date,
+  invokeEnd: Date,
+): HypertestTestResult => ({
+  testId,
+  name: invokeResponse.name ?? 'unknown',
+  filePath: invokeResponse.filePath ?? 'unknown',
+  status:
+    invokeResponse.success === true
+      ? 'success'
+      : invokeResponse.success === 'skipped'
+        ? 'skipped'
+        : 'failed',
+  startDate: invokeStart.toISOString(),
+  endDate: invokeEnd.toISOString(),
+  duration:
+    invokeResponse.success === true
+      ? invokeResponse.duration
+      : invokeEnd.getTime() - invokeStart.getTime(),
+  error:
+    invokeResponse.success === false
+      ? { message: invokeResponse.message, stackTrace: invokeResponse.stackTrace }
+      : undefined,
+});
 
 export const setupHypertest = async ({ dryRun }: CommandOptions) => {
   const { config, ...providers } = await loadConfig();
@@ -46,6 +78,8 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       options.config.logger.info('Invoking cloud functions');
 
       const runId = crypto.randomUUID();
+      const runStartDate = new Date();
+
       const manifest = await options.cloudProvider.pullManifest();
       const testDirHash = await getTestDirHash();
 
@@ -73,22 +107,61 @@ export const HypertestCore = <InvokePayloadContext>(options: {
         }),
       );
 
-      const results = await promiseMap(
+      const invokeResponses = await promiseMap(
         functionInvokePayloads,
-        async (payload) => ({
-          ...payload,
-          result: await options.cloudProvider.invoke(payload),
-        }),
+        async (payload) => {
+          const invokeStart = new Date();
+          const invokeResponse = await options.cloudProvider.invoke(payload);
+          const invokeEnd = new Date();
+          return { ...payload, invokeResponse, invokeStart, invokeEnd };
+        },
         { concurrency: options.config.concurrency },
       );
 
-      options.config.logger.info(
-        `Functions invoked successfully. Run id: ${results[0].runId}`,
+      const runEndDate = new Date();
+
+      const testResults: HypertestTestResult[] = invokeResponses.map(
+        ({ testId, invokeResponse, invokeStart, invokeEnd }) =>
+          parseTestResult(testId, invokeResponse, invokeStart, invokeEnd),
       );
-      for (const { result, testId } of results) {
+
+      const counts = testResults.reduce(
+        (counts, testResult) => {
+          counts[testResult.status]++;
+          return counts;
+        },
+        { success: 0, skipped: 0, failed: 0 },
+      );
+
+      const runResult: HypertestRunResult = {
+        runId,
+        startDate: runStartDate.toISOString(),
+        endDate: runEndDate.toISOString(),
+        duration: runEndDate.getTime() - runStartDate.getTime(),
+        tests: {
+          total: testResults.length,
+          ...counts,
+        },
+        testResults,
+      };
+
+      const json = JSON.stringify(runResult, null, 2);
+      const localPath = path.join(process.cwd(), options.config.resultsFileName);
+
+      await writeFile(localPath, json, 'utf-8');
+      await options.cloudProvider.uploadRunResult(runId, json);
+
+      options.config.logger.info(
+        `Results written to ${localPath} and uploaded to cloud storage at ${runId}/${options.config.resultsFileName}`,
+      );
+
+      options.config.logger.info(
+        `Functions invoked successfully. Run id: ${runId}`,
+      );
+      for (const { invokeResponse, testId } of invokeResponses) {
         options.config.logger.verbose(`TestId: ${testId}`);
         options.config.logger.verbose(
-          `Test results: ${JSON.stringify(result, null, 2)}`,
+          `Invoke response: ${JSON.stringify(invokeResponse, null, 2)}`,
         );
       }
     },
