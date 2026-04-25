@@ -26,21 +26,17 @@ Before upgrading, verify that AWS has a GA managed runtime for the target versio
 
 ## Where Node version is pinned
 
-A single functional change drives the runtime bump. Three additional lines are documentation-only:
-
-| # | File | Location | Type |
-|---|------|----------|------|
-| 1 | `Dockerfile` | Line ~29: `FROM node:20-bookworm` | **Functional** — determines the actual Lambda runtime |
-| 2 | `README.md` | Prerequisites section | Docs only |
-| 3 | `packages/hypertest-docs/docs/getting-started/installation.md` | Prerequisites list | Docs only |
-| 4 | `packages/hypertest-docs/docs/getting-started/usage.md` | Example CI workflow snippet | Docs only |
-
-Already-correct locations that do **not** need changes (verify after the bump):
-- `Dockerfile` line 1: build stage `ARG BASE_ALPINE_IMAGE=node:XX-alpine`
-- `.github/workflows/ci.yml`: `node-version`
-- `.github/workflows/playground-image-dev.yml`: `node-version`
-- `.github/workflows/docs-dev.yml`: `node-version`
-- `packages/hypertest-runner-aws-playwright/package.json`: `@types/node`
+| File | Location | Update required | Notes |
+|------|----------|:--------------:|-------|
+| `Dockerfile` | `FROM node:XX-bookworm` (~line 29) | Yes | **Functional** — determines the actual Lambda runtime |
+| `README.md` | Prerequisites section | Yes | Docs only |
+| `packages/hypertest-docs/docs/getting-started/installation.md` | Prerequisites list | Yes | Docs only |
+| `packages/hypertest-docs/docs/getting-started/usage.md` | Example CI workflow `node-version` | Yes | Docs only |
+| `Dockerfile` | `ARG BASE_ALPINE_IMAGE=node:XX-alpine` (line 1) | No | Build stage — update separately if needed |
+| `.github/workflows/ci.yml` | `node-version` | No | CI runner — update separately if needed |
+| `.github/workflows/playground-image-dev.yml` | `node-version` | No | CI runner — update separately if needed |
+| `.github/workflows/docs-dev.yml` | `node-version` | No | CI runner — update separately if needed |
+| `packages/hypertest-runner-aws-playwright/package.json` | `@types/node` | No | Type definitions — update separately if needed |
 
 ## Step-by-step process
 
