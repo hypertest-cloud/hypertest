@@ -33,6 +33,9 @@ export default defineConfig({
   // Custom hypertest build manifest filename
   buildManifestFileName: 'hypertest.manifest.json',
 
+  // Custom results filename written locally and to cloud storage after invoke
+  resultsFileName: 'hypertest.results.json',
+
   // Specifies the action to take if drift is detected between the deployed manifest and the local test suite. Can be: 'silence', 'warning', or 'error'. Defaults to 'warning'.
   driftDetectionPolicy: 'warning',
 
@@ -63,6 +66,8 @@ export default defineConfig({
 | `imageName` | string | Yes | - | Name for your Docker image with test files |
 | `localImageName` | string | No | - | Name for local Docker image used during build |
 | `localBaseImageName` | string | No | - | Name for the local base image with hypertest runner |
+| `resultsFileName` | string | No | `hypertest.results.json` | Filename for the results file written locally and to cloud storage after every invoke run |
+| `buildManifestFileName` | string | No | `hypertest.manifest.json` | Filename for the build manifest stored in cloud storage |
 
 ::: tip
 Higher `concurrency` values mean faster execution but more cloud resource usage. Start with 10-30 and increase based on your AWS Lambda quotas.
