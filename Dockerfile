@@ -26,7 +26,7 @@ RUN npm run build -w packages/hypertest-runner-aws-playwright
 # magic....
 
 
-FROM node:20-bookworm
+FROM node:22-bookworm
 ARG FUNCTION_DIR
 
 RUN apt-get update && \

@@ -60,7 +60,7 @@ Full documentation available at [packages/hypertest-docs](./packages/hypertest-d
 
 ## Prerequisites
 
-- Node.js 20+
+- Node.js 22+
 - Docker
 - AWS account with ECR, Lambda, and S3 configured
 

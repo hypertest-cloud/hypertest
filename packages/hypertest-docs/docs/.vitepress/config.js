@@ -54,6 +54,10 @@ export default {
             text: 'Manifest',
             link: '/developers/manifest',
           },
+          {
+            text: 'Node.js Version Upgrade',
+            link: '/developers/node-version-upgrade',
+          },
         ],
       },
       {
