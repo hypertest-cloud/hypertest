@@ -6,7 +6,7 @@ dist
 
 # hypertest
 .hypertest
-hypertest.results.json # default resultsFileName — update if you use a custom name
+hypertest.results.json
 
 # Claude
 .claude

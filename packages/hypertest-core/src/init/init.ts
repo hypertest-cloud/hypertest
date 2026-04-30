@@ -81,6 +81,5 @@ export const initializeHypertestConfig = async () => {
 
   fs.writeFile(configPath, getConfigFromTemplate(promptAnswers));
 
-  console.log(`\n✅ File ${CONFIG_FILENAME} has been created!`);
-  console.log(`Path: ${configPath}\n`);
+  process.stdout.write(`\nhypertest. config created\npath: ${configPath}\n\n`);
 };

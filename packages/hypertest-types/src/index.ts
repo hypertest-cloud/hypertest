@@ -68,3 +68,5 @@ export * from './manifest-schema.js';
 export * from './manifest.js';
 // biome-ignore lint/performance/noReExportAll: <explanation>
 export * from './run-result.js';
+// biome-ignore lint/performance/noReExportAll: <explanation>
+export * from './events.js';
