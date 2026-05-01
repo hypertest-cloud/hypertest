@@ -52,7 +52,7 @@ export interface PluginDefinition<T extends (...args: any[]) => any> {
   handler: T;
 }
 
-// biome-ignore lint/performance/noReExportAll: <explanation>
+// biome-ignore lint/performance/noReExportAll lint/performance/noBarrelFile: intentional barrel file for package exports
 export * from './cloud-provider.js';
 // biome-ignore lint/performance/noReExportAll: <explanation>
 export * from './test-runner-plugin.js';

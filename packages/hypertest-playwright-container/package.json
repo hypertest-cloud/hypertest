@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "license": "Elastic-2.0",
   "type": "module",
+  "scripts": {
+    "lint": "biome lint"
+  },
   "files": ["Dockerfile", "index.js"],
   "exports": "./index.js",
   "types": "index.d.ts",

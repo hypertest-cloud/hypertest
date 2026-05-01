@@ -6,7 +6,9 @@ export interface Check {
 }
 
 export class CheckError extends Error {
-  constructor(public readonly problem: string) {
+  public readonly problem: string;
+  constructor(problem: string) {
     super(problem);
+    this.problem = problem;
   }
 }

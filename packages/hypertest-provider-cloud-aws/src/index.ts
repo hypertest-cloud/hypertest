@@ -124,7 +124,7 @@ const HypertestProviderCloudAWS = (
 
     if (batchImageResponse.images && batchImageResponse.images.length > 0) {
       const image = batchImageResponse.images[0];
-      if (!image || !image.imageId) {
+      if (!image?.imageId) {
         throw new Error('Failed to pull erc deployed image.');
       }
 

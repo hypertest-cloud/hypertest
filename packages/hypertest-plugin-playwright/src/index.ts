@@ -13,10 +13,7 @@ import { buildDockerImage } from './docker-build.js';
 import { getGrepString } from './getGrepString.js';
 import { getSpecFilePaths } from './getSpecFilePaths.js';
 import { getTestContextPaths } from './getTestContextPaths.js';
-import type {
-  PlaywrightCloudFunctionContext,
-  PlaywrightPluginOptions,
-} from './types.js';
+import type { PlaywrightCloudFunctionContext } from './types.js';
 
 const CONFIG_FILE_PATH = './playwright.config.js';
 
@@ -65,7 +62,6 @@ const getTestDir = (config: PlaywrightTestConfig) => {
 };
 
 const PlaywrightRunnerPlugin = (options: {
-  options: PlaywrightPluginOptions;
   config: ResolvedHypertestConfig;
   dryRun?: boolean;
 }): TestRunnerPlugin<PlaywrightCloudFunctionContext> => {
@@ -151,7 +147,6 @@ const plugin = (
   handler: (config, { dryRun }) =>
     PlaywrightRunnerPlugin({
       config,
-      options,
       dryRun,
     }),
 });

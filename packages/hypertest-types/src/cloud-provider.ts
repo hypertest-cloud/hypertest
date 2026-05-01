@@ -25,6 +25,7 @@ export const TestInvokeResponseSchema = z.discriminatedUnion('success', [
     name: z.string().optional(),
     filePath: z.string().optional(),
     stackTrace: z.string().optional(),
+    duration: z.number().optional(),
   }),
 ]);
 
