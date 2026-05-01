@@ -47,6 +47,7 @@ const buildInvokeResponse = (
       filePath,
       message: result.error?.message ?? 'Unable to retrieve message',
       stackTrace: result.error?.stack ?? 'Unable to retrieve stack trace',
+      duration: result.duration,
     };
   }
 
