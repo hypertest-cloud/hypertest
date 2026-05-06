@@ -43,7 +43,7 @@ Hypertest is a cloud-based test distribution system that runs each test file in 
 - **hypertest-provider-cloud-aws**: AWS cloud provider (ECR, Lambda, S3)
 - **hypertest-playground**: Example implementation for testing
 - **hypertest-docs**: VitePress documentation site
-- **hypertest-playwright-container**: Container utilities for Playwright in Lambda
+- **internal-hypertest-playwright-container**: Container utilities for Playwright in Lambda
 
 Note: `hypertest-types` must build first (see workspace ordering in root `package.json`).
 

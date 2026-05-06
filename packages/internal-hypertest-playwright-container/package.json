@@ -1,5 +1,5 @@
 {
-  "name": "@hypertest/hypertest-playwright-container",
+  "name": "@hypertest/internal-hypertest-playwright-container",
   "version": "0.0.1",
   "license": "Elastic-2.0",
   "private": true,

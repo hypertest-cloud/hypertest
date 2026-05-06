@@ -1,12 +1,12 @@
-import { Dockerfile } from '@hypertest/hypertest-playwright-container';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import type {
   ResolvedHypertestConfig,
   TestRunnerPlugin,
   TestRunnerPluginDefinition,
 } from '@hypertest/hypertest-types';
+import { Dockerfile } from '@hypertest/internal-hypertest-playwright-container';
 import type { PlaywrightTestConfig } from '@playwright/test';
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
 import type winston from 'winston';
 import { z } from 'zod';
 import { buildDockerImage } from './docker-build.js';
