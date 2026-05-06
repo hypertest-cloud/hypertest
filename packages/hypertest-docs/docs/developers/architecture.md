@@ -154,7 +154,6 @@ hypertest is organized as a monorepo with these packages:
 | `hypertest-plugin-playwright` | Playwright test framework integration |
 | `hypertest-provider-cloud-aws` | AWS Lambda, ECR, and S3 integration |
 | `hypertest-runner-aws-playwright` | Playwright execution in Lambda |
-| `hypertest-playwright-container` | Dockerfile for Playwright Lambda images |
 
 ## Extensibility
 

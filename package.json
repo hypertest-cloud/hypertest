@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "author": "Marcin Łesek <hello@hypertest.cloud>",
   "license": "Elastic-2.0",
-  "private": "false",
+  "private": true,
   "scripts": {
     "docker": "npm run build && docker build . -t hypertest-playwright",
     "build": "npm run build -w packages --if-present",
     "lint": "npm run lint --workspaces"
   },
-  "workspaces": [
-    "packages/hypertest-types",
-    "packages/*"
-  ]
+  "workspaces": ["packages/hypertest-types", "packages/*"],
+  "devDependencies": {
+    "@changesets/cli": "^2.31.0"
+  }
 }

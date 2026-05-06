@@ -2,6 +2,7 @@
   "name": "@hypertest/hypertest-playground",
   "version": "0.0.1",
   "license": "Elastic-2.0",
+  "private": true,
   "type": "module",
   "scripts": {
     "start:core": "hypertest deploy",
