@@ -1,6 +1,5 @@
 import { Box, Static, Text } from 'ink';
 import { useEffect, useState } from 'react';
-import path from 'node:path';
 import type { HypertestEvents, HypertestRunResult, HypertestTestResult } from '@hypertest/hypertest-types';
 import { Wordmark } from '../components/Wordmark.js';
 import { Rule } from '../components/Rule.js';
@@ -24,6 +23,7 @@ export const InvokeApp = ({ events }: InvokeAppProps) => {
   const [running, setRunning] = useState<Set<string>>(new Set());
   const [done, setDone] = useState<HypertestTestResult[]>([]);
   const [result, setResult] = useState<HypertestRunResult | null>(null);
+  const [artifactsBaseUrl, setArtifactsBaseUrl] = useState<string | undefined>(undefined);
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
@@ -46,6 +46,7 @@ export const InvokeApp = ({ events }: InvokeAppProps) => {
         setDone((prev) => [...prev, event.result]);
       } else if (event.type === 'run:end') {
         setResult(event.result);
+        setArtifactsBaseUrl(event.artifactsBaseUrl);
       }
     });
     return unsubscribe;
@@ -63,7 +64,7 @@ export const InvokeApp = ({ events }: InvokeAppProps) => {
     ? run.testCount - done.length - running.size
     : 0;
 
-  const localPath = path.join(process.cwd(), 'hypertest.results.json');
+  const localPath = './hypertest.results.json';
 
   return (
     <Box flexDirection="column" gap={0}>
@@ -120,7 +121,7 @@ export const InvokeApp = ({ events }: InvokeAppProps) => {
       {result && (
         <>
           <Text> </Text>
-          <InvokeSummary result={result} localPath={localPath} />
+          <InvokeSummary result={result} localPath={localPath} artifactsBaseUrl={artifactsBaseUrl} />
         </>
       )}
     </Box>

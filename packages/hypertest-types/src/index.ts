@@ -3,6 +3,7 @@ import type { z } from 'zod';
 import type { Check } from './cli-doctor.js';
 import type { CloudProviderPluginDefinition } from './cloud-provider.js';
 import type { ConfigSchema } from './config-schema.js';
+import type { HypertestEvents } from './events.js';
 import type { TestRunnerPluginDefinition } from './test-runner-plugin.js';
 
 export type HypertestConfigInput = z.input<typeof ConfigSchema>;
@@ -31,6 +32,7 @@ export interface ResolvedHypertestConfig {
   driftDetectionPolicy: 'warning' | 'error' | 'silence';
   concurrency: number;
   logger: winston.Logger;
+  events?: HypertestEvents;
 }
 
 export interface CommandOptions {

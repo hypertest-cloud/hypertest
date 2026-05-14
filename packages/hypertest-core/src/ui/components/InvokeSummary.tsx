@@ -5,9 +5,11 @@ import { formatDuration } from '../theme.js';
 export const InvokeSummary = ({
   result,
   localPath,
+  artifactsBaseUrl,
 }: {
   result: HypertestRunResult;
   localPath: string;
+  artifactsBaseUrl?: string;
 }) => {
   const { tests, testResults, runId } = result;
   const failed = testResults.filter((t) => t.status === 'failed');
@@ -60,7 +62,7 @@ export const InvokeSummary = ({
       <Box flexDirection="column" marginTop={1} gap={0}>
         <Box gap={2}>
           <Text color="#97a3b6">{'ARTIFACTS'}</Text>
-          <Text color="#3366ff">{`s3://<bucket>/${runId}/`}</Text>
+          <Text color="#97a3b6">{artifactsBaseUrl ?? `run ${runId}`}</Text>
         </Box>
         <Box gap={2}>
           <Text color="#97a3b6">{'RESULTS  '}</Text>

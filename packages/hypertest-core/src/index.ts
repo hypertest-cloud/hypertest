@@ -65,7 +65,8 @@ export const setupHypertest = async ({
     return createDevCore(bus);
   }
 
-  const { config, ...providers } = await loadConfig();
+  const { config: baseConfig, ...providers } = await loadConfig();
+  const config: ResolvedHypertestConfig = { ...baseConfig, events: bus };
   const opts: CommandOptions = { dryRun };
 
   const cloudProvider = providers.cloudProvider.handler(config, opts);
@@ -173,9 +174,9 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       const localPath = path.join(process.cwd(), options.config.resultsFileName);
 
       await writeFile(localPath, json, 'utf-8');
-      await options.cloudProvider.uploadRunResult(runId, json);
+      const { artifactsBaseUrl } = await options.cloudProvider.uploadRunResult(runId, json);
 
-      options.events.emit({ type: 'run:end', runId, result: runResult });
+      options.events.emit({ type: 'run:end', runId, result: runResult, artifactsBaseUrl });
     },
 
     deploy: async () => {

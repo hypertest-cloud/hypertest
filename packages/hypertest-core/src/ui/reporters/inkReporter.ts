@@ -24,7 +24,10 @@ export const createInkReporter = (
 
   return {
     done: async () => {
-      await new Promise((r) => setTimeout(r, 50));
+      // Two setImmediate ticks: first lets React flush batched state updates,
+      // second lets ink write the final frame to the terminal.
+      await new Promise((r) => setImmediate(r));
+      await new Promise((r) => setImmediate(r));
       instance.unmount();
     },
   };

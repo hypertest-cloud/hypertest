@@ -79,15 +79,18 @@ program.name('hypertest').version('0.0.1');
 
 program.command('init').action(initializeHypertestConfig);
 
-program.command('doctor').action(async () => {
-  const events = createEventBus();
-  const reporter = pickReporter('doctor', events);
-  try {
-    await runDoctor(events);
-  } finally {
-    await reporter.done();
-  }
-});
+program
+  .command('doctor')
+  .option('--quiet', 'plain text output (no ink)')
+  .action(async (opts) => {
+    const events = createEventBus();
+    const reporter = pickReporter('doctor', events, opts.quiet);
+    try {
+      await runDoctor(events);
+    } finally {
+      await reporter.done();
+    }
+  });
 
 program
   .command('deploy')

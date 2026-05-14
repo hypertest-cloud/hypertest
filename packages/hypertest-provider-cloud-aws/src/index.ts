@@ -28,13 +28,23 @@ import {
   ImageBuildManifestSchema,
   TestInvokeResponseSchema,
 } from '@hypertest/hypertest-types';
-import type winston from 'winston';
 import { z } from 'zod';
 import { isDockerRunning } from './isDockerRunning.js';
 import { runCommand, runCommandAndGetOutput } from './runCommand.js';
 import { isAwsSdkError } from './ts-guards.js';
 
-const getEcrAuth = async (ecrClient: ECRClient, logger: winston.Logger) => {
+type LogLevel = 'info' | 'warn' | 'error' | 'debug';
+
+const makeLog = (config: ResolvedHypertestConfig) =>
+  (level: LogLevel, message: string) => {
+    if (config.events) {
+      config.events.emit({ type: 'log', level, message });
+    } else {
+      config.logger[level === 'debug' ? 'verbose' : level](message);
+    }
+  };
+
+const getEcrAuth = async (ecrClient: ECRClient, log: (level: LogLevel, msg: string) => void) => {
   const command = new GetAuthorizationTokenCommand({});
   const response = await ecrClient.send(command);
 
@@ -48,7 +58,7 @@ const getEcrAuth = async (ecrClient: ECRClient, logger: winston.Logger) => {
     throw new Error('Invalid authorization data received.');
   }
 
-  logger.debug('ECR authorization proxy endpoint:', proxyEndpoint);
+  log('debug', `ECR authorization proxy endpoint: ${proxyEndpoint}`);
   // Decode the authorization token (Base64 encoded "username:password")
   const decodedToken = Buffer.from(authorizationToken, 'base64').toString();
   const [username, password] = decodedToken.split(':');
@@ -64,6 +74,8 @@ const HypertestProviderCloudAWS = (
   settings: ResolvedHypertestProviderCloudAwsConfig,
   config: ResolvedHypertestConfig,
 ): CloudProviderPlugin => {
+  const log = makeLog(config);
+
   const lambdaClient = new LambdaClient({
     credentials: fromEnv(),
     region: settings.region,
@@ -83,9 +95,7 @@ const HypertestProviderCloudAWS = (
 
   const assertDockerDaemon = () => {
     if (!isDockerRunning()) {
-      config.logger.error(
-        'Error: Docker daemon is not running. Please start Docker and try again.',
-      );
+      log('error', 'Error: Docker daemon is not running. Please start Docker and try again.');
       process.exit(1);
     }
   };
@@ -104,9 +114,7 @@ const HypertestProviderCloudAWS = (
     const bodyString = await manifestResponse.Body.transformToString();
     const manifest = ImageBuildManifestSchema.parse(JSON.parse(bodyString));
 
-    config.logger.verbose(
-      `JSON was successfully downloaded from key ${config.buildManifestFileName} in bucket ${settings.bucketName}.`,
-    );
+    log('debug', `JSON was successfully downloaded from key ${config.buildManifestFileName} in bucket ${settings.bucketName}.`);
 
     return manifest;
   };
@@ -139,32 +147,23 @@ const HypertestProviderCloudAWS = (
       assertDockerDaemon();
 
       try {
-        const { username, password, proxyEndpoint } = await getEcrAuth(
-          ecrClient,
-          config.logger,
-        );
+        const { username, password, proxyEndpoint } = await getEcrAuth(ecrClient, log);
 
-        config.logger.verbose('Logging in to ECR...');
+        log('debug', 'Logging in to ECR...');
         runCommand(
           `docker login -u ${username} --password-stdin ${proxyEndpoint}`,
           { input: password },
         );
 
-        // Push the Docker image to ECR
-        config.logger.verbose(
-          'Pulling base docker lambda runner image to local repo...',
-        );
+        log('debug', 'Pulling base docker lambda runner image to local repo...');
         runCommand(`docker pull ${settings.baseImage}`);
 
-        // Push the Docker image to ECR
-        config.logger.verbose(
-          `Tagging local image with ${config.localBaseImageName} ...`,
-        );
+        log('debug', `Tagging local image with ${config.localBaseImageName} ...`);
         runCommand(
           `docker tag ${settings.baseImage} ${config.localBaseImageName}`,
         );
       } catch (error) {
-        config.logger.error(`Error pushing Docker image to ECR: ${error}`);
+        log('error', `Error pushing Docker image to ECR: ${error}`);
         process.exit(1);
       }
     },
@@ -172,12 +171,9 @@ const HypertestProviderCloudAWS = (
       assertDockerDaemon();
 
       try {
-        const { username, password, proxyEndpoint } = await getEcrAuth(
-          ecrClient,
-          config.logger,
-        );
+        const { username, password, proxyEndpoint } = await getEcrAuth(ecrClient, log);
 
-        config.logger.verbose('Logging in to ECR...');
+        log('debug', 'Logging in to ECR...');
         runCommand(
           `docker login -u ${username} --password-stdin ${proxyEndpoint}`,
           { input: password },
@@ -185,17 +181,15 @@ const HypertestProviderCloudAWS = (
 
         const targetName = getTargetImageName();
 
-        config.logger.verbose('Tagging local image with remote tag');
+        log('debug', 'Tagging local image with remote tag');
         runCommand(`docker tag ${config.localImageName} ${targetName}`);
 
-        config.logger.verbose('Pushing Docker image to ECR...');
+        log('debug', 'Pushing Docker image to ECR...');
         runCommand(`docker push ${targetName}`);
 
-        config.logger.verbose(
-          `Docker image pushed successfully to ${targetName}`,
-        );
+        log('debug', `Docker image pushed successfully to ${targetName}`);
       } catch (error) {
-        config.logger.error(`Error pushing Docker image to ECR: ${error}`);
+        log('error', `Error pushing Docker image to ECR: ${error}`);
         process.exit(1);
       }
     },
@@ -219,12 +213,10 @@ const HypertestProviderCloudAWS = (
 
         return TestInvokeResponseSchema.parseAsync(result);
       } catch (error) {
-        config.logger.error(`Failed to send lambda: ${error}`);
+        log('error', `Failed to send lambda: ${error}`);
 
         if (isAwsSdkError(error) && error.$metadata.httpStatusCode === 429) {
-          config.logger.error(
-            "Lambda invocation failed with HTTP 429 (Too Many Requests). Your account's concurrent executions quota may be too low — see the AWS provider docs for steps to request a quota increase.",
-          );
+          log('error', "Lambda invocation failed with HTTP 429 (Too Many Requests). Your account's concurrent executions quota may be too low — see the AWS provider docs for steps to request a quota increase.");
         }
 
         process.exit(1);
@@ -239,13 +231,8 @@ const HypertestProviderCloudAWS = (
       try {
         const response = await lambdaClient.send(command);
 
-        config.logger.verbose(
-          `Lambda ${settings.functionName} image update has been started, status: ${response.LastUpdateStatus}`,
-        );
-
-        config.logger.info(
-          `Waiting for Lambda ${settings.functionName} to finish updating...`,
-        );
+        log('debug', `Lambda ${settings.functionName} image update has been started, status: ${response.LastUpdateStatus}`);
+        log('info', `Waiting for Lambda ${settings.functionName} to finish updating...`);
 
         await waitUntilFunctionUpdated(
           {
@@ -257,16 +244,12 @@ const HypertestProviderCloudAWS = (
           },
         );
 
-        config.logger.info(
-          `Lambda ${settings.functionName} update completed successfully`,
-        );
+        log('info', `Lambda ${settings.functionName} update completed successfully`);
       } catch (error) {
         if (error instanceof Error && error.name === 'TimeoutError') {
-          config.logger.error(
-            `Lambda ${settings.functionName} update timed out after ${settings.lambdaUpdateMaxWaitTime} seconds. The function may still be updating — check the AWS Console for the current status.`,
-          );
+          log('error', `Lambda ${settings.functionName} update timed out after ${settings.lambdaUpdateMaxWaitTime} seconds. The function may still be updating — check the AWS Console for the current status.`);
         } else {
-          config.logger.error(`Error updating lambda by new image ${error}`);
+          log('error', `Error updating lambda by new image ${error}`);
         }
 
         process.exit(1);
@@ -278,9 +261,7 @@ const HypertestProviderCloudAWS = (
           `docker inspect --format="{{index .RepoDigests 0}}" ${config.localImageName}`,
         );
         if (!imageEcrId) {
-          config.logger.error(
-            `Failed to find image ${config.localImageName} erc id. Try to push image to registry before creating manifest`,
-          );
+          log('error', `Failed to find image ${config.localImageName} erc id. Try to push image to registry before creating manifest`);
           process.exit(1);
         }
 
@@ -298,11 +279,9 @@ const HypertestProviderCloudAWS = (
         });
 
         await s3Client.send(command);
-        config.logger.verbose(
-          `File ${config.buildManifestFileName} was successfully uploaded to bucket ${settings.bucketName}.`,
-        );
+        log('debug', `File ${config.buildManifestFileName} was successfully uploaded to bucket ${settings.bucketName}.`);
       } catch (error) {
-        config.logger.error('Error while updating manifest:', error);
+        log('error', `Error while updating manifest: ${error}`);
         process.exit(1);
       }
     },
@@ -317,11 +296,11 @@ const HypertestProviderCloudAWS = (
         });
 
         await s3Client.send(command);
-        config.logger.verbose(
-          `${config.resultsFileName} was successfully uploaded to bucket ${settings.bucketName} at ${s3Key}.`,
-        );
+        log('debug', `${config.resultsFileName} was successfully uploaded to bucket ${settings.bucketName} at ${s3Key}.`);
+
+        return { artifactsBaseUrl: `s3://${settings.bucketName}/${runId}/` };
       } catch (error) {
-        config.logger.error('Error while uploading run result:', error);
+        log('error', `Error while uploading run result: ${error}`);
         process.exit(1);
       }
     },
@@ -331,15 +310,13 @@ const HypertestProviderCloudAWS = (
         const ecrPushedImageDigest = await fetchEcrImageDigest();
 
         if (manifest.imageDigest !== ecrPushedImageDigest) {
-          config.logger.error(
-            `Manifest drift detected. Deployed cloud function image is incompatible with current manifest. Please try to run "npx hypertest deploy" first to recreate the manifest`,
-          );
+          log('error', 'Manifest drift detected. Deployed cloud function image is incompatible with current manifest. Please try to run "npx hypertest deploy" first to recreate the manifest');
           process.exit(1);
         }
 
         return manifest;
       } catch (error) {
-        config.logger.error('Error while pulling manifest:', error);
+        log('error', `Error while pulling manifest: ${error}`);
         process.exit(1);
       }
     },

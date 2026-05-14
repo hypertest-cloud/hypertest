@@ -52,35 +52,41 @@ Two plugin interfaces in `hypertest-types`:
 
 **TestRunnerPlugin** (`test-runner-plugin.ts`):
 - `getInvokePayloadContext()`: Returns invoke payload context (one per test file)
+- `getTestDir()`: Returns path to test directory (used for drift detection hashing)
 - `buildImage()`: Builds Docker image with tests
 
 **CloudProviderPlugin** (`cloud-provider.ts`):
 - `pullBaseImage()`: Pull pre-built base image
 - `pushImage()`: Push built image to registry
 - `invoke(payload)`: Invoke cloud function
+- `updateManifest(contexts, testDirHash)`: Store invoke payload contexts + test dir hash to cloud (called during deploy)
+- `pullManifest()`: Fetch manifest from cloud (called during invoke)
 - `updateLambdaImage()`: Update Lambda with new image
 - `uploadRunResult(runId, content)`: Upload serialized results file to cloud storage at `{runId}/{resultsFileName}` (default: `hypertest.results.json`)
 
 ### Execution Flow
 
-**Deploy** (`packages/hypertest-core/src/index.ts:73-89`):
+**Deploy** (`packages/hypertest-core/src/index.ts`):
 1. Pull base image from ECR
 2. Build target image (base + user tests)
 3. Push to ECR
-4. Update Lambda function
+4. Build manifest (store invoke payload contexts + test dir hash to cloud via `updateManifest`)
+5. Update Lambda function
 
-**Invoke** (`packages/hypertest-core/src/index.ts:46-71`):
+**Invoke** (`packages/hypertest-core/src/index.ts`):
 1. Generate unique `runId`
-2. Test runner creates payloads (one per test file)
-3. Invoke Lambdas concurrently (up to `concurrency` limit)
-4. Collect results from cloud storage
+2. Pull manifest from cloud (`pullManifest`) — contains pre-built invoke payload contexts and `testDirHash`
+3. Hash local test dir; compare with manifest hash (drift detection via `driftDetectionPolicy`)
+4. Invoke Lambdas concurrently (up to `concurrency` limit) using manifest payloads
 5. Write results file locally (CWD) and upload to cloud storage at `{runId}/{resultsFileName}` (default: `hypertest.results.json`)
 
 ### Key Files
 - CLI entry: `packages/hypertest-core/src/cli.ts`
 - Core orchestration: `packages/hypertest-core/src/index.ts`
+- Events system: `packages/hypertest-core/src/events.ts`
 - Type definitions: `packages/hypertest-types/src/index.ts`
 - Run result types: `packages/hypertest-types/src/run-result.ts` (`HypertestRunResult`, `HypertestTestResult`)
+- Event types: `packages/hypertest-types/src/events.ts` (`HypertestEvents`, `HypertestEvent`, `DeployStep`)
 - Lambda handler: `packages/hypertest-runner-aws-playwright/src/index.ts`
 - Playwright report parser: `packages/hypertest-runner-aws-playwright/src/utils/parsePlaywrightReport.ts`
 
@@ -104,6 +110,18 @@ export default defineConfig({
   }),
 });
 ```
+
+### Events System
+Core emits typed events via `HypertestEvents` (`packages/hypertest-types/src/events.ts`).
+Pass custom `events` to `setupHypertest()` to hook into: `run:start`, `run:end`, `test:start`, `test:end`, `deploy:step`, `log`, `doctor:check`.
+CLI printer (`packages/hypertest-core/src/cli.ts`) consumes these events for terminal output.
+
+### Drift Detection
+On invoke, hypertest hashes local test dir and compares with deployed manifest hash.
+Control behavior via `driftDetectionPolicy` config option:
+- `'warning'` (default): emit log warning and continue
+- `'error'`: throw and abort
+- `'silence'`: ignore
 
 ### Artifact Handling
 Tests use `HT_TEST_ARTIFACTS_OUTPUT_PATH` environment variable for cloud artifact storage:

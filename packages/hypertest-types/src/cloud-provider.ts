@@ -44,7 +44,7 @@ export interface CloudProviderPlugin<InvokePayloadContext = unknown> {
    * @param runId - The unique identifier for the invoke run.
    * @param content - The serialized JSON string of {@link HypertestRunResult}.
    */
-  uploadRunResult: (runId: string, content: string) => Promise<void>;
+  uploadRunResult: (runId: string, content: string) => Promise<{ artifactsBaseUrl?: string }>;
   /**
    * Updates the cloud function to a newly pushed image and waits until
    * the update is fully applied before resolving. Implementations should
