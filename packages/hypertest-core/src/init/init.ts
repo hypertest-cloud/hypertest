@@ -73,13 +73,12 @@ const QUESTIONS: Question[] = [
   },
 ];
 
-export const initializeHypertestConfig = async () => {
+export const collectInitAnswers = (): Promise<Record<TemplateProperties, unknown>> => {
+  return inquirer.prompt(QUESTIONS);
+};
+
+export const writeInitConfig = async (answers: Record<TemplateProperties, unknown>): Promise<string> => {
   const configPath = path.resolve(process.cwd(), CONFIG_FILENAME);
-
-  const promptAnswers: Record<TemplateProperties, unknown> =
-    await inquirer.prompt(QUESTIONS);
-
-  fs.writeFile(configPath, getConfigFromTemplate(promptAnswers));
-
-  process.stdout.write(`\nhypertest. config created\npath: ${configPath}\n\n`);
+  await fs.writeFile(configPath, getConfigFromTemplate(answers));
+  return configPath;
 };

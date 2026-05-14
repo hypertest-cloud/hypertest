@@ -6,11 +6,14 @@ import { Command } from '@commander-js/extra-typings';
 import { ZodError } from 'zod';
 import { CheckError, type Check } from '@hypertest/hypertest-types';
 import type { HypertestEvents } from '@hypertest/hypertest-types';
+import { render } from 'ink';
 import { getConfigFileURL, loadConfig } from './config.js';
 import { createEventBus } from './events.js';
 import { setupHypertest } from './index.js';
-import { initializeHypertestConfig } from './init/init.js';
+import { collectInitAnswers, writeInitConfig } from './init/init.js';
+import { InitApp } from './ui/apps/InitApp.js';
 import { pickReporter } from './ui/reporters/pickReporter.js';
+import { color, icon } from './ui/theme.js';
 
 const CORE_CHECKS: Check[] = [
   {
@@ -77,7 +80,20 @@ const program = new Command();
 
 program.name('hypertest').version('0.0.1');
 
-program.command('init').action(initializeHypertestConfig);
+program
+  .command('init')
+  .option('--quiet', 'plain text output (no ink)')
+  .action(async (opts) => {
+    process.stdout.write(`hypertest${color.zap('.')}\n\n`);
+    const answers = await collectInitAnswers();
+    const configPath = await writeInitConfig(answers);
+    if (!opts.quiet && process.stdout.isTTY) {
+      const { waitUntilExit } = render(<InitApp configPath={configPath} />);
+      await waitUntilExit();
+    } else {
+      process.stdout.write(`${color.inkSecondary(icon.arrow)} created ${configPath}\n`);
+    }
+  });
 
 program
   .command('doctor')
