@@ -9,10 +9,7 @@
     "docker": "npm run build && docker build . -t hypertest-playwright",
     "build": "npm run build -w packages --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "test": "npm test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present"
   },
-  "workspaces": [
-    "packages/hypertest-types",
-    "packages/*"
-  ]
+  "workspaces": ["packages/hypertest-types", "packages/*"]
 }

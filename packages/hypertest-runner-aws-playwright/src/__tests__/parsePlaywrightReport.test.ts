@@ -93,8 +93,10 @@ test('no results entry in test: duration falls back to 0, success=true', () => {
     tests: [{ results: [] }],
   };
   const result = parsePlaywrightReport(makeReport({ title: 'suite', specs: [spec] }));
-  assert.equal(result.duration, 0);
   assert.equal(result.success, true);
+  if (result.success === true) {
+    assert.equal(result.duration, 0);
+  }
 });
 
 test('two tests in report: throws "more than one test"', () => {

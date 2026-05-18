@@ -72,7 +72,7 @@ test('after run:end: shows summary with passed count', async () => {
   const runResult = makeRunResult({ runId: 'run-abc12345', tests: { total: 1, success: 1, skipped: 0, failed: 0 } });
   await flush();
   bus.emit({ type: 'run:start', runId: 'run-abc12345', testCount: 1, concurrency: 1 });
-  bus.emit({ type: 'run:end', runId: 'run-abc12345', result: runResult });
+  bus.emit({ type: 'run:end', runId: 'run-abc12345', result: runResult, localPath: './hypertest.results.json' });
   await flush();
   const frame = lastFrame() ?? '';
   assert.ok(frame.includes('1 passed'), `frame: ${frame}`);
@@ -84,7 +84,7 @@ test('after run:end: shows RESULTS path', async () => {
   const runResult = makeRunResult();
   await flush();
   bus.emit({ type: 'run:start', runId: 'run-abc12345', testCount: 2, concurrency: 2 });
-  bus.emit({ type: 'run:end', runId: 'run-abc12345', result: runResult });
+  bus.emit({ type: 'run:end', runId: 'run-abc12345', result: runResult, localPath: './hypertest.results.json' });
   await flush();
   const frame = lastFrame() ?? '';
   assert.ok(frame.includes('./hypertest.results.json'), `frame: ${frame}`);
@@ -96,7 +96,7 @@ test('after run:end with artifactsBaseUrl: shows URL in ARTIFACTS', async () => 
   const runResult = makeRunResult({ testResults: [] });
   await flush();
   bus.emit({ type: 'run:start', runId: 'run-abc12345', testCount: 1, concurrency: 1 });
-  bus.emit({ type: 'run:end', runId: 'run-abc12345', result: runResult, artifactsBaseUrl: 's3://bucket/run/' });
+  bus.emit({ type: 'run:end', runId: 'run-abc12345', result: runResult, localPath: './hypertest.results.json', artifactsBaseUrl: 's3://bucket/run/' });
   await flush();
   const frame = lastFrame() ?? '';
   assert.ok(frame.includes('s3://bucket/run/'), `frame: ${frame}`);

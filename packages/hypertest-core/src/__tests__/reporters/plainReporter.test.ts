@@ -94,6 +94,7 @@ test('run:end outputs counts', () => {
     type: 'run:end',
     runId: 'r1',
     result: makeRunResult({ tests: { total: 3, success: 2, skipped: 1, failed: 0 } }),
+    localPath: './hypertest.results.json',
   });
   const line = captured.join('');
   assert.ok(line.includes('[run:end]'), `line: ${line}`);
