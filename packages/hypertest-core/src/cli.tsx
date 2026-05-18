@@ -7,7 +7,7 @@ import { ZodError } from 'zod';
 import { CheckError, type Check } from '@hypertest/hypertest-types';
 import type { HypertestEvents } from '@hypertest/hypertest-types';
 import { render } from 'ink';
-import { getConfigFileURL, loadConfig } from './config.js';
+import { getConfigFileUrl, loadConfig } from './config.js';
 import { createEventBus } from './events.js';
 import { setupHypertest } from './index.js';
 import { collectInitAnswers, writeInitConfig } from './init/init.js';
@@ -21,7 +21,7 @@ const CORE_CHECKS: Check[] = [
     description: 'Check for valid config',
     run: async () => {
       try {
-        if (!fs.existsSync(fileURLToPath(getConfigFileURL()))) {
+        if (!fs.existsSync(fileURLToPath(getConfigFileUrl()))) {
           throw new CheckError('hypertest.config.js is missing');
         }
         const { config } = await loadConfig();
@@ -86,12 +86,14 @@ program
   .action(async (opts) => {
     process.stdout.write(`hypertest${color.zap('.')}\n\n`);
     const answers = await collectInitAnswers();
+    process.stdout.write('\n');
     const configPath = await writeInitConfig(answers);
     if (!opts.quiet && process.stdout.isTTY) {
       const { waitUntilExit } = render(<InitApp configPath={configPath} />);
       await waitUntilExit();
     } else {
       process.stdout.write(`${color.inkSecondary(icon.arrow)} created ${configPath}\n`);
+      process.stdout.write('\nhypertest initialized.\n\nNext steps:\n  npx hypertest deploy   deploy tests to the cloud\n  npx hypertest invoke   run tests in cloud\n');
     }
   });
 
@@ -104,6 +106,7 @@ program
     try {
       await runDoctor(events);
     } finally {
+      events.emit({ type: 'doctor:done' });
       await reporter.done();
     }
   });
@@ -115,9 +118,13 @@ program
   .action(async (opts) => {
     const events = createEventBus();
     const reporter = pickReporter('deploy', events, opts.quiet);
+    const silent = !opts.quiet && !!process.stdout.isTTY;
     try {
-      const core = await setupHypertest({ dryRun: opts.dryRun, events });
+      const core = await setupHypertest({ dryRun: opts.dryRun, silent, events });
       await core.deploy();
+    } catch {
+      reporter.abort();
+      process.exitCode = 1;
     } finally {
       await reporter.done();
     }
@@ -130,9 +137,13 @@ program
   .action(async (opts) => {
     const events = createEventBus();
     const reporter = pickReporter('invoke', events, opts.quiet);
+    const silent = !opts.quiet && !!process.stdout.isTTY;
     try {
-      const core = await setupHypertest({ dryRun: opts.dryRun, events });
+      const core = await setupHypertest({ dryRun: opts.dryRun, silent, events });
       await core.invoke();
+    } catch {
+      reporter.abort();
+      process.exitCode = 1;
     } finally {
       await reporter.done();
     }

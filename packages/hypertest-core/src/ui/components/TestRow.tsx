@@ -50,7 +50,9 @@ export const TestRow = (props: TestRowProps) => {
       <Box flexGrow={1}>
         <Text color={nameColor}>{truncate(result.name, 56)}</Text>
       </Box>
-      <Text color={durationColor}>{formatDuration(result.duration)}</Text>
+      <Box marginLeft={1}>
+        <Text color={durationColor}>{formatDuration(result.duration)}</Text>
+      </Box>
     </Box>
   );
 };

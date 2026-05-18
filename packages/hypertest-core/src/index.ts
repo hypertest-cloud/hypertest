@@ -25,7 +25,7 @@ interface HypertestCore {
 
 export const defineConfig = <T>(config: HypertestConfig<T>) => config;
 
-const parseTestResult = (
+export const parseTestResult = (
   testId: string,
   invokeResponse: TestInvokeResponse,
   invokeStart: Date,
@@ -54,9 +54,11 @@ const parseTestResult = (
 
 export const setupHypertest = async ({
   dryRun,
+  silent,
   events,
 }: {
   dryRun?: boolean;
+  silent?: boolean;
   events?: HypertestEvents;
 }) => {
   const bus = events ?? createEventBus();
@@ -67,7 +69,7 @@ export const setupHypertest = async ({
 
   const { config: baseConfig, ...providers } = await loadConfig();
   const config: ResolvedHypertestConfig = { ...baseConfig, events: bus };
-  const opts: CommandOptions = { dryRun };
+  const opts: CommandOptions = { dryRun, silent };
 
   const cloudProvider = providers.cloudProvider.handler(config, opts);
   const testRunner = providers.testRunner.handler(config, opts);

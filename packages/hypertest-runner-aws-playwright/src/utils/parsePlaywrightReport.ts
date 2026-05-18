@@ -36,6 +36,7 @@ export const parsePlaywrightReport = (
 ): TestInvokeResponse => {
   const extractedData: TestInvokeResponse[] = [];
 
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: recursive tree walker, refactoring would reduce readability
   const walk = (suite: Suite, parentTitles: string[] = []) => {
     const currentPath = suite.title
       ? [...parentTitles, suite.title]

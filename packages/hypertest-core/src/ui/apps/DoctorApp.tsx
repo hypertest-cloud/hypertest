@@ -14,9 +14,10 @@ interface CheckResult {
 
 interface DoctorAppProps {
   events: HypertestEvents;
+  onExit?: () => void;
 }
 
-export const DoctorApp = ({ events }: DoctorAppProps) => {
+export const DoctorApp = ({ events, onExit }: DoctorAppProps) => {
   const [checks, setChecks] = useState<CheckResult[]>([]);
 
   useEffect(() => {
@@ -31,10 +32,12 @@ export const DoctorApp = ({ events }: DoctorAppProps) => {
             data: event.data,
           },
         ]);
+      } else if (event.type === 'doctor:done') {
+        onExit?.();
       }
     });
     return unsubscribe;
-  }, [events]);
+  }, [events, onExit]);
 
   return (
     <Box flexDirection="column" gap={0}>

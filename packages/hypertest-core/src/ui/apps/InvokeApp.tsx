@@ -9,6 +9,7 @@ import { formatDuration } from '../theme.js';
 
 interface InvokeAppProps {
   events: HypertestEvents;
+  onExit?: () => void;
 }
 
 interface RunState {
@@ -18,10 +19,42 @@ interface RunState {
   startMs: number;
 }
 
-export const InvokeApp = ({ events }: InvokeAppProps) => {
+type StaticItem =
+  | { type: 'wordmark' }
+  | { type: 'header'; runId: string; concurrency: number }
+  | { type: 'test'; testId: string; result: HypertestTestResult };
+
+const renderStaticItem = (item: StaticItem) => {
+  if (item.type === 'wordmark') {
+    return (
+      <Box key="wordmark" flexDirection="column">
+        <Wordmark />
+        <Text> </Text>
+      </Box>
+    );
+  }
+  if (item.type === 'header') {
+    return (
+      <Box key="header" flexDirection="column">
+        <Box gap={1}>
+          <Text color="#97a3b6">{'INVOKE'}</Text>
+          <Text color="#3366ff">{`run ${item.runId.slice(0, 8)}`}</Text>
+          <Text color="#97a3b6">·</Text>
+          <Text color="#475063">{`concurrency ${item.concurrency}`}</Text>
+        </Box>
+        <Rule />
+        <Text> </Text>
+      </Box>
+    );
+  }
+  return <TestRow key={item.testId} status="done" result={item.result} />;
+};
+
+export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
+  const [staticItems, setStaticItems] = useState<StaticItem[]>([{ type: 'wordmark' }]);
   const [run, setRun] = useState<RunState | null>(null);
   const [running, setRunning] = useState<Set<string>>(new Set());
-  const [done, setDone] = useState<HypertestTestResult[]>([]);
+  const [doneCount, setDoneCount] = useState(0);
   const [result, setResult] = useState<HypertestRunResult | null>(null);
   const [artifactsBaseUrl, setArtifactsBaseUrl] = useState<string | undefined>(undefined);
   const [elapsed, setElapsed] = useState(0);
@@ -35,6 +68,10 @@ export const InvokeApp = ({ events }: InvokeAppProps) => {
           concurrency: event.concurrency,
           startMs: Date.now(),
         });
+        setStaticItems((prev) => [
+          ...prev,
+          { type: 'header', runId: event.runId, concurrency: event.concurrency },
+        ]);
       } else if (event.type === 'test:start') {
         setRunning((prev) => new Set([...prev, event.testId]));
       } else if (event.type === 'test:end') {
@@ -43,7 +80,11 @@ export const InvokeApp = ({ events }: InvokeAppProps) => {
           next.delete(event.testId);
           return next;
         });
-        setDone((prev) => [...prev, event.result]);
+        setStaticItems((prev) => [
+          ...prev,
+          { type: 'test', testId: event.testId, result: event.result },
+        ]);
+        setDoneCount((prev) => prev + 1);
       } else if (event.type === 'run:end') {
         setResult(event.result);
         setArtifactsBaseUrl(event.artifactsBaseUrl);
@@ -54,46 +95,21 @@ export const InvokeApp = ({ events }: InvokeAppProps) => {
 
   useEffect(() => {
     if (!run || result) { return; }
-    const id = setInterval(() => {
-      setElapsed(Date.now() - run.startMs);
-    }, 100);
+    const id = setInterval(() => setElapsed(Date.now() - run.startMs), 100);
     return () => clearInterval(id);
   }, [run, result]);
 
-  const queued = run
-    ? run.testCount - done.length - running.size
-    : 0;
+  useEffect(() => {
+    if (result) { onExit?.(); }
+  }, [result, onExit]);
 
+  const queued = run ? run.testCount - doneCount - running.size : 0;
   const localPath = './hypertest.results.json';
 
   return (
     <Box flexDirection="column" gap={0}>
-      <Wordmark />
-      <Text> </Text>
-
-      <Box gap={1}>
-        <Text color="#97a3b6">{'INVOKE'}</Text>
-        {run && !result && (
-          <>
-            <Text color="#3366ff">{`run ${run.runId.slice(0, 8)}`}</Text>
-            <Text color="#97a3b6">·</Text>
-            <Text color="#475063">{`concurrency ${run.concurrency}`}</Text>
-          </>
-        )}
-        {result && (
-          <>
-            <Text color="#3366ff">{`run ${result.runId.slice(0, 8)}`}</Text>
-            <Text color="#97a3b6">{'  '}</Text>
-            <Text color="#1ee600">{'✓'}</Text>
-            <Text color="#97a3b6">{formatDuration(result.duration)}</Text>
-          </>
-        )}
-      </Box>
-      <Rule />
-      <Text> </Text>
-
-      <Static items={done}>
-        {(t) => <TestRow key={t.testId} status="done" result={t} />}
+      <Static items={staticItems}>
+        {renderStaticItem}
       </Static>
 
       {!result && (
@@ -111,7 +127,7 @@ export const InvokeApp = ({ events }: InvokeAppProps) => {
           <Rule />
           {run && (
             <Box gap={2}>
-              <Text color="#97a3b6">{`[ ${done.length}/${run.testCount} ]`}</Text>
+              <Text color="#97a3b6">{`[ ${doneCount}/${run.testCount} ]`}</Text>
               <Text color="#475063">{`elapsed ${formatDuration(elapsed)}`}</Text>
             </Box>
           )}

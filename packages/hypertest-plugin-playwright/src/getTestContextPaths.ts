@@ -1,14 +1,15 @@
-import * as fs from 'node:fs';
+import { readFileSync } from 'node:fs';
+// biome-ignore lint/style/noNamespaceImport: TypeScript compiler API requires namespace import
 import * as ts from 'typescript';
 
 const globalFunctionProxyFactory = (names: string[][]) => {
   const currentDescription: string[] = [];
 
-  const proxy = new Proxy(() => {}, {
+  const proxy = new Proxy(() => { /* no-op proxy target */ }, {
     apply: () => {
       return;
     },
-    get: (target, prop) => {
+    get: (_target, prop) => {
       if (Symbol.unscopables === prop) {
         return undefined;
       }
@@ -26,7 +27,7 @@ const globalFunctionProxyFactory = (names: string[][]) => {
         };
 
         return new Proxy(fn, {
-          get: (target, prop) => {
+          get: (_target, prop) => {
             if (Symbol.unscopables === prop) {
               return undefined;
             }
@@ -54,9 +55,7 @@ const globalFunctionProxyFactory = (names: string[][]) => {
 
 export const getTestContextPaths = (filePath: string): string[] => {
   // TODO handle other types of imports
-  const fileContent = fs
-    .readFileSync(filePath, 'utf8')
-    .replace('import', '// import');
+  const fileContent = readFileSync(filePath, 'utf8').replace('import', '// import');
 
   const result = ts.transpileModule(fileContent, {});
 

@@ -115,6 +115,16 @@ npx hypertest --version
 
 You should see the version number of your installed hypertest core package.
 
+## Create your config
+
+Run the interactive setup wizard to generate `hypertest.config.js`:
+
+```bash
+npx hypertest init
+```
+
+The wizard prompts for your image name, AWS region, ECR registry, Lambda function name, and S3 bucket, then writes a ready-to-use config file in your project root.
+
 ::: tip Next steps
-After installation, proceed to [Configuration](/getting-started/configuration) to set up your `hypertest.config.js` file and AWS credentials.
+After installation, proceed to [Configuration](/getting-started/configuration) to review all available options or to set up AWS credentials.
 :::

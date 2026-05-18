@@ -2,6 +2,9 @@ import { Box, Text } from 'ink';
 import type { HypertestRunResult } from '@hypertest/hypertest-types';
 import { formatDuration } from '../theme.js';
 
+// biome-ignore lint/suspicious/noControlCharactersInRegex: ESC byte required to strip ANSI sequences
+const stripAnsi = (s: string) => s.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
+
 export const InvokeSummary = ({
   result,
   localPath,
@@ -46,10 +49,10 @@ export const InvokeSummary = ({
               </Box>
               {t.error && (
                 <Box marginLeft={3} flexDirection="column">
-                  <Text color="#475063" wrap="wrap">{t.error.message}</Text>
+                  <Text color="#475063" wrap="wrap">{stripAnsi(t.error.message)}</Text>
                   {t.error.stackTrace && (
                     <Text color="#475063" dimColor={true} wrap="wrap">
-                      {t.error.stackTrace.split('\n').slice(0, 4).join('\n')}
+                      {stripAnsi(t.error.stackTrace.split('\n').slice(0, 4).join('\n'))}
                     </Text>
                   )}
                 </Box>

@@ -19,6 +19,7 @@ export default {
           { text: 'Configuration', link: '/getting-started/configuration' },
           { text: 'Usage', link: '/getting-started/usage' },
           { text: 'Results', link: '/getting-started/results' },
+          { text: 'CLI Reference', link: '/getting-started/cli-reference' },
         ],
       },
       {

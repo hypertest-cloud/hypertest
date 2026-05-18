@@ -16,11 +16,12 @@ const INITIAL_STEPS: Record<DeployStep, StepState> = {
 
 interface DeployAppProps {
   events: HypertestEvents;
+  onExit?: () => void;
 }
 
-export const DeployApp = ({ events }: DeployAppProps) => {
+export const DeployApp = ({ events, onExit }: DeployAppProps) => {
   const [steps, setSteps] = useState<Record<DeployStep, StepState>>(INITIAL_STEPS);
-  const [done, setDone] = useState(false);
+  const [doneReason, setDoneReason] = useState<'success' | 'error' | null>(null);
   const [startMs] = useState(Date.now());
   const [elapsed, setElapsed] = useState(0);
 
@@ -39,7 +40,9 @@ export const DeployApp = ({ events }: DeployAppProps) => {
           return next;
         });
         if (event.step === 'updateLambda' && event.status === 'end') {
-          setDone(true);
+          setDoneReason('success');
+        } else if (event.status === 'error') {
+          setDoneReason('error');
         }
       }
     });
@@ -47,10 +50,14 @@ export const DeployApp = ({ events }: DeployAppProps) => {
   }, [events]);
 
   useEffect(() => {
-    if (done) { return; }
+    if (doneReason) { return; }
     const id = setInterval(() => setElapsed(Date.now() - startMs), 100);
     return () => clearInterval(id);
-  }, [done, startMs]);
+  }, [doneReason, startMs]);
+
+  useEffect(() => {
+    if (doneReason) { onExit?.(); }
+  }, [doneReason, onExit]);
 
   return (
     <Box flexDirection="column" gap={0}>
@@ -58,7 +65,8 @@ export const DeployApp = ({ events }: DeployAppProps) => {
       <Text> </Text>
       <Box gap={1}>
         <Text color="#97a3b6">{'DEPLOY'}</Text>
-        {done && <Text color="#1ee600">{'✓ done'}</Text>}
+        {doneReason === 'success' && <Text color="#1ee600">{'✓ done'}</Text>}
+        {doneReason === 'error' && <Text color="#f43d5e">{'✕ failed'}</Text>}
       </Box>
       <Rule />
       <Text> </Text>

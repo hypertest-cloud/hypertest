@@ -37,6 +37,7 @@ export interface ResolvedHypertestConfig {
 
 export interface CommandOptions {
   dryRun?: boolean;
+  silent?: boolean;
 }
 
 export interface InvokePayload<Context> {
@@ -54,6 +55,7 @@ export interface PluginDefinition<T extends (...args: any[]) => any> {
   handler: T;
 }
 
+// biome-ignore lint/performance/noBarrelFile: intentional barrel for hypertest-types
 // biome-ignore lint/performance/noReExportAll: <explanation>
 export * from './cloud-provider.js';
 // biome-ignore lint/performance/noReExportAll: <explanation>

@@ -2,4 +2,4 @@ export interface PlaywrightCloudFunctionContext {
   grep: string;
 }
 
-export interface PlaywrightPluginOptions {}
+export type PlaywrightPluginOptions = Record<string, never>;

@@ -22,12 +22,21 @@ npm run lint --workspace=packages/hypertest-core
 
 # Build Docker image for Playwright tests
 npm run docker
+
+# Run all tests
+npm test
+
+# Run tests for a specific package
+npm test --workspace=packages/hypertest-core
 ```
 
 ### CLI Commands (run from playground or user project)
 ```bash
+npx hypertest init                # Create hypertest.config.js interactively
 npx hypertest deploy              # Deploy tests to cloud (builds + pushes image to ECR + updates Lambda)
 npx hypertest invoke              # Run tests in cloud
+npx hypertest invoke --dry-run    # Simulate invoke without Lambda calls
+npx hypertest invoke --quiet      # Plain text output — no Ink UI (use in CI/non-TTY)
 npx hypertest doctor              # Validate configuration and cloud provider setup
 ```
 
@@ -81,7 +90,7 @@ Two plugin interfaces in `hypertest-types`:
 5. Write results file locally (CWD) and upload to cloud storage at `{runId}/{resultsFileName}` (default: `hypertest.results.json`)
 
 ### Key Files
-- CLI entry: `packages/hypertest-core/src/cli.ts`
+- CLI entry: `packages/hypertest-core/src/cli.tsx`
 - Core orchestration: `packages/hypertest-core/src/index.ts`
 - Events system: `packages/hypertest-core/src/events.ts`
 - Type definitions: `packages/hypertest-types/src/index.ts`
@@ -113,8 +122,8 @@ export default defineConfig({
 
 ### Events System
 Core emits typed events via `HypertestEvents` (`packages/hypertest-types/src/events.ts`).
-Pass custom `events` to `setupHypertest()` to hook into: `run:start`, `run:end`, `test:start`, `test:end`, `deploy:step`, `log`, `doctor:check`.
-CLI printer (`packages/hypertest-core/src/cli.ts`) consumes these events for terminal output.
+Pass custom `events` to `setupHypertest()` to hook into: `run:start`, `run:end`, `test:start`, `test:end`, `deploy:step`, `log`, `doctor:check`, `doctor:done`.
+`packages/hypertest-core/src/cli.tsx` consumes these events for terminal output via a reporter selected at runtime: Ink (rich TUI) when stdout is a TTY and `--quiet` is not passed; plain text otherwise. Both implement the `Reporter` interface (`packages/hypertest-core/src/ui/reporters/`).
 
 ### Drift Detection
 On invoke, hypertest hashes local test dir and compares with deployed manifest hash.
@@ -129,6 +138,31 @@ Tests use `HT_TEST_ARTIFACTS_OUTPUT_PATH` environment variable for cloud artifac
 await page.screenshot({
   path: `${process.env.HT_TEST_ARTIFACTS_OUTPUT_PATH}/screenshots/test.png`,
 });
+```
+
+### Dev / Demo Mode
+Set `HYPERTEST_DEV=true` to run the CLI with mocked data — no AWS credentials needed.
+Useful for developing the Ink UI without a real cloud deployment.
+
+```bash
+HYPERTEST_DEV=true npx hypertest invoke   # Simulated run with 13 mock tests
+HYPERTEST_DEV=true npx hypertest deploy   # Simulated deploy steps
+HYPERTEST_DEV_SPEED=5                     # Speed multiplier (default 10×); lower = slower animation
+```
+
+## Testing
+
+```bash
+npm test --workspace=packages/hypertest-core   # 59 unit tests
+```
+
+Uses Node's built-in test runner with `tsx/esm` for TypeScript + JSX and `ink-testing-library` for Ink component tests. Structure mirrors `src/ui/`:
+
+```
+src/__tests__/
+├── apps/          # InvokeApp, DeployApp, DoctorApp
+├── components/    # TestRow, InvokeSummary, …
+└── reporters/     # plainReporter
 ```
 
 ## Code Quality

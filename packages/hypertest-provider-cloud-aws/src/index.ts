@@ -23,6 +23,7 @@ import {
   CheckError,
   type CloudProviderPlugin,
   type CloudProviderPluginDefinition,
+  type CommandOptions,
   type ResolvedHypertestConfig,
   type ImageBuildManifest,
   ImageBuildManifestSchema,
@@ -73,6 +74,7 @@ const getEcrAuth = async (ecrClient: ECRClient, log: (level: LogLevel, msg: stri
 const HypertestProviderCloudAWS = (
   settings: ResolvedHypertestProviderCloudAwsConfig,
   config: ResolvedHypertestConfig,
+  opts?: CommandOptions,
 ): CloudProviderPlugin => {
   const log = makeLog(config);
 
@@ -132,7 +134,7 @@ const HypertestProviderCloudAWS = (
 
     if (batchImageResponse.images && batchImageResponse.images.length > 0) {
       const image = batchImageResponse.images[0];
-      if (!image || !image.imageId) {
+      if (!image?.imageId) {
         throw new Error('Failed to pull erc deployed image.');
       }
 
@@ -146,52 +148,43 @@ const HypertestProviderCloudAWS = (
     async pullBaseImage() {
       assertDockerDaemon();
 
-      try {
-        const { username, password, proxyEndpoint } = await getEcrAuth(ecrClient, log);
+      const { username, password, proxyEndpoint } = await getEcrAuth(ecrClient, log);
 
-        log('debug', 'Logging in to ECR...');
-        runCommand(
-          `docker login -u ${username} --password-stdin ${proxyEndpoint}`,
-          { input: password },
-        );
+      log('debug', 'Logging in to ECR...');
+      await runCommand(
+        `docker login -u ${username} --password-stdin ${proxyEndpoint}`,
+        { input: password, silent: opts?.silent },
+      );
 
-        log('debug', 'Pulling base docker lambda runner image to local repo...');
-        runCommand(`docker pull ${settings.baseImage}`);
+      log('debug', 'Pulling base docker lambda runner image to local repo...');
+      await runCommand(`docker pull ${settings.baseImage}`, { silent: opts?.silent });
 
-        log('debug', `Tagging local image with ${config.localBaseImageName} ...`);
-        runCommand(
-          `docker tag ${settings.baseImage} ${config.localBaseImageName}`,
-        );
-      } catch (error) {
-        log('error', `Error pushing Docker image to ECR: ${error}`);
-        process.exit(1);
-      }
+      log('debug', `Tagging local image with ${config.localBaseImageName} ...`);
+      await runCommand(
+        `docker tag ${settings.baseImage} ${config.localBaseImageName}`,
+        { silent: opts?.silent },
+      );
     },
     pushImage: async () => {
       assertDockerDaemon();
 
-      try {
-        const { username, password, proxyEndpoint } = await getEcrAuth(ecrClient, log);
+      const { username, password, proxyEndpoint } = await getEcrAuth(ecrClient, log);
 
-        log('debug', 'Logging in to ECR...');
-        runCommand(
-          `docker login -u ${username} --password-stdin ${proxyEndpoint}`,
-          { input: password },
-        );
+      log('debug', 'Logging in to ECR...');
+      await runCommand(
+        `docker login -u ${username} --password-stdin ${proxyEndpoint}`,
+        { input: password, silent: opts?.silent },
+      );
 
-        const targetName = getTargetImageName();
+      const targetName = getTargetImageName();
 
-        log('debug', 'Tagging local image with remote tag');
-        runCommand(`docker tag ${config.localImageName} ${targetName}`);
+      log('debug', 'Tagging local image with remote tag');
+      await runCommand(`docker tag ${config.localImageName} ${targetName}`, { silent: opts?.silent });
 
-        log('debug', 'Pushing Docker image to ECR...');
-        runCommand(`docker push ${targetName}`);
+      log('debug', 'Pushing Docker image to ECR...');
+      await runCommand(`docker push ${targetName}`, { silent: opts?.silent });
 
-        log('debug', `Docker image pushed successfully to ${targetName}`);
-      } catch (error) {
-        log('error', `Error pushing Docker image to ECR: ${error}`);
-        process.exit(1);
-      }
+      log('debug', `Docker image pushed successfully to ${targetName}`);
     },
     invoke: async (payload) => {
       const ingestedPayload = {
@@ -387,13 +380,14 @@ const plugin = (
       children: [],
     },
   ],
-  handler: (config) => {
+  handler: (config, opts) => {
     return HypertestProviderCloudAWS(
       {
         lambdaUpdateMaxWaitTime: 600,
         ...options,
       },
       config,
+      opts,
     );
   },
 });

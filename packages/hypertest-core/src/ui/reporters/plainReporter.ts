@@ -48,5 +48,7 @@ export const createPlainReporter = (events: HypertestEvents): Reporter => {
       unsubscribe();
       return Promise.resolve();
     },
+    // biome-ignore lint/suspicious/noEmptyBlockStatements: intentional no-op
+    abort: () => {},
   };
 };

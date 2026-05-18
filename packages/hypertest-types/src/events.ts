@@ -26,7 +26,8 @@ export type HypertestEvent =
       status: 'ok' | 'warn' | 'error';
       message: string;
       data?: Record<string, unknown> | null;
-    };
+    }
+  | { type: 'doctor:done' };
 
 export interface HypertestEvents {
   emit(event: HypertestEvent): void;

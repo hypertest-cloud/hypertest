@@ -10,3 +10,6 @@ hypertest.results.json
 
 # Claude
 .claude
+
+# Internal
+docs
