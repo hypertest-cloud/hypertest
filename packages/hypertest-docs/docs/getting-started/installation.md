@@ -16,7 +16,7 @@ This guide walks you through installing hypertest packages for your project. hyp
 
 Before installing hypertest, ensure you have:
 
-- [Node.js](https://nodejs.org/) version 20 or higher
+- [Node.js](https://nodejs.org/) version 22 or higher
 - **npm**, **yarn**, or **pnpm** package manager
 - An existing [Playwright](https://playwright.dev/) test suite
 - [Docker](https://www.docker.com/) installed and running
