@@ -178,7 +178,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       await writeFile(localPath, json, 'utf-8');
       const { artifactsBaseUrl } = await options.cloudProvider.uploadRunResult(runId, json);
 
-      options.events.emit({ type: 'run:end', runId, result: runResult, artifactsBaseUrl });
+      options.events.emit({ type: 'run:end', runId, result: runResult, localPath, artifactsBaseUrl });
     },
 
     deploy: async () => {

@@ -128,11 +128,10 @@ export const createDevCore = (events: HypertestEvents): HypertestCore => ({
       testResults,
     };
 
-    events.emit({ type: 'run:end', runId, result: runResult });
-
-    // Write a local results file so the output path in InvokeSummary is real
     const { writeFile } = await import('node:fs/promises');
     const localPath = path.join(process.cwd(), 'hypertest.results.json');
     await writeFile(localPath, JSON.stringify(runResult, null, 2), 'utf-8');
+
+    events.emit({ type: 'run:end', runId, result: runResult, localPath });
   },
 });

@@ -97,8 +97,7 @@ const HypertestProviderCloudAWS = (
 
   const assertDockerDaemon = () => {
     if (!isDockerRunning()) {
-      log('error', 'Error: Docker daemon is not running. Please start Docker and try again.');
-      process.exit(1);
+      throw new Error('Docker daemon is not running. Please start Docker and try again.');
     }
   };
 
@@ -212,7 +211,7 @@ const HypertestProviderCloudAWS = (
           log('error', "Lambda invocation failed with HTTP 429 (Too Many Requests). Your account's concurrent executions quota may be too low — see the AWS provider docs for steps to request a quota increase.");
         }
 
-        process.exit(1);
+        throw error;
       }
     },
     updateLambdaImage: async () => {
@@ -245,73 +244,56 @@ const HypertestProviderCloudAWS = (
           log('error', `Error updating lambda by new image ${error}`);
         }
 
-        process.exit(1);
+        throw error;
       }
     },
     updateManifest: async (invokePayloadContexts, testDirHash) => {
-      try {
-        const imageEcrId = runCommandAndGetOutput(
-          `docker inspect --format="{{index .RepoDigests 0}}" ${config.localImageName}`,
-        );
-        if (!imageEcrId) {
-          log('error', `Failed to find image ${config.localImageName} erc id. Try to push image to registry before creating manifest`);
-          process.exit(1);
-        }
-
-        const manifest: ImageBuildManifest<unknown> = {
-          imageDigest: `sha256:${imageEcrId.split('@sha256:')[1]}`,
-          testDirHash,
-          invokePayloadContexts,
-        };
-
-        const command = new PutObjectCommand({
-          Bucket: settings.bucketName,
-          Key: config.buildManifestFileName,
-          Body: JSON.stringify(manifest),
-          ContentType: 'application/json',
-        });
-
-        await s3Client.send(command);
-        log('debug', `File ${config.buildManifestFileName} was successfully uploaded to bucket ${settings.bucketName}.`);
-      } catch (error) {
-        log('error', `Error while updating manifest: ${error}`);
-        process.exit(1);
+      const imageEcrId = runCommandAndGetOutput(
+        `docker inspect --format="{{index .RepoDigests 0}}" ${config.localImageName}`,
+      );
+      if (!imageEcrId) {
+        throw new Error(`Failed to find image ${config.localImageName} ECR id. Push the image to the registry before creating the manifest.`);
       }
+
+      const manifest: ImageBuildManifest<unknown> = {
+        imageDigest: `sha256:${imageEcrId.split('@sha256:')[1]}`,
+        testDirHash,
+        invokePayloadContexts,
+      };
+
+      const command = new PutObjectCommand({
+        Bucket: settings.bucketName,
+        Key: config.buildManifestFileName,
+        Body: JSON.stringify(manifest),
+        ContentType: 'application/json',
+      });
+
+      await s3Client.send(command);
+      log('debug', `File ${config.buildManifestFileName} was successfully uploaded to bucket ${settings.bucketName}.`);
     },
     uploadRunResult: async (runId, content) => {
-      try {
-        const s3Key = `${runId}/${config.resultsFileName}`;
-        const command = new PutObjectCommand({
-          Bucket: settings.bucketName,
-          Key: s3Key,
-          Body: content,
-          ContentType: 'application/json',
-        });
+      const s3Key = `${runId}/${config.resultsFileName}`;
+      const command = new PutObjectCommand({
+        Bucket: settings.bucketName,
+        Key: s3Key,
+        Body: content,
+        ContentType: 'application/json',
+      });
 
-        await s3Client.send(command);
-        log('debug', `${config.resultsFileName} was successfully uploaded to bucket ${settings.bucketName} at ${s3Key}.`);
+      await s3Client.send(command);
+      log('debug', `${config.resultsFileName} was successfully uploaded to bucket ${settings.bucketName} at ${s3Key}.`);
 
-        return { artifactsBaseUrl: `s3://${settings.bucketName}/${runId}/` };
-      } catch (error) {
-        log('error', `Error while uploading run result: ${error}`);
-        process.exit(1);
-      }
+      return { artifactsBaseUrl: `s3://${settings.bucketName}/${runId}/` };
     },
     pullManifest: async () => {
-      try {
-        const manifest = await fetchManifest();
-        const ecrPushedImageDigest = await fetchEcrImageDigest();
+      const manifest = await fetchManifest();
+      const ecrPushedImageDigest = await fetchEcrImageDigest();
 
-        if (manifest.imageDigest !== ecrPushedImageDigest) {
-          log('error', 'Manifest drift detected. Deployed cloud function image is incompatible with current manifest. Please try to run "npx hypertest deploy" first to recreate the manifest');
-          process.exit(1);
-        }
-
-        return manifest;
-      } catch (error) {
-        log('error', `Error while pulling manifest: ${error}`);
-        process.exit(1);
+      if (manifest.imageDigest !== ecrPushedImageDigest) {
+        throw new Error('Manifest drift detected. Deployed cloud function image is incompatible with current manifest. Please try to run "npx hypertest deploy" first to recreate the manifest.');
       }
+
+      return manifest;
     },
   };
 };

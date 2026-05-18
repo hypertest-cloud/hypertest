@@ -53,7 +53,7 @@ const runCheck = async (check: Check) => {
       if (err instanceof CheckError) {
         return { status: 'warn' as const, message: err.message, data: null };
       }
-      return { status: 'error' as const, message: String(err.message), data: null };
+      return { status: 'error' as const, message: err instanceof Error ? err.message : String(err), data: null };
     });
   return { title: check.title, ...result };
 };

@@ -56,6 +56,7 @@ export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
   const [running, setRunning] = useState<Set<string>>(new Set());
   const [doneCount, setDoneCount] = useState(0);
   const [result, setResult] = useState<HypertestRunResult | null>(null);
+  const [localPath, setLocalPath] = useState<string>('');
   const [artifactsBaseUrl, setArtifactsBaseUrl] = useState<string | undefined>(undefined);
   const [elapsed, setElapsed] = useState(0);
 
@@ -87,6 +88,7 @@ export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
         setDoneCount((prev) => prev + 1);
       } else if (event.type === 'run:end') {
         setResult(event.result);
+        setLocalPath(event.localPath);
         setArtifactsBaseUrl(event.artifactsBaseUrl);
       }
     });
@@ -104,7 +106,6 @@ export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
   }, [result, onExit]);
 
   const queued = run ? run.testCount - doneCount - running.size : 0;
-  const localPath = './hypertest.results.json';
 
   return (
     <Box flexDirection="column" gap={0}>
