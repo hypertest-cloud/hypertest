@@ -8,7 +8,7 @@
     "docker": "npm run build && docker build . -t hypertest-playwright",
     "build": "npm run build -w packages --if-present",
     "lint": "npm run lint --workspaces",
-    "release": "echo 'Release Test'"
+    "release": "npm run build && changeset publish"
   },
   "workspaces": ["packages/hypertest-types", "packages/*"],
   "devDependencies": {
