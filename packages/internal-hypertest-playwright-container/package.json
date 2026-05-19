@@ -1,15 +1,16 @@
 {
   "name": "@hypertest/internal-hypertest-playwright-container",
   "version": "0.0.1",
+  "main": "dist/index.js",
+  "files": ["Dockerfile", "index.js"],
+  "types": "index.d.ts",
   "license": "Elastic-2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "lint": "biome lint"
   },
-  "files": ["Dockerfile", "index.js"],
   "exports": "./index.js",
-  "types": "index.d.ts",
   "devDependencies": {
     "@hypertest/hypertest-types": "0.x.x"
   }

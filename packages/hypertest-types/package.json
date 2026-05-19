@@ -1,6 +1,9 @@
 {
   "name": "@hypertest/hypertest-types",
   "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
   "license": "Elastic-2.0",
   "private": false,
   "type": "module",
