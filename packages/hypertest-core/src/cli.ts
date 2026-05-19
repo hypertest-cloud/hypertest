@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 import 'dotenv/config';
 import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import util from 'node:util';
 import { Command } from '@commander-js/extra-typings';
+import { type Check, CheckError } from '@hypertest-cloud/hypertest-types';
 import { ZodError } from 'zod';
 import { getConfigFileUrl, loadConfig } from './config.js';
 import { setupHypertest } from './index.js';
-import { promiseMap } from './utils.js';
-import { CheckError, type Check } from '@hypertest/hypertest-types';
-import { fileURLToPath } from 'node:url';
 import { initializeHypertestConfig } from './init/init.js';
+import { promiseMap } from './utils.js';
 
 const CORE_CHECKS: Check[] = [
   {

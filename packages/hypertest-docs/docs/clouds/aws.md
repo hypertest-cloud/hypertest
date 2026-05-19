@@ -35,9 +35,9 @@ pnpm add @hypertest/hypertest-provider-cloud-aws
 Add the provider to your `hypertest.config.js`:
 
 ```javascript
-import { defineConfig } from '@hypertest/hypertest-core';
-import playwright from '@hypertest/hypertest-plugin-playwright';
-import aws from '@hypertest/hypertest-provider-cloud-aws';
+import { defineConfig } from '@hypertest-cloud/hypertest-core';
+import playwright from '@hypertest-cloud/hypertest-plugin-playwright';
+import aws from '@hypertest-cloud/hypertest-provider-cloud-aws';
 
 export default defineConfig({
   concurrency: 30,

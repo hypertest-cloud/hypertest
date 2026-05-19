@@ -31,8 +31,8 @@ When you run hypertest commands, plugins handle the framework-specific logic:
 Plugins are configured in your `hypertest.config.js` file via the `testRunner` option:
 
 ```javascript
-import { defineConfig } from '@hypertest/hypertest-core';
-import playwright from '@hypertest/hypertest-plugin-playwright';
+import { defineConfig } from '@hypertest-cloud/hypertest-core';
+import playwright from '@hypertest-cloud/hypertest-plugin-playwright';
 
 export default defineConfig({
   testRunner: playwright({}),

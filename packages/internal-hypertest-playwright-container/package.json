@@ -1,5 +1,5 @@
 {
-  "name": "@hypertest/internal-hypertest-playwright-container",
+  "name": "@hypertest-cloud/internal-hypertest-playwright-container",
   "version": "0.0.1",
   "main": "dist/index.js",
   "files": ["Dockerfile", "index.js"],
@@ -12,6 +12,6 @@
   },
   "exports": "./index.js",
   "devDependencies": {
-    "@hypertest/hypertest-types": "0.x.x"
+    "@hypertest-cloud/hypertest-types": "0.x.x"
   }
 }

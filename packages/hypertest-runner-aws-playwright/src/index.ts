@@ -1,13 +1,13 @@
 process.env.HOME = '/tmp';
 
-import chromium from '@sparticuz/chromium';
-import type { Context } from 'aws-lambda';
 import { execSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import fs from 'node:fs/promises';
-import { uploadToS3 } from './utils/uploadToS3.js';
-import type { TestInvokeResponse } from '@hypertest/hypertest-types';
+import type { TestInvokeResponse } from '@hypertest-cloud/hypertest-types';
+import chromium from '@sparticuz/chromium';
+import type { Context } from 'aws-lambda';
 import { parsePlaywrightReport } from './utils/parsePlaywrightReport.js';
+import { uploadToS3 } from './utils/uploadToS3.js';
 
 interface EventContext {
   grep: string;

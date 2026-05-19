@@ -87,9 +87,9 @@ Two plugin interfaces in `hypertest-types`:
 ### Configuration
 Projects use `hypertest.config.js`:
 ```javascript
-import { defineConfig } from '@hypertest/hypertest-core';
-import playwright from '@hypertest/hypertest-plugin-playwright';
-import aws from '@hypertest/hypertest-provider-cloud-aws';
+import { defineConfig } from '@hypertest-cloud/hypertest-core';
+import playwright from '@hypertest-cloud/hypertest-plugin-playwright';
+import aws from '@hypertest-cloud/hypertest-provider-cloud-aws';
 
 export default defineConfig({
   concurrency: 30,

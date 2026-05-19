@@ -4,16 +4,16 @@ import {
   GetAuthorizationTokenCommand,
 } from '@aws-sdk/client-ecr';
 import {
-  GetObjectCommand,
-  PutObjectCommand,
-  S3Client,
-} from '@aws-sdk/client-s3';
-import {
   InvokeCommand,
   LambdaClient,
   UpdateFunctionCodeCommand,
   waitUntilFunctionUpdated,
 } from '@aws-sdk/client-lambda';
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import {
   GetServiceQuotaCommand,
   ServiceQuotasClient,
@@ -23,11 +23,11 @@ import {
   CheckError,
   type CloudProviderPlugin,
   type CloudProviderPluginDefinition,
-  type ResolvedHypertestConfig,
   type ImageBuildManifest,
   ImageBuildManifestSchema,
+  type ResolvedHypertestConfig,
   TestInvokeResponseSchema,
-} from '@hypertest/hypertest-types';
+} from '@hypertest-cloud/hypertest-types';
 import type winston from 'winston';
 import { z } from 'zod';
 import { isDockerRunning } from './isDockerRunning.js';

@@ -1,12 +1,12 @@
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import {
   type CloudProviderPluginDefinition,
   ConfigSchema,
   type ResolvedHypertestConfig,
   type TestRunnerPluginDefinition,
-} from '@hypertest/hypertest-types';
+} from '@hypertest-cloud/hypertest-types';
 import type winston from 'winston';
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
 import { z } from 'zod';
 import { initializeLogger } from './logger.js';
 
@@ -42,7 +42,6 @@ export const loadConfig = async <T>(): Promise<{
       ),
     },
     testRunner: testRunner as TestRunnerPluginDefinition<T>,
-    cloudProvider:
-      cloudProvider as CloudProviderPluginDefinition,
+    cloudProvider: cloudProvider as CloudProviderPluginDefinition,
   };
 };

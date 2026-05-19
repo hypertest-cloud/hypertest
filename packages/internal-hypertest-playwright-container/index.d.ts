@@ -1,4 +1,4 @@
-import type { Dockerfile } from '@hypertest/hypertest-types';
+import type { Dockerfile } from '@hypertest-cloud/hypertest-types';
 
 type BuildArgs = {
   // biome-ignore lint/style/useNamingConvention: <explanation>

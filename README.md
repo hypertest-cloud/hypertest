@@ -24,9 +24,9 @@ npm install @hypertest/hypertest-core @hypertest/hypertest-plugin-playwright @hy
 Create `hypertest.config.js` in your project root:
 
 ```javascript
-import { defineConfig } from '@hypertest/hypertest-core';
-import playwright from '@hypertest/hypertest-plugin-playwright';
-import aws from '@hypertest/hypertest-provider-cloud-aws';
+import { defineConfig } from '@hypertest-cloud/hypertest-core';
+import playwright from '@hypertest-cloud/hypertest-plugin-playwright';
+import aws from '@hypertest-cloud/hypertest-provider-cloud-aws';
 
 export default defineConfig({
   concurrency: 30,

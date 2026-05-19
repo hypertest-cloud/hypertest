@@ -9,10 +9,10 @@ import type {
   ResolvedHypertestConfig,
   TestInvokeResponse,
   TestRunnerPlugin,
-} from '@hypertest/hypertest-types';
+} from '@hypertest-cloud/hypertest-types';
 import { loadConfig } from './config.js';
-import { promiseMap } from './utils.js';
 import { hashDirectory } from './hashDirectory.js';
+import { promiseMap } from './utils.js';
 
 interface HypertestCore {
   deploy: () => Promise<void>;
@@ -44,7 +44,10 @@ const parseTestResult = (
       : invokeEnd.getTime() - invokeStart.getTime(),
   error:
     invokeResponse.success === false
-      ? { message: invokeResponse.message, stackTrace: invokeResponse.stackTrace }
+      ? {
+          message: invokeResponse.message,
+          stackTrace: invokeResponse.stackTrace,
+        }
       : undefined,
 });
 
@@ -146,7 +149,10 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       };
 
       const json = JSON.stringify(runResult, null, 2);
-      const localPath = path.join(process.cwd(), options.config.resultsFileName);
+      const localPath = path.join(
+        process.cwd(),
+        options.config.resultsFileName,
+      );
 
       await writeFile(localPath, json, 'utf-8');
       await options.cloudProvider.uploadRunResult(runId, json);

@@ -28,9 +28,9 @@ export const getConfigFromTemplate = (
 
   return `
 // @ts-check
-import { defineConfig } from '@hypertest/hypertest-core';
-import playwright from '@hypertest/hypertest-plugin-playwright';
-import aws from '@hypertest/hypertest-provider-cloud-aws';
+import { defineConfig } from '@hypertest-cloud/hypertest-core';
+import playwright from '@hypertest-cloud/hypertest-plugin-playwright';
+import aws from '@hypertest-cloud/hypertest-provider-cloud-aws';
 
 // biome-ignore lint/style/noDefaultExport: <explanation>
 export default defineConfig({

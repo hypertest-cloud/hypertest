@@ -1,9 +1,9 @@
-import { execa } from 'execa';
 import type {
   AnyDockerfile,
   BuildArgsOf,
   EnvOf,
-} from '@hypertest/hypertest-types';
+} from '@hypertest-cloud/hypertest-types';
+import { execa } from 'execa';
 
 export type DockerBuildOptions<
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
