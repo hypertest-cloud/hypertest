@@ -1,16 +1,11 @@
 import { Box, Text } from 'ink';
 import { useEffect, useState } from 'react';
-import type { HypertestEvents } from '@hypertest/hypertest-types';
+import type { HypertestEvent, HypertestEvents } from '@hypertest/hypertest-types';
 import { Wordmark } from '../components/Wordmark.js';
 import { Rule } from '../components/Rule.js';
 import { DoctorCheck } from '../components/DoctorCheck.js';
 
-interface CheckResult {
-  title: string;
-  status: 'ok' | 'warn' | 'error';
-  message: string;
-  data?: Record<string, unknown> | null;
-}
+type CheckResult = Extract<HypertestEvent, { type: 'doctor:check' }>;
 
 interface DoctorAppProps {
   events: HypertestEvents;
@@ -23,15 +18,7 @@ export const DoctorApp = ({ events, onExit }: DoctorAppProps) => {
   useEffect(() => {
     const unsubscribe = events.on((event) => {
       if (event.type === 'doctor:check') {
-        setChecks((prev) => [
-          ...prev,
-          {
-            title: event.title,
-            status: event.status,
-            message: event.message,
-            data: event.data,
-          },
-        ]);
+        setChecks((prev) => [...prev, event]);
       } else if (event.type === 'doctor:done') {
         onExit?.();
       }

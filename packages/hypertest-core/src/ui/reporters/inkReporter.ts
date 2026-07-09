@@ -5,7 +5,7 @@ import { InvokeApp } from '../apps/InvokeApp.js';
 import { DeployApp } from '../apps/DeployApp.js';
 import { DoctorApp } from '../apps/DoctorApp.js';
 
-type Command = 'invoke' | 'deploy' | 'doctor';
+export type Command = 'invoke' | 'deploy' | 'doctor';
 
 export interface Reporter {
   done: () => Promise<void>;
@@ -16,7 +16,7 @@ export const createInkReporter = (
   command: Command,
   events: HypertestEvents,
 ): Reporter => {
-  let resolveExit: () => void;
+  let resolveExit!: () => void;
   const exitPromise = new Promise<void>((resolve) => { resolveExit = resolve; });
   const onExit = () => resolveExit();
 

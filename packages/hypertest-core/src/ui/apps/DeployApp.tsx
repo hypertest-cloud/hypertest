@@ -1,5 +1,5 @@
 import { Box, Text } from 'ink';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { DeployStep, HypertestEvents } from '@hypertest/hypertest-types';
 import { Wordmark } from '../components/Wordmark.js';
 import { Rule } from '../components/Rule.js';
@@ -22,7 +22,7 @@ interface DeployAppProps {
 export const DeployApp = ({ events, onExit }: DeployAppProps) => {
   const [steps, setSteps] = useState<Record<DeployStep, StepState>>(INITIAL_STEPS);
   const [doneReason, setDoneReason] = useState<'success' | 'error' | null>(null);
-  const [startMs] = useState(Date.now());
+  const startMs = useRef(Date.now()).current;
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export const DeployApp = ({ events, onExit }: DeployAppProps) => {
     if (doneReason) { return; }
     const id = setInterval(() => setElapsed(Date.now() - startMs), 100);
     return () => clearInterval(id);
-  }, [doneReason, startMs]);
+  }, [doneReason]);
 
   useEffect(() => {
     if (doneReason) { onExit?.(); }

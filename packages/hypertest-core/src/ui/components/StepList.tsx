@@ -17,15 +17,16 @@ export type StepState =
   | { status: 'done'; durationMs: number }
   | { status: 'error'; error: string };
 
+const ORDER: DeployStep[] = ['pullBase', 'build', 'push', 'manifest', 'updateLambda'];
+
 export const StepList = ({
   steps,
 }: {
   steps: Record<DeployStep, StepState>;
 }) => {
-  const order: DeployStep[] = ['pullBase', 'build', 'push', 'manifest', 'updateLambda'];
   return (
     <Box flexDirection="column" gap={0}>
-      {order.map((key) => {
+      {ORDER.map((key) => {
         const state = steps[key];
         const label = STEP_LABELS[key];
         return (

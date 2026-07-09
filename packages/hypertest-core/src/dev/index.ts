@@ -1,10 +1,11 @@
+import { writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import type {
   DeployStep,
   HypertestEvents,
   HypertestRunResult,
   HypertestTestResult,
 } from '@hypertest/hypertest-types';
-import path from 'node:path';
 import { promiseMap } from '../utils.js';
 
 interface MockTest {
@@ -128,7 +129,6 @@ export const createDevCore = (events: HypertestEvents): HypertestCore => ({
       testResults,
     };
 
-    const { writeFile } = await import('node:fs/promises');
     const localPath = path.join(process.cwd(), 'hypertest.results.json');
     await writeFile(localPath, JSON.stringify(runResult, null, 2), 'utf-8');
 

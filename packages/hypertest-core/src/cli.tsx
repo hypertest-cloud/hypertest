@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 import 'dotenv/config';
-import fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { Command } from '@commander-js/extra-typings';
 import { ZodError } from 'zod';
 import { CheckError, type Check } from '@hypertest/hypertest-types';
 import type { HypertestEvents } from '@hypertest/hypertest-types';
 import { render } from 'ink';
-import { getConfigFileUrl, loadConfig } from './config.js';
+import { loadConfig } from './config.js';
 import { createEventBus } from './events.js';
 import { setupHypertest } from './index.js';
 import { collectInitAnswers, writeInitConfig } from './init/init.js';
@@ -21,9 +19,6 @@ const CORE_CHECKS: Check[] = [
     description: 'Check for valid config',
     run: async () => {
       try {
-        if (!fs.existsSync(fileURLToPath(getConfigFileUrl()))) {
-          throw new CheckError('hypertest.config.js is missing');
-        }
         const { config } = await loadConfig();
         return {
           message: 'config loaded successfully',

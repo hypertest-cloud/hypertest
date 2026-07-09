@@ -3,6 +3,12 @@ import { StatusIcon } from './StatusIcon.js';
 
 type CheckStatus = 'ok' | 'warn' | 'error';
 
+const STATUS_MAP: Record<CheckStatus, { iconStatus: 'pass' | 'warn' | 'fail'; color: string }> = {
+  ok:    { iconStatus: 'pass', color: '#ffffff' },
+  warn:  { iconStatus: 'warn', color: '#f5a524' },
+  error: { iconStatus: 'fail', color: '#f43d5e' },
+};
+
 export const DoctorCheck = ({
   title,
   status,
@@ -14,11 +20,7 @@ export const DoctorCheck = ({
   message: string;
   data?: Record<string, unknown> | null;
 }) => {
-  const iconStatus = status === 'ok' ? 'pass' : status === 'warn' ? 'warn' : 'fail';
-  const msgColor =
-    status === 'ok'   ? '#ffffff' :
-    status === 'warn' ? '#f5a524' :
-                        '#f43d5e';
+  const { iconStatus, color: msgColor } = STATUS_MAP[status];
 
   return (
     <Box flexDirection="column">

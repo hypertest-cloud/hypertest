@@ -1,6 +1,6 @@
 import { Box, Static, Text } from 'ink';
 import { useEffect, useState } from 'react';
-import type { HypertestEvents, HypertestRunResult, HypertestTestResult } from '@hypertest/hypertest-types';
+import type { HypertestEvent, HypertestEvents, HypertestTestResult } from '@hypertest/hypertest-types';
 import { Wordmark } from '../components/Wordmark.js';
 import { Rule } from '../components/Rule.js';
 import { TestRow } from '../components/TestRow.js';
@@ -55,9 +55,7 @@ export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
   const [run, setRun] = useState<RunState | null>(null);
   const [running, setRunning] = useState<Set<string>>(new Set());
   const [doneCount, setDoneCount] = useState(0);
-  const [result, setResult] = useState<HypertestRunResult | null>(null);
-  const [localPath, setLocalPath] = useState<string>('');
-  const [artifactsBaseUrl, setArtifactsBaseUrl] = useState<string | undefined>(undefined);
+  const [runEnd, setRunEnd] = useState<Extract<HypertestEvent, { type: 'run:end' }> | null>(null);
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
@@ -74,7 +72,7 @@ export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
           { type: 'header', runId: event.runId, concurrency: event.concurrency },
         ]);
       } else if (event.type === 'test:start') {
-        setRunning((prev) => new Set([...prev, event.testId]));
+        setRunning((prev) => { const next = new Set(prev); next.add(event.testId); return next; });
       } else if (event.type === 'test:end') {
         setRunning((prev) => {
           const next = new Set(prev);
@@ -87,23 +85,21 @@ export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
         ]);
         setDoneCount((prev) => prev + 1);
       } else if (event.type === 'run:end') {
-        setResult(event.result);
-        setLocalPath(event.localPath);
-        setArtifactsBaseUrl(event.artifactsBaseUrl);
+        setRunEnd(event);
       }
     });
     return unsubscribe;
   }, [events]);
 
   useEffect(() => {
-    if (!run || result) { return; }
+    if (!run || runEnd) { return; }
     const id = setInterval(() => setElapsed(Date.now() - run.startMs), 100);
     return () => clearInterval(id);
-  }, [run, result]);
+  }, [run, runEnd]);
 
   useEffect(() => {
-    if (result) { onExit?.(); }
-  }, [result, onExit]);
+    if (runEnd) { onExit?.(); }
+  }, [runEnd, onExit]);
 
   const queued = run ? run.testCount - doneCount - running.size : 0;
 
@@ -113,7 +109,7 @@ export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
         {renderStaticItem}
       </Static>
 
-      {!result && (
+      {!runEnd && (
         <>
           {[...running].map((testId) => (
             <TestRow key={testId} status="running" testId={testId} />
@@ -135,10 +131,10 @@ export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
         </>
       )}
 
-      {result && (
+      {runEnd && (
         <>
           <Text> </Text>
-          <InvokeSummary result={result} localPath={localPath} artifactsBaseUrl={artifactsBaseUrl} />
+          <InvokeSummary result={runEnd.result} localPath={runEnd.localPath} artifactsBaseUrl={runEnd.artifactsBaseUrl} />
         </>
       )}
     </Box>
