@@ -1,9 +1,9 @@
+import type { DeployStep, HypertestEvents } from '@hypertest/hypertest-types';
 import { Box, Text } from 'ink';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { DeployStep, HypertestEvents } from '@hypertest/hypertest-types';
-import { Wordmark } from '../components/Wordmark.js';
 import { Rule } from '../components/Rule.js';
 import { StepList, type StepState } from '../components/StepList.js';
+import { Wordmark } from '../components/Wordmark.js';
 import { formatDuration } from '../theme.js';
 
 const INITIAL_STEPS: Record<DeployStep, StepState> = {
@@ -28,12 +28,15 @@ interface DeployAppProps {
 
 export const DeployApp = ({ events, onExit }: DeployAppProps) => {
   const [state, setState] = useState<DeployState>(INITIAL_STATE);
-  const startMs = useRef(Date.now()).current;
+  const deployStartMs = useRef<number | null>(null);
   const [elapsed, setElapsed] = useState(0);
 
   useLayoutEffect(() => {
     const unsubscribe = events.on((event) => {
       if (event.type === 'deploy:step') {
+        if (event.status === 'start' && deployStartMs.current === null) {
+          deployStartMs.current = Date.now();
+        }
         setState((prev) => {
           const steps = { ...prev.steps };
           if (event.status === 'start') {
@@ -58,9 +61,13 @@ export const DeployApp = ({ events, onExit }: DeployAppProps) => {
 
   useEffect(() => {
     if (state.doneReason) { return; }
-    const id = setInterval(() => setElapsed(Date.now() - startMs), 100);
+    const id = setInterval(() => {
+      if (deployStartMs.current !== null) {
+        setElapsed(Date.now() - deployStartMs.current);
+      }
+    }, 100);
     return () => clearInterval(id);
-  }, [state.doneReason, startMs]);
+  }, [state.doneReason]);
 
   useEffect(() => {
     if (state.doneReason) { onExit?.(); }
