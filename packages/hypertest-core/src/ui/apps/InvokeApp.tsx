@@ -1,5 +1,5 @@
 import { Box, Static, Text } from 'ink';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import type { HypertestEvent, HypertestEvents, HypertestTestResult } from '@hypertest/hypertest-types';
 import { Wordmark } from '../components/Wordmark.js';
 import { Rule } from '../components/Rule.js';
@@ -23,6 +23,22 @@ type StaticItem =
   | { type: 'wordmark' }
   | { type: 'header'; runId: string; concurrency: number }
   | { type: 'test'; testId: string; result: HypertestTestResult };
+
+interface InvokeState {
+  staticItems: StaticItem[];
+  run: RunState | null;
+  running: Set<string>;
+  doneCount: number;
+  runEnd: Extract<HypertestEvent, { type: 'run:end' }> | null;
+}
+
+const INITIAL_STATE: InvokeState = {
+  staticItems: [{ type: 'wordmark' }],
+  run: null,
+  running: new Set(),
+  doneCount: 0,
+  runEnd: null,
+};
 
 const renderStaticItem = (item: StaticItem) => {
   if (item.type === 'wordmark') {
@@ -51,57 +67,59 @@ const renderStaticItem = (item: StaticItem) => {
 };
 
 export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
-  const [staticItems, setStaticItems] = useState<StaticItem[]>([{ type: 'wordmark' }]);
-  const [run, setRun] = useState<RunState | null>(null);
-  const [running, setRunning] = useState<Set<string>>(new Set());
-  const [doneCount, setDoneCount] = useState(0);
-  const [runEnd, setRunEnd] = useState<Extract<HypertestEvent, { type: 'run:end' }> | null>(null);
+  const [state, setState] = useState<InvokeState>(INITIAL_STATE);
   const [elapsed, setElapsed] = useState(0);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const unsubscribe = events.on((event) => {
       if (event.type === 'run:start') {
-        setRun({
-          runId: event.runId,
-          testCount: event.testCount,
-          concurrency: event.concurrency,
-          startMs: Date.now(),
-        });
-        setStaticItems((prev) => [
+        setState((prev) => ({
           ...prev,
-          { type: 'header', runId: event.runId, concurrency: event.concurrency },
-        ]);
+          run: { runId: event.runId, testCount: event.testCount, concurrency: event.concurrency, startMs: Date.now() },
+          staticItems: [...prev.staticItems, { type: 'header', runId: event.runId, concurrency: event.concurrency }],
+        }));
       } else if (event.type === 'test:start') {
-        setRunning((prev) => { const next = new Set(prev); next.add(event.testId); return next; });
-      } else if (event.type === 'test:end') {
-        setRunning((prev) => {
-          const next = new Set(prev);
-          next.delete(event.testId);
-          return next;
+        setState((prev) => {
+          const running = new Set(prev.running);
+          running.add(event.testId);
+          return { ...prev, running };
         });
-        setStaticItems((prev) => [
-          ...prev,
-          { type: 'test', testId: event.testId, result: event.result },
-        ]);
-        setDoneCount((prev) => prev + 1);
+      } else if (event.type === 'test:end') {
+        setState((prev) => {
+          const running = new Set(prev.running);
+          running.delete(event.testId);
+          return {
+            ...prev,
+            running,
+            doneCount: prev.doneCount + 1,
+            staticItems: [...prev.staticItems, { type: 'test', testId: event.testId, result: event.result }],
+          };
+        });
       } else if (event.type === 'run:end') {
-        setRunEnd(event);
+        setState((prev) => ({ ...prev, runEnd: event }));
       }
     });
     return unsubscribe;
   }, [events]);
 
   useEffect(() => {
-    if (!run || runEnd) { return; }
-    const id = setInterval(() => setElapsed(Date.now() - run.startMs), 100);
+    if (!state.run || state.runEnd) { return; }
+    const { startMs } = state.run;
+    const id = setInterval(() => setElapsed(Date.now() - startMs), 100);
     return () => clearInterval(id);
-  }, [run, runEnd]);
+  }, [state.run, state.runEnd]);
 
   useEffect(() => {
-    if (runEnd) { onExit?.(); }
-  }, [runEnd, onExit]);
+    if (state.runEnd) { onExit?.(); }
+  }, [state.runEnd, onExit]);
 
+  const { run, running, doneCount, runEnd, staticItems } = state;
   const queued = run ? run.testCount - doneCount - running.size : 0;
+
+  const MAX_VISIBLE_RUNNING = 8;
+  const runningArr = [...running];
+  const visibleRunning = runningArr.slice(0, MAX_VISIBLE_RUNNING);
+  const hiddenRunning = running.size - visibleRunning.length;
 
   return (
     <Box flexDirection="column" gap={0}>
@@ -111,9 +129,15 @@ export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
 
       {!runEnd && (
         <>
-          {[...running].map((testId) => (
+          {visibleRunning.map((testId) => (
             <TestRow key={testId} status="running" testId={testId} />
           ))}
+          {hiddenRunning > 0 && (
+            <Box gap={1}>
+              <Text color="#97a3b6">{'  ·'}</Text>
+              <Text color="#475063">{`${hiddenRunning} more running`}</Text>
+            </Box>
+          )}
           {queued > 0 && (
             <Box gap={1}>
               <Text color="#97a3b6">{'  ○'}</Text>
