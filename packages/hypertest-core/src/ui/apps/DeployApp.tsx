@@ -53,7 +53,7 @@ export const DeployApp = ({ events, onExit }: DeployAppProps) => {
     if (doneReason) { return; }
     const id = setInterval(() => setElapsed(Date.now() - startMs), 100);
     return () => clearInterval(id);
-  }, [doneReason]);
+  }, [doneReason, startMs]);
 
   useEffect(() => {
     if (doneReason) { onExit?.(); }

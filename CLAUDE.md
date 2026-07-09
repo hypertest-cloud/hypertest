@@ -145,7 +145,7 @@ Set `HYPERTEST_DEV=true` to run the CLI with mocked data — no AWS credentials 
 Useful for developing the Ink UI without a real cloud deployment.
 
 ```bash
-HYPERTEST_DEV=true npx hypertest invoke   # Simulated run with 13 mock tests
+HYPERTEST_DEV=true npx hypertest invoke   # Simulated run with 14 mock tests
 HYPERTEST_DEV=true npx hypertest deploy   # Simulated deploy steps
 HYPERTEST_DEV_SPEED=5                     # Speed multiplier (default 10×); lower = slower animation
 ```
@@ -153,16 +153,20 @@ HYPERTEST_DEV_SPEED=5                     # Speed multiplier (default 10×); low
 ## Testing
 
 ```bash
-npm test --workspace=packages/hypertest-core   # 59 unit tests
+npm test --workspace=packages/hypertest-core   # 128 unit tests
 ```
 
-Uses Node's built-in test runner with `tsx/esm` for TypeScript + JSX and `ink-testing-library` for Ink component tests. Structure mirrors `src/ui/`:
+Uses Node's built-in test runner with `tsx/esm` for TypeScript + JSX and `ink-testing-library` for Ink component tests.
 
 ```
 src/__tests__/
-├── apps/          # InvokeApp, DeployApp, DoctorApp
-├── components/    # TestRow, InvokeSummary, …
-└── reporters/     # plainReporter
+├── apps/              # InvokeApp, DeployApp, DoctorApp
+├── components/        # TestRow, InvokeSummary, DoctorCheck, StepList, …
+├── reporters/         # plainReporter, pickReporter
+├── events.test.ts
+├── init.test.ts
+├── parseTestResult.test.ts
+└── theme.test.ts
 ```
 
 ## Code Quality
