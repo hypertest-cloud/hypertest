@@ -1,5 +1,5 @@
 import { Box, Text } from 'ink';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { DeployStep, HypertestEvents } from '@hypertest/hypertest-types';
 import { Wordmark } from '../components/Wordmark.js';
 import { Rule } from '../components/Rule.js';
@@ -14,50 +14,57 @@ const INITIAL_STEPS: Record<DeployStep, StepState> = {
   updateLambda: { status: 'pending' },
 };
 
+interface DeployState {
+  steps: Record<DeployStep, StepState>;
+  doneReason: 'success' | 'error' | null;
+}
+
+const INITIAL_STATE: DeployState = { steps: INITIAL_STEPS, doneReason: null };
+
 interface DeployAppProps {
   events: HypertestEvents;
   onExit?: () => void;
 }
 
 export const DeployApp = ({ events, onExit }: DeployAppProps) => {
-  const [steps, setSteps] = useState<Record<DeployStep, StepState>>(INITIAL_STEPS);
-  const [doneReason, setDoneReason] = useState<'success' | 'error' | null>(null);
+  const [state, setState] = useState<DeployState>(INITIAL_STATE);
   const startMs = useRef(Date.now()).current;
   const [elapsed, setElapsed] = useState(0);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const unsubscribe = events.on((event) => {
       if (event.type === 'deploy:step') {
-        setSteps((prev) => {
-          const next = { ...prev };
+        setState((prev) => {
+          const steps = { ...prev.steps };
           if (event.status === 'start') {
-            next[event.step] = { status: 'running' };
+            steps[event.step] = { status: 'running' };
           } else if (event.status === 'end') {
-            next[event.step] = { status: 'done', durationMs: event.durationMs ?? 0 };
+            steps[event.step] = { status: 'done', durationMs: event.durationMs ?? 0 };
           } else {
-            next[event.step] = { status: 'error', error: event.error ?? 'unknown error' };
+            steps[event.step] = { status: 'error', error: event.error ?? 'unknown error' };
           }
-          return next;
+          let doneReason = prev.doneReason;
+          if (event.step === 'updateLambda' && event.status === 'end') {
+            doneReason = 'success';
+          } else if (event.status === 'error') {
+            doneReason = 'error';
+          }
+          return { steps, doneReason };
         });
-        if (event.step === 'updateLambda' && event.status === 'end') {
-          setDoneReason('success');
-        } else if (event.status === 'error') {
-          setDoneReason('error');
-        }
       }
     });
     return unsubscribe;
   }, [events]);
 
   useEffect(() => {
-    if (doneReason) { return; }
+    if (state.doneReason) { return; }
     const id = setInterval(() => setElapsed(Date.now() - startMs), 100);
     return () => clearInterval(id);
-  }, [doneReason, startMs]);
+  }, [state.doneReason, startMs]);
 
   useEffect(() => {
-    if (doneReason) { onExit?.(); }
-  }, [doneReason, onExit]);
+    if (state.doneReason) { onExit?.(); }
+  }, [state.doneReason, onExit]);
 
   return (
     <Box flexDirection="column" gap={0}>
@@ -65,12 +72,12 @@ export const DeployApp = ({ events, onExit }: DeployAppProps) => {
       <Text> </Text>
       <Box gap={1}>
         <Text color="#97a3b6">{'DEPLOY'}</Text>
-        {doneReason === 'success' && <Text color="#1ee600">{'✓ done'}</Text>}
-        {doneReason === 'error' && <Text color="#f43d5e">{'✕ failed'}</Text>}
+        {state.doneReason === 'success' && <Text color="#1ee600">{'✓ done'}</Text>}
+        {state.doneReason === 'error' && <Text color="#f43d5e">{'✕ failed'}</Text>}
       </Box>
       <Rule />
       <Text> </Text>
-      <StepList steps={steps} />
+      <StepList steps={state.steps} />
       <Text> </Text>
       <Text color="#475063">{`elapsed ${formatDuration(elapsed)}`}</Text>
     </Box>

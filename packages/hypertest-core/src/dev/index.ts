@@ -75,7 +75,7 @@ export const createDevCore = (events: HypertestEvents): HypertestCore => ({
       const durationMs = Math.round(realMs / SPEED);
       events.emit({ type: 'deploy:step', step, status: 'start' });
       await sleep(durationMs);
-      events.emit({ type: 'deploy:step', step, status: 'end', durationMs: realMs });
+      events.emit({ type: 'deploy:step', step, status: 'end', durationMs });
     }
   },
 
