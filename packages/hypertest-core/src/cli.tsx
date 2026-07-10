@@ -114,11 +114,13 @@ program
     const events = createEventBus();
     const reporter = pickReporter('deploy', events, opts.quiet);
     const silent = !opts.quiet && !!process.stdout.isTTY;
+    let deployStarted = false;
     try {
       const core = await setupHypertest({ dryRun: opts.dryRun, silent, events });
+      deployStarted = true;
       await core.deploy();
     } catch {
-      reporter.abort();
+      if (!deployStarted) reporter.abort();
       process.exitCode = 1;
     } finally {
       await reporter.done();
