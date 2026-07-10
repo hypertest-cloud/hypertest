@@ -13,7 +13,8 @@ export const runCommand = (
     const stdio: 'pipe' | 'inherit' =
       options?.input || options?.silent ? 'pipe' : 'inherit';
 
-    const child = spawn('sh', ['-c', cmd], {
+    const child = spawn(cmd, {
+      shell: true,
       stdio: [stdio, stdio, stdio],
       cwd: options?.cwd ?? process.cwd(),
     });
