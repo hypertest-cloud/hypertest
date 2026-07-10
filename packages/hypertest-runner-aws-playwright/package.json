@@ -10,7 +10,7 @@
     "build": "tsc",
     "start": "node ./dist/bin.js",
     "lint": "biome lint",
-    "test": "node --import tsx/esm --test --test-reporter=spec $(find src/__tests__ -regex '.*\\.test\\.tsx?$')"
+    "test": "node --import tsx/esm --test --test-reporter=spec \"src/__tests__/**/*.test.ts\" \"src/__tests__/**/*.test.tsx\""
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
