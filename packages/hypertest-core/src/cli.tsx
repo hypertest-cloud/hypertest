@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import 'dotenv/config';
 import { Command } from '@commander-js/extra-typings';
-import { ZodError } from 'zod';
-import { CheckError, type Check } from '@hypertest/hypertest-types';
+import { type Check, CheckError } from '@hypertest/hypertest-types';
 import type { HypertestEvents } from '@hypertest/hypertest-types';
 import { render } from 'ink';
+import { ZodError } from 'zod';
 import { loadConfig } from './config.js';
 import { createEventBus } from './events.js';
 import { setupHypertest } from './index.js';
@@ -38,8 +38,6 @@ const CORE_CHECKS: Check[] = [
   },
 ] as const;
 
-const DEV_MODE = process.env.HYPERTEST_DEV === 'true';
-
 const runCheck = async (check: Check) => {
   const result = await check
     .run()
@@ -48,15 +46,31 @@ const runCheck = async (check: Check) => {
       if (err instanceof CheckError) {
         return { status: 'warn' as const, message: err.message, data: null };
       }
-      return { status: 'error' as const, message: err instanceof Error ? err.message : String(err), data: null };
+      return {
+        status: 'error' as const,
+        message: err instanceof Error ? err.message : String(err),
+        data: null,
+      };
     });
   return { title: check.title, ...result };
 };
 
 const runDoctor = async (events: HypertestEvents) => {
-  if (DEV_MODE) {
-    events.emit({ type: 'doctor:check', title: 'Hypertest Config', status: 'ok', message: 'dev mode — config check skipped', data: null });
-    events.emit({ type: 'doctor:check', title: 'AWS Credentials',  status: 'ok', message: 'dev mode — AWS check skipped',    data: null });
+  if (process.env.HYPERTEST_DEV === 'true') {
+    events.emit({
+      type: 'doctor:check',
+      title: 'Hypertest Config',
+      status: 'ok',
+      message: 'dev mode — config check skipped',
+      data: null,
+    });
+    events.emit({
+      type: 'doctor:check',
+      title: 'AWS Credentials',
+      status: 'ok',
+      message: 'dev mode — AWS check skipped',
+      data: null,
+    });
     return;
   }
 
@@ -87,8 +101,12 @@ program
       const { waitUntilExit } = render(<InitApp configPath={configPath} />);
       await waitUntilExit();
     } else {
-      process.stdout.write(`${color.inkSecondary(icon.arrow)} created ${configPath}\n`);
-      process.stdout.write('\nhypertest initialized.\n\nNext steps:\n  npx hypertest deploy   deploy tests to the cloud\n  npx hypertest invoke   run tests in cloud\n');
+      process.stdout.write(
+        `${color.inkSecondary(icon.arrow)} created ${configPath}\n`,
+      );
+      process.stdout.write(
+        '\nhypertest initialized.\n\nNext steps:\n  npx hypertest deploy   deploy tests to the cloud\n  npx hypertest invoke   run tests in cloud\n',
+      );
     }
   });
 
@@ -116,7 +134,11 @@ program
     const silent = !opts.quiet && !!process.stdout.isTTY;
     let deployStarted = false;
     try {
-      const core = await setupHypertest({ dryRun: opts.dryRun, silent, events });
+      const core = await setupHypertest({
+        dryRun: opts.dryRun,
+        silent,
+        events,
+      });
       deployStarted = true;
       await core.deploy();
     } catch {
@@ -136,7 +158,11 @@ program
     const reporter = pickReporter('invoke', events, opts.quiet);
     const silent = !opts.quiet && !!process.stdout.isTTY;
     try {
-      const core = await setupHypertest({ dryRun: opts.dryRun, silent, events });
+      const core = await setupHypertest({
+        dryRun: opts.dryRun,
+        silent,
+        events,
+      });
       await core.invoke();
     } catch {
       reporter.abort();
