@@ -1,9 +1,13 @@
-import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createEventBus } from '../events.js';
+import { test } from 'node:test';
 import type { HypertestEvent } from '@hypertest/hypertest-types';
+import { createEventBus } from '../events.js';
 
-const sampleEvent: HypertestEvent = { type: 'log', level: 'info', message: 'hello' };
+const sampleEvent: HypertestEvent = {
+  type: 'deploy:step',
+  step: 'pullBase',
+  status: 'start',
+};
 
 test('emit delivers event to listener', () => {
   const bus = createEventBus();

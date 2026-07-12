@@ -9,7 +9,13 @@ export type DeployStep =
 
 export type HypertestEvent =
   | { type: 'run:start'; runId: string; testCount: number; concurrency: number }
-  | { type: 'run:end'; runId: string; result: HypertestRunResult; localPath: string; artifactsBaseUrl?: string }
+  | {
+      type: 'run:end';
+      runId: string;
+      result: HypertestRunResult;
+      localPath: string;
+      artifactsBaseUrl?: string;
+    }
   | { type: 'test:start'; testId: string }
   | { type: 'test:end'; testId: string; result: HypertestTestResult }
   | {
@@ -19,7 +25,6 @@ export type HypertestEvent =
       durationMs?: number;
       error?: string;
     }
-  | { type: 'log'; level: 'info' | 'warn' | 'error' | 'debug'; message: string }
   | {
       type: 'doctor:check';
       title: string;

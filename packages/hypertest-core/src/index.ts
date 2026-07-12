@@ -13,10 +13,10 @@ import type {
   TestRunnerPlugin,
 } from '@hypertest/hypertest-types';
 import { loadConfig } from './config.js';
-import { createEventBus } from './events.js';
 import { createDevCore } from './dev/index.js';
-import { promiseMap } from './utils.js';
+import { createEventBus } from './events.js';
 import { hashDirectory } from './hashDirectory.js';
+import { promiseMap } from './utils.js';
 
 interface HypertestCore {
   deploy: () => Promise<void>;
@@ -48,7 +48,10 @@ export const parseTestResult = (
       : invokeEnd.getTime() - invokeStart.getTime(),
   error:
     invokeResponse.success === false
-      ? { message: invokeResponse.message, stackTrace: invokeResponse.stackTrace }
+      ? {
+          message: invokeResponse.message,
+          stackTrace: invokeResponse.stackTrace,
+        }
       : undefined,
 });
 
@@ -104,8 +107,9 @@ export const HypertestCore = <InvokePayloadContext>(options: {
           'Your local test code differ from what is deploying in cloud infrastructure';
 
         const policyActions = {
-          warning: () =>
-            options.events.emit({ type: 'log', level: 'warn', message }),
+          warning: () => {
+            options.config.logger.warn(message);
+          },
           error: () => {
             throw new Error(message);
           },
@@ -135,6 +139,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
         functionInvokePayloads,
         async (payload) => {
           options.events.emit({ type: 'test:start', testId: payload.testId });
+          options.config.logger.verbose(`TestId: ${payload.testId}`);
           const invokeStart = new Date();
           const invokeResponse = await options.cloudProvider.invoke(payload);
           const invokeEnd = new Date();
@@ -144,7 +149,14 @@ export const HypertestCore = <InvokePayloadContext>(options: {
             invokeStart,
             invokeEnd,
           );
-          options.events.emit({ type: 'test:end', testId: payload.testId, result });
+          options.events.emit({
+            type: 'test:end',
+            testId: payload.testId,
+            result,
+          });
+          options.config.logger.verbose(
+            `Invoke response: ${JSON.stringify(invokeResponse, null, 2)}`,
+          );
           return result;
         },
         { concurrency: options.config.concurrency },
@@ -173,18 +185,40 @@ export const HypertestCore = <InvokePayloadContext>(options: {
       };
 
       const json = JSON.stringify(runResult, null, 2);
-      const localPath = path.join(process.cwd(), options.config.resultsFileName);
+      const localPath = path.join(
+        process.cwd(),
+        options.config.resultsFileName,
+      );
 
       await writeFile(localPath, json, 'utf-8');
-      const { artifactsBaseUrl } = await options.cloudProvider.uploadRunResult(runId, json);
+      options.config.logger.info(
+        `Results written to ${localPath} and uploaded to cloud storage at ${runId}/${options.config.resultsFileName}`,
+      );
+      const { artifactsBaseUrl } = await options.cloudProvider.uploadRunResult(
+        runId,
+        json,
+      );
 
-      options.events.emit({ type: 'run:end', runId, result: runResult, localPath, artifactsBaseUrl });
+      options.events.emit({
+        type: 'run:end',
+        runId,
+        result: runResult,
+        localPath,
+        artifactsBaseUrl,
+      });
+      options.config.logger.info(
+        `Functions invoked successfully. Run id: ${runId}`,
+      );
     },
 
     deploy: async () => {
       const step = async (name: DeployStep, fn: () => Promise<void>) => {
         const start = Date.now();
-        options.events.emit({ type: 'deploy:step', step: name, status: 'start' });
+        options.events.emit({
+          type: 'deploy:step',
+          step: name,
+          status: 'start',
+        });
         try {
           await fn();
           options.events.emit({
@@ -205,9 +239,19 @@ export const HypertestCore = <InvokePayloadContext>(options: {
         }
       };
 
+      options.config.logger.info(
+        'Deploying lambda image to the cloud infrastructure',
+      );
+      options.config.logger.info('Pulling base image');
       await step('pullBase', () => options.cloudProvider.pullBaseImage());
+
+      options.config.logger.info('Building container image');
       await step('build', () => options.testRunner.buildImage());
+
+      options.config.logger.info('Pushing image to the cloud');
       await step('push', () => options.cloudProvider.pushImage());
+
+      options.config.logger.info('Building and storing manifest');
       await step('manifest', async () => {
         const invokePayloadContext =
           await options.testRunner.getInvokePayloadContext();
@@ -217,7 +261,13 @@ export const HypertestCore = <InvokePayloadContext>(options: {
           testDirHash,
         );
       });
-      await step('updateLambda', () => options.cloudProvider.updateLambdaImage());
+
+      options.config.logger.info(
+        'Updating lambda image and waiting for deployment to complete',
+      );
+      await step('updateLambda', () =>
+        options.cloudProvider.updateLambdaImage(),
+      );
     },
   };
 };

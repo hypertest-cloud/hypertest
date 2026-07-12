@@ -1,3 +1,5 @@
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { Dockerfile } from '@hypertest/hypertest-playwright-container';
 import type {
   ResolvedHypertestConfig,
@@ -5,8 +7,7 @@ import type {
   TestRunnerPluginDefinition,
 } from '@hypertest/hypertest-types';
 import type { PlaywrightTestConfig } from '@playwright/test';
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import type winston from 'winston';
 import { z } from 'zod';
 import { buildDockerImage } from './docker-build.js';
 import { getGrepString } from './getGrepString.js';
@@ -16,17 +17,8 @@ import type { PlaywrightCloudFunctionContext } from './types.js';
 
 const CONFIG_FILE_PATH = './playwright.config.js';
 
-const makeLog = (config: ResolvedHypertestConfig) =>
-  (level: 'info' | 'warn' | 'error' | 'debug', message: string) => {
-    if (config.events) {
-      config.events.emit({ type: 'log', level, message });
-    } else {
-      config.logger[level === 'debug' ? 'verbose' : level](message);
-    }
-  };
-
 const getPlaywrightConfigFactory = (
-  log: (level: 'info' | 'warn' | 'error' | 'debug', message: string) => void,
+  logger: winston.Logger,
 ): (() => Promise<PlaywrightTestConfig>) => {
   let pwConfig: PlaywrightTestConfig | null = null;
 
@@ -35,7 +27,7 @@ const getPlaywrightConfigFactory = (
       return pwConfig;
     }
 
-    log('debug', `Loading PW config from: ${CONFIG_FILE_PATH}`);
+    logger.verbose(`Loading PW config from: ${CONFIG_FILE_PATH}`);
     const fileUrl = pathToFileURL(
       path.resolve(process.cwd(), CONFIG_FILE_PATH),
     ).href;
@@ -74,8 +66,7 @@ const PlaywrightRunnerPlugin = (options: {
   dryRun?: boolean;
   silent?: boolean;
 }): TestRunnerPlugin<PlaywrightCloudFunctionContext> => {
-  const log = makeLog(options.config);
-  const getPlaywrightConfig = getPlaywrightConfigFactory(log);
+  const getPlaywrightConfig = getPlaywrightConfigFactory(options.config.logger);
 
   return {
     buildImage: async () => {
@@ -104,10 +95,12 @@ const PlaywrightRunnerPlugin = (options: {
       const pwConfig = await getPlaywrightConfig();
       const projectName = getProjectName(pwConfig);
       const testDir = getTestDir(pwConfig);
-      log('debug', `Playwright tests directory: ${testDir}`);
+      options.config.logger.verbose(`Playwright tests directory: ${testDir}`);
 
       const specFilePaths = getSpecFilePaths(testDir);
-      log('debug', `Playwright test spec file paths: ${specFilePaths.join(', ')}`);
+      options.config.logger.verbose(
+        `Playwright test spec file paths: ${specFilePaths.join(', ')}`,
+      );
 
       const fileContexts = await Promise.all(
         specFilePaths.map(async (specFilePath) => {

@@ -1,6 +1,9 @@
-import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import type { HypertestTestResult, HypertestRunResult } from '@hypertest/hypertest-types';
+import { afterEach, beforeEach, test } from 'node:test';
+import type {
+  HypertestRunResult,
+  HypertestTestResult,
+} from '@hypertest/hypertest-types';
 import { createEventBus } from '../../events.js';
 import { createPlainReporter } from '../../ui/reporters/plainReporter.js';
 
@@ -20,7 +23,9 @@ afterEach(() => {
   process.stdout.write = origWrite;
 });
 
-const makeTestResult = (overrides: Partial<HypertestTestResult> = {}): HypertestTestResult => ({
+const makeTestResult = (
+  overrides: Partial<HypertestTestResult> = {},
+): HypertestTestResult => ({
   testId: 'tid-1',
   name: 'my test',
   filePath: 'tests/foo.spec.ts',
@@ -31,7 +36,9 @@ const makeTestResult = (overrides: Partial<HypertestTestResult> = {}): Hypertest
   ...overrides,
 });
 
-const makeRunResult = (overrides: Partial<HypertestRunResult> = {}): HypertestRunResult => ({
+const makeRunResult = (
+  overrides: Partial<HypertestRunResult> = {},
+): HypertestRunResult => ({
   runId: 'run-1',
   startDate: '2024-01-01T00:00:00Z',
   endDate: '2024-01-01T00:00:32Z',
@@ -44,7 +51,12 @@ const makeRunResult = (overrides: Partial<HypertestRunResult> = {}): HypertestRu
 test('run:start outputs test count, concurrency, runId', () => {
   const bus = createEventBus();
   createPlainReporter(bus);
-  bus.emit({ type: 'run:start', runId: 'my-run-id', testCount: 5, concurrency: 4 });
+  bus.emit({
+    type: 'run:start',
+    runId: 'my-run-id',
+    testCount: 5,
+    concurrency: 4,
+  });
   const line = captured.join('');
   assert.ok(line.includes('[run:start]'), `line: ${line}`);
   assert.ok(line.includes('5 tests'), `line: ${line}`);
@@ -55,7 +67,11 @@ test('run:start outputs test count, concurrency, runId', () => {
 test('test:end success outputs check mark and name', () => {
   const bus = createEventBus();
   createPlainReporter(bus);
-  bus.emit({ type: 'test:end', testId: 'tid-1', result: makeTestResult({ name: 'passing', status: 'success' }) });
+  bus.emit({
+    type: 'test:end',
+    testId: 'tid-1',
+    result: makeTestResult({ name: 'passing', status: 'success' }),
+  });
   const line = captured.join('');
   assert.ok(line.includes('[test:end] ✓'), `line: ${line}`);
   assert.ok(line.includes('passing'), `line: ${line}`);
@@ -82,7 +98,11 @@ test('test:end failed outputs cross mark and error message', () => {
 test('test:end skipped outputs skip glyph', () => {
   const bus = createEventBus();
   createPlainReporter(bus);
-  bus.emit({ type: 'test:end', testId: 'tid-1', result: makeTestResult({ status: 'skipped', name: 'skipped test' }) });
+  bus.emit({
+    type: 'test:end',
+    testId: 'tid-1',
+    result: makeTestResult({ status: 'skipped', name: 'skipped test' }),
+  });
   const line = captured.join('');
   assert.ok(line.includes('[test:end] ◯'), `line: ${line}`);
 });
@@ -93,7 +113,9 @@ test('run:end outputs counts', () => {
   bus.emit({
     type: 'run:end',
     runId: 'r1',
-    result: makeRunResult({ tests: { total: 3, success: 2, skipped: 1, failed: 0 } }),
+    result: makeRunResult({
+      tests: { total: 3, success: 2, skipped: 1, failed: 0 },
+    }),
     localPath: './hypertest.results.json',
   });
   const line = captured.join('');
@@ -115,7 +137,12 @@ test('deploy:step start outputs starting message', () => {
 test('deploy:step end outputs done with duration', () => {
   const bus = createEventBus();
   createPlainReporter(bus);
-  bus.emit({ type: 'deploy:step', step: 'build', status: 'end', durationMs: 12400 });
+  bus.emit({
+    type: 'deploy:step',
+    step: 'build',
+    status: 'end',
+    durationMs: 12400,
+  });
   const line = captured.join('');
   assert.ok(line.includes('[deploy]'), `line: ${line}`);
   assert.ok(line.includes('done'), `line: ${line}`);
@@ -125,7 +152,12 @@ test('deploy:step end outputs done with duration', () => {
 test('deploy:step error outputs error message', () => {
   const bus = createEventBus();
   createPlainReporter(bus);
-  bus.emit({ type: 'deploy:step', step: 'push', status: 'error', error: 'ECR auth failed' });
+  bus.emit({
+    type: 'deploy:step',
+    step: 'push',
+    status: 'error',
+    error: 'ECR auth failed',
+  });
   const line = captured.join('');
   assert.ok(line.includes('[deploy]'), `line: ${line}`);
   assert.ok(line.includes('error:'), `line: ${line}`);
@@ -135,7 +167,12 @@ test('deploy:step error outputs error message', () => {
 test('doctor:check ok outputs check mark', () => {
   const bus = createEventBus();
   createPlainReporter(bus);
-  bus.emit({ type: 'doctor:check', title: 'AWS Creds', status: 'ok', message: 'ok' });
+  bus.emit({
+    type: 'doctor:check',
+    title: 'AWS Creds',
+    status: 'ok',
+    message: 'ok',
+  });
   const line = captured.join('');
   assert.ok(line.includes('[doctor] ✓'), `line: ${line}`);
   assert.ok(line.includes('AWS Creds'), `line: ${line}`);
@@ -144,7 +181,12 @@ test('doctor:check ok outputs check mark', () => {
 test('doctor:check warn outputs warning glyph', () => {
   const bus = createEventBus();
   createPlainReporter(bus);
-  bus.emit({ type: 'doctor:check', title: 'ECR', status: 'warn', message: 'not found' });
+  bus.emit({
+    type: 'doctor:check',
+    title: 'ECR',
+    status: 'warn',
+    message: 'not found',
+  });
   const line = captured.join('');
   assert.ok(line.includes('[doctor] ▲'), `line: ${line}`);
 });
@@ -152,25 +194,24 @@ test('doctor:check warn outputs warning glyph', () => {
 test('doctor:check error outputs cross mark', () => {
   const bus = createEventBus();
   createPlainReporter(bus);
-  bus.emit({ type: 'doctor:check', title: 'Config', status: 'error', message: 'missing' });
+  bus.emit({
+    type: 'doctor:check',
+    title: 'Config',
+    status: 'error',
+    message: 'missing',
+  });
   const line = captured.join('');
   assert.ok(line.includes('[doctor] ✕'), `line: ${line}`);
-});
-
-test('log event outputs level and message', () => {
-  const bus = createEventBus();
-  createPlainReporter(bus);
-  bus.emit({ type: 'log', level: 'info', message: 'deploying...' });
-  const line = captured.join('');
-  assert.ok(line.includes('[info]'), `line: ${line}`);
-  assert.ok(line.includes('deploying...'), `line: ${line}`);
 });
 
 test('done: unsubscribes listener', async () => {
   const bus = createEventBus();
   const reporter = createPlainReporter(bus);
   await reporter.done();
-  bus.emit({ type: 'log', level: 'info', message: 'after unsubscribe' });
+  bus.emit({ type: 'test:start', testId: 'after unsubscribe' });
   const line = captured.join('');
-  assert.ok(!line.includes('after unsubscribe'), `should not receive events after done: ${line}`);
+  assert.ok(
+    !line.includes('after unsubscribe'),
+    `should not receive events after done: ${line}`,
+  );
 });
