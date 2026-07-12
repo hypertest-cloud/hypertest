@@ -7,19 +7,19 @@ import { Wordmark } from '../components/Wordmark.js';
 import { formatDuration } from '../theme.js';
 
 const INITIAL_STEPS: Record<DeployStep, StepState> = {
-  pullBase:     { status: 'pending' },
-  build:        { status: 'pending' },
-  push:         { status: 'pending' },
-  manifest:     { status: 'pending' },
+  pullBase: { status: 'pending' },
+  build: { status: 'pending' },
+  push: { status: 'pending' },
+  manifest: { status: 'pending' },
   updateLambda: { status: 'pending' },
 };
 
 interface DeployState {
   steps: Record<DeployStep, StepState>;
-  doneReason: 'success' | 'error' | null;
+  status: 'success' | 'error' | null;
 }
 
-const INITIAL_STATE: DeployState = { steps: INITIAL_STEPS, doneReason: null };
+const INITIAL_STATE: DeployState = { steps: INITIAL_STEPS, status: null };
 
 interface DeployAppProps {
   events: HypertestEvents;
@@ -42,17 +42,23 @@ export const DeployApp = ({ events, onExit }: DeployAppProps) => {
           if (event.status === 'start') {
             steps[event.step] = { status: 'running' };
           } else if (event.status === 'end') {
-            steps[event.step] = { status: 'done', durationMs: event.durationMs ?? 0 };
+            steps[event.step] = {
+              status: 'done',
+              durationMs: event.durationMs ?? 0,
+            };
           } else {
-            steps[event.step] = { status: 'error', error: event.error ?? 'unknown error' };
+            steps[event.step] = {
+              status: 'error',
+              error: event.error ?? 'unknown error',
+            };
           }
-          let doneReason = prev.doneReason;
+          let status = prev.status;
           if (event.step === 'updateLambda' && event.status === 'end') {
-            doneReason = 'success';
+            status = 'success';
           } else if (event.status === 'error') {
-            doneReason = 'error';
+            status = 'error';
           }
-          return { steps, doneReason };
+          return { steps, status };
         });
       }
     });
@@ -60,18 +66,22 @@ export const DeployApp = ({ events, onExit }: DeployAppProps) => {
   }, [events]);
 
   useEffect(() => {
-    if (state.doneReason) { return; }
+    if (state.status) {
+      return;
+    }
     const id = setInterval(() => {
       if (deployStartMs.current !== null) {
         setElapsed(Date.now() - deployStartMs.current);
       }
     }, 100);
     return () => clearInterval(id);
-  }, [state.doneReason]);
+  }, [state.status]);
 
   useEffect(() => {
-    if (state.doneReason) { onExit?.(); }
-  }, [state.doneReason, onExit]);
+    if (state.status) {
+      onExit?.();
+    }
+  }, [state.status, onExit]);
 
   return (
     <Box flexDirection="column" gap={0}>
@@ -79,8 +89,8 @@ export const DeployApp = ({ events, onExit }: DeployAppProps) => {
       <Text> </Text>
       <Box gap={1}>
         <Text color="#97a3b6">{'DEPLOY'}</Text>
-        {state.doneReason === 'success' && <Text color="#1ee600">{'✓ done'}</Text>}
-        {state.doneReason === 'error' && <Text color="#f43d5e">{'✕ failed'}</Text>}
+        {state.status === 'success' && <Text color="#1ee600">{'✓ done'}</Text>}
+        {state.status === 'error' && <Text color="#f43d5e">{'✕ failed'}</Text>}
       </Box>
       <Rule />
       <Text> </Text>
