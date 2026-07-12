@@ -178,7 +178,6 @@ interface HypertestEvents {
 | `test:start` | A single test Lambda is invoked; carries `testId` |
 | `test:end` | A single test completes; carries `testId` and `result` |
 | `deploy:step` | A deploy step starts, ends, or errors; carries `step`, `status`, `durationMs`, `error` |
-| `log` | Informational message from core or a plugin; carries `level` and `message` |
 | `doctor:check` | A doctor check resolves; carries `title`, `status`, `message`, optional `data` |
 | `doctor:done` | All doctor checks complete |
 
