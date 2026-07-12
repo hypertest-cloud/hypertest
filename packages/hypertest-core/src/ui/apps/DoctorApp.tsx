@@ -1,9 +1,12 @@
+import type {
+  HypertestEvent,
+  HypertestEvents,
+} from '@hypertest/hypertest-types';
 import { Box, Text } from 'ink';
-import { useEffect, useState } from 'react';
-import type { HypertestEvent, HypertestEvents } from '@hypertest/hypertest-types';
-import { Wordmark } from '../components/Wordmark.js';
-import { Rule } from '../components/Rule.js';
+import { useLayoutEffect, useState } from 'react';
 import { DoctorCheck } from '../components/DoctorCheck.js';
+import { Rule } from '../components/Rule.js';
+import { Wordmark } from '../components/Wordmark.js';
 
 type CheckResult = Extract<HypertestEvent, { type: 'doctor:check' }>;
 
@@ -15,7 +18,7 @@ interface DoctorAppProps {
 export const DoctorApp = ({ events, onExit }: DoctorAppProps) => {
   const [checks, setChecks] = useState<CheckResult[]>([]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const unsubscribe = events.on((event) => {
       if (event.type === 'doctor:check') {
         setChecks((prev) => [...prev, event]);
