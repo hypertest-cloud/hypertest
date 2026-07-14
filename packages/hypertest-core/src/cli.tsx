@@ -6,6 +6,7 @@ import type { HypertestEvents } from '@hypertest/hypertest-types';
 import { render } from 'ink';
 import { ZodError } from 'zod';
 import { loadConfig } from './config.js';
+import { runWithDeployGuard } from './deployGuard.js';
 import { createEventBus } from './events.js';
 import { setupHypertest } from './index.js';
 import { collectInitAnswers, writeInitConfig } from './init/init.js';
@@ -132,17 +133,12 @@ program
     const events = createEventBus();
     const reporter = pickReporter('deploy', events, opts.quiet);
     const silent = !opts.quiet && !!process.stdout.isTTY;
-    let deployStarted = false;
     try {
-      const core = await setupHypertest({
-        dryRun: opts.dryRun,
-        silent,
-        events,
-      });
-      deployStarted = true;
-      await core.deploy();
+      await runWithDeployGuard(
+        () => setupHypertest({ dryRun: opts.dryRun, silent, events }),
+        () => reporter.abort(),
+      );
     } catch {
-      if (!deployStarted) reporter.abort();
       process.exitCode = 1;
     } finally {
       await reporter.done();
