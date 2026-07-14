@@ -72,6 +72,7 @@ export const setupHypertest = async ({
 
   const { config: baseConfig, ...providers } = await loadConfig();
   const config: ResolvedHypertestConfig = { ...baseConfig, events: bus };
+  if (silent) config.logger.silent = true;
   const opts: CommandOptions = { dryRun, silent };
 
   const cloudProvider = providers.cloudProvider.handler(config, opts);
