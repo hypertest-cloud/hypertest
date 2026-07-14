@@ -4,8 +4,8 @@ next:
   text: Playwright
   link: /plugins/playwright
 prev:
-  text: Usage
-  link: /getting-started/usage
+  text: Terminal output
+  link: /getting-started/terminal-ui
 ---
 
 # Plugins overview

@@ -4,8 +4,8 @@ prev:
   text: AWS Playwright
   link: /runners/aws-playwright
 next:
-  text: 'License Overview'
-  link: '/license/overview'
+  text: Logging
+  link: /developers/logging
 ---
 
 # Architecture
@@ -232,6 +232,17 @@ HYPERTEST_DEV_SPEED=5                     # Speed multiplier (default 10×); low
 ```
 
 The mock is implemented in `packages/hypertest-core/src/dev/index.ts`. It emits the same events as the real core so the reporter layer is exercised identically.
+
+## Logging
+
+hypertest has two separate output streams. See [Logging](/developers/logging) for full details.
+
+| Stream | Interface | Consumer |
+|--------|-----------|---------|
+| **Event bus** | `HypertestEvents` | Ink TUI and plain-text reporter |
+| **Logger** | `config.logger` (Winston) | Configured Winston transports |
+
+Events carry lifecycle signals (step started, test ended) that drive the UI. The logger carries operational and debug messages that bypass the UI and go directly to configured transports (stderr, file, remote sink, etc.). The logger is automatically silenced when the Ink TUI is active to prevent TTY rendering corruption.
 
 ## Extensibility
 
