@@ -109,6 +109,7 @@ export const HypertestCore = <InvokePayloadContext>(options: {
 
         const policyActions = {
           warning: () => {
+            // TODO Implement TUI solution for warnings
             options.config.logger.warn(message);
           },
           error: () => {
