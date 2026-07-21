@@ -90,12 +90,12 @@ When the run completes, the summary shows where artifacts and results were store
 ```
 14 tests · 12 passed · 2 failed
 
-ARTIFACTS  s3://your-bucket/run-abc12345/
+ARTIFACTS  <provider>://your-bucket/run-abc12345/
 RESULTS    ./hypertest.results.json
 DURATION   0:32
 ```
 
-The `ARTIFACTS` URL is the S3 prefix for the entire run — screenshots, videos, traces, and the results file are all under this path.
+The `ARTIFACTS` URL is the cloud storage prefix for the entire run — screenshots, videos, traces, and the results file are all under this path. The exact URL format depends on your cloud provider plugin (e.g. `s3://your-bucket/` for AWS).
 
 See [Results](/getting-started/results) for the full file structure.
 
