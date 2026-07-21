@@ -1,17 +1,17 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { runWithDeployGuard } from '../deployGuard.js';
+import { runDeployWithCoreSetupGuard } from '../runDeployWithCoreSetupGuard.js';
 
 const noop = async () => {};
 const mockCore = () => ({ deploy: noop });
 
-test('abort is called when getCore (setup) throws', async () => {
+test('abort is called when setupCoreHandler (setup) throws', async () => {
   let abortCalled = false;
   await assert.rejects(
-    () => runWithDeployGuard(
-      async () => { throw new Error('setup failed'); },
-      () => { abortCalled = true; },
-    ),
+    () => runDeployWithCoreSetupGuard({
+      setupCoreHandler: async () => { throw new Error('setup failed'); },
+      onSetupFailure: () => { abortCalled = true; },
+    }),
     /setup failed/,
   );
   assert.ok(abortCalled, 'abort should be called when setup throws');
@@ -20,10 +20,10 @@ test('abort is called when getCore (setup) throws', async () => {
 test('abort is NOT called when core.deploy() throws after setup succeeds', async () => {
   let abortCalled = false;
   await assert.rejects(
-    () => runWithDeployGuard(
-      async () => ({ deploy: async () => { throw new Error('deploy failed'); } }),
-      () => { abortCalled = true; },
-    ),
+    () => runDeployWithCoreSetupGuard({
+      setupCoreHandler: async () => ({ deploy: async () => { throw new Error('deploy failed'); } }),
+      onSetupFailure: () => { abortCalled = true; },
+    }),
     /deploy failed/,
   );
   assert.ok(!abortCalled, 'abort should not be called when deploy() throws');
@@ -32,13 +32,19 @@ test('abort is NOT called when core.deploy() throws after setup succeeds', async
 test('error is re-thrown so caller can set process.exitCode', async () => {
   const err = new Error('some error');
   await assert.rejects(
-    () => runWithDeployGuard(async () => { throw err; }, () => {}),
+    () => runDeployWithCoreSetupGuard({
+      setupCoreHandler: async () => { throw err; },
+      onSetupFailure: () => {},
+    }),
     (caught: unknown) => caught === err,
   );
 });
 
 test('resolves without error on successful deploy', async () => {
   await assert.doesNotReject(
-    () => runWithDeployGuard(() => Promise.resolve(mockCore()), () => {}),
+    () => runDeployWithCoreSetupGuard({
+      setupCoreHandler: () => Promise.resolve(mockCore()),
+      onSetupFailure: () => {},
+    }),
   );
 });
