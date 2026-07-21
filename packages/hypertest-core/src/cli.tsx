@@ -6,10 +6,10 @@ import type { HypertestEvents } from '@hypertest/hypertest-types';
 import { render } from 'ink';
 import { ZodError } from 'zod';
 import { loadConfig } from './config.js';
-import { runWithDeployGuard } from './deployGuard.js';
 import { createEventBus } from './events.js';
 import { setupHypertest } from './index.js';
 import { collectInitAnswers, writeInitConfig } from './init/init.js';
+import { runDeployWithCoreSetupGuard } from './runDeployWithCoreSetupGuard.js';
 import { InitApp } from './ui/apps/InitApp.js';
 import { pickReporter } from './ui/reporters/pickReporter.js';
 import { color, icon } from './ui/theme.js';
@@ -134,10 +134,11 @@ program
     const reporter = pickReporter('deploy', events, opts.quiet);
     const silent = !opts.quiet && !!process.stdout.isTTY;
     try {
-      await runWithDeployGuard(
-        () => setupHypertest({ dryRun: opts.dryRun, silent, events }),
-        () => reporter.abort(),
-      );
+      await runDeployWithCoreSetupGuard({
+        setupCoreHandler: () =>
+          setupHypertest({ dryRun: opts.dryRun, silent, events }),
+        onSetupFailure: () => reporter.abort(),
+      });
     } catch {
       process.exitCode = 1;
     } finally {
