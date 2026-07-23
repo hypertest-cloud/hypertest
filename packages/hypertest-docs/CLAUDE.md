@@ -4,6 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
+Run commands from `packages/hypertest-docs/`, not the repo root.
+
 ```bash
 npm run dev      # Start local dev server with hot reload
 npm run build    # Build static site (outputs to docs/.vitepress/dist)

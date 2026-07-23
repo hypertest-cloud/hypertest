@@ -4,8 +4,8 @@ prev:
   text: Usage
   link: /getting-started/usage
 next:
-  text: Plugins overview
-  link: /plugins/overview
+  text: CLI Reference
+  link: /getting-started/cli-reference
 ---
 
 # Results

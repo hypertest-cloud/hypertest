@@ -17,6 +17,7 @@ export type DockerBuildOptions<
   platform?: 'linux/amd64';
   buildArgs: BuildArgsOf<TDockerfile>;
   env: EnvOf<TDockerfile>;
+  silent?: boolean;
 };
 
 export async function buildDockerImage<
@@ -29,6 +30,7 @@ export async function buildDockerImage<
   platform,
   buildArgs = {},
   env = {},
+  silent = false,
 }: DockerBuildOptions<TDockerfile>): Promise<void> {
   const args = [
     'buildx',
@@ -49,8 +51,8 @@ export async function buildDockerImage<
 
   await execa('docker', args, {
     input: dockerfile,
-    stdout: 'inherit',
-    stderr: 'inherit',
+    stdout: silent ? 'pipe' : 'inherit',
+    stderr: silent ? 'pipe' : 'inherit',
     env: {
       // biome-ignore lint/style/useNamingConvention: <explanation>
       DOCKER_BUILDKIT: '1',

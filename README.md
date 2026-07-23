@@ -45,8 +45,17 @@ export default defineConfig({
 ### Usage
 
 ```bash
+npx hypertest init      # Create hypertest.config.js interactively
 npx hypertest deploy    # Build and deploy test image to AWS
 npx hypertest invoke    # Run tests in cloud
+npx hypertest doctor    # Validate config and cloud provider setup
+```
+
+In CI or non-TTY environments, add `--quiet` for plain text output:
+
+```bash
+npx hypertest deploy --quiet
+npx hypertest invoke --quiet
 ```
 
 ## Documentation
