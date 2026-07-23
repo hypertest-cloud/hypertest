@@ -10,7 +10,7 @@ next:
 
 # CLI Reference
 
-Complete reference for all `hypertest` commands, flags, and environment variables.
+Complete reference for all `hypertest` commands and flags.
 
 ## Commands
 
@@ -124,24 +124,6 @@ When `--quiet` is passed, or when stdout is not a TTY (CI runners, piped output)
 [test:end] ✕ filters.spec.ts › should respect the back button
 [run:end] 14 tests · 12 passed · 0 skipped · 2 failed
 ```
-
-## Environment variables
-
-### Runtime (your machine / CI)
-
-| Variable | Description |
-|----------|-------------|
-| `AWS_ACCESS_KEY_ID` | AWS access key for ECR, Lambda, S3, and ServiceQuotas |
-| `AWS_SECRET_ACCESS_KEY` | AWS secret key |
-| `AWS_REGION` | AWS region (can also be set in `hypertest.config.js`) |
-| `HYPERTEST_DEV` | Set to `true` to run against mock data — no AWS or Docker required |
-| `HYPERTEST_DEV_SPEED` | Speed multiplier for dev mode animations (default: `10`; lower = slower) |
-
-### Inside Lambda (test execution)
-
-| Variable | Description |
-|----------|-------------|
-| `HT_TEST_ARTIFACTS_OUTPUT_PATH` | Local path inside Lambda where your tests should write screenshots, videos, and traces — hypertest uploads everything under this path to S3 |
 
 ## Exit codes
 

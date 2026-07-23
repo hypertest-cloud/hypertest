@@ -61,6 +61,10 @@ export default {
             text: 'Node.js Version Upgrade',
             link: '/developers/node-version-upgrade',
           },
+          {
+            text: 'Dev Mode',
+            link: '/developers/dev-mode',
+          },
         ],
       },
       {
