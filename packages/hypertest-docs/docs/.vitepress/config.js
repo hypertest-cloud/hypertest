@@ -19,6 +19,8 @@ export default {
           { text: 'Configuration', link: '/getting-started/configuration' },
           { text: 'Usage', link: '/getting-started/usage' },
           { text: 'Results', link: '/getting-started/results' },
+          { text: 'CLI Reference', link: '/getting-started/cli-reference' },
+          { text: 'Terminal output', link: '/getting-started/terminal-ui' },
         ],
       },
       {
@@ -50,6 +52,7 @@ export default {
         collapsed: true,
         items: [
           { text: 'Architecture', link: '/developers/architecture' },
+          { text: 'Logging', link: '/developers/logging' },
           {
             text: 'Manifest',
             link: '/developers/manifest',
@@ -57,6 +60,10 @@ export default {
           {
             text: 'Node.js Version Upgrade',
             link: '/developers/node-version-upgrade',
+          },
+          {
+            text: 'Dev Mode',
+            link: '/developers/dev-mode',
           },
         ],
       },

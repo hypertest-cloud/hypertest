@@ -42,9 +42,32 @@ The `deploy` command performs these operations:
 4. **Builds and stores manifest** - Creates invocation manifest file and stores it in cloud
 5. **Updates Lambda** - Points your Lambda function to the new image
 
+When running in a terminal, hypertest shows a live progress UI:
+
+```
+hypertest.
+
+DEPLOY
+─────────────────────────────────────────────────
+
+  ✓ pull base image          2.1s
+  ✓ build                   14.3s
+  ✓ push                     8.7s
+  ✓ manifest                 0.4s
+  ◌ update lambda ...
+
+elapsed 0:26
+```
+
 ::: tip When to redeploy
 You only need to run `deploy` when your test files or Playwright configuration change. If you're just re-running existing tests, skip straight to `invoke`.
 :::
+
+To simulate a deploy without executing anything, use the `--dry-run` flag:
+
+```bash
+npx hypertest deploy --dry-run
+```
 
 ## Run your tests
 
@@ -57,12 +80,30 @@ npx hypertest invoke
 The `invoke` command:
 
 1. **Analyzes tests** - Scans the test directory and generates a content hash.
-2. **Validates state** - Compares the local hash and deployed image digest against the manifest (mismatch handling is TODO).
+2. **Validates state** - Compares the local hash and deployed image digest against the manifest.
 3. **Invokes functions** - Builds payloads based on the manifest and launches cloud functions in parallel (up to `concurrency` limit).
 4. **Collects results** - Gathers test results and artifacts from cloud storage (like S3 for AWS).
 5. **Writes results file** - Saves `hypertest.results.json` locally and uploads it to cloud storage.
 
+When the run completes, the summary shows where artifacts and results were stored:
+
+```
+14 tests · 12 passed · 2 failed
+
+ARTIFACTS  <provider>://your-bucket/run-abc12345/
+RESULTS    ./hypertest.results.json
+DURATION   0:32
+```
+
+The `ARTIFACTS` URL is the cloud storage prefix for the entire run — screenshots, videos, traces, and the results file are all under this path. The exact URL format depends on your cloud provider plugin (e.g. `s3://your-bucket/` for AWS).
+
 See [Results](/getting-started/results) for the full file structure.
+
+To simulate an invoke without making real Lambda calls:
+
+```bash
+npx hypertest invoke --dry-run
+```
 
 ## Development workflow
 
@@ -132,7 +173,14 @@ test('example with artifacts', async ({ page }) => {
 
 ## CI/CD integration
 
-hypertest integrates seamlessly with CI/CD pipelines. Example GitHub Actions workflow:
+hypertest integrates seamlessly with CI/CD pipelines. CI runners don't have a TTY, so use the `--quiet` flag to get plain text output instead of the interactive UI:
+
+```bash
+npx hypertest deploy --quiet
+npx hypertest invoke --quiet
+```
+
+Example GitHub Actions workflow:
 
 ```yaml
 name: E2E Tests
@@ -154,14 +202,14 @@ jobs:
         run: npm ci
 
       - name: Deploy tests
-        run: npx hypertest deploy
+        run: npx hypertest deploy --quiet
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: eu-central-1
 
       - name: Run tests
-        run: npx hypertest invoke
+        run: npx hypertest invoke --quiet
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
