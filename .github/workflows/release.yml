@@ -44,4 +44,4 @@ jobs:
         run: |
           curl -H "Content-Type: application/json" \
                -d '{"content": "🚀 A new version of the **${{ github.repository }}** package has just been published to NPM!"}' \
-               $DISCORD_WEBHOOK
+               "$DISCORD_WEBHOOK"
