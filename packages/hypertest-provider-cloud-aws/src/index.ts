@@ -23,6 +23,7 @@ import {
   CheckError,
   type CloudProviderPlugin,
   type CloudProviderPluginDefinition,
+  type CommandOptions,
   type ImageBuildManifest,
   ImageBuildManifestSchema,
   type ResolvedHypertestConfig,
@@ -63,6 +64,7 @@ const getEcrAuth = async (ecrClient: ECRClient, logger: winston.Logger) => {
 const HypertestProviderCloudAWS = (
   settings: ResolvedHypertestProviderCloudAwsConfig,
   config: ResolvedHypertestConfig,
+  opts?: CommandOptions,
 ): CloudProviderPlugin => {
   const lambdaClient = new LambdaClient({
     credentials: fromEnv(),
@@ -83,10 +85,9 @@ const HypertestProviderCloudAWS = (
 
   const assertDockerDaemon = () => {
     if (!isDockerRunning()) {
-      config.logger.error(
-        'Error: Docker daemon is not running. Please start Docker and try again.',
+      throw new Error(
+        'Docker daemon is not running. Please start Docker and try again.',
       );
-      process.exit(1);
     }
   };
 
@@ -138,66 +139,59 @@ const HypertestProviderCloudAWS = (
     async pullBaseImage() {
       assertDockerDaemon();
 
-      try {
-        const { username, password, proxyEndpoint } = await getEcrAuth(
-          ecrClient,
-          config.logger,
-        );
+      const { username, password, proxyEndpoint } = await getEcrAuth(
+        ecrClient,
+        config.logger,
+      );
 
-        config.logger.verbose('Logging in to ECR...');
-        runCommand(
-          `docker login -u ${username} --password-stdin ${proxyEndpoint}`,
-          { input: password },
-        );
+      config.logger.verbose('Logging in to ECR...');
+      await runCommand(
+        `docker login -u ${username} --password-stdin ${proxyEndpoint}`,
+        { input: password, silent: opts?.silent },
+      );
 
-        // Push the Docker image to ECR
-        config.logger.verbose(
-          'Pulling base docker lambda runner image to local repo...',
-        );
-        runCommand(`docker pull ${settings.baseImage}`);
+      config.logger.verbose(
+        'Pulling base docker lambda runner image to local repo...',
+      );
+      await runCommand(`docker pull ${settings.baseImage}`, {
+        silent: opts?.silent,
+      });
 
-        // Push the Docker image to ECR
-        config.logger.verbose(
-          `Tagging local image with ${config.localBaseImageName} ...`,
-        );
-        runCommand(
-          `docker tag ${settings.baseImage} ${config.localBaseImageName}`,
-        );
-      } catch (error) {
-        config.logger.error(`Error pushing Docker image to ECR: ${error}`);
-        process.exit(1);
-      }
+      config.logger.verbose(
+        `Tagging local image with ${config.localBaseImageName} ...`,
+      );
+      await runCommand(
+        `docker tag ${settings.baseImage} ${config.localBaseImageName}`,
+        { silent: opts?.silent },
+      );
     },
     pushImage: async () => {
       assertDockerDaemon();
 
-      try {
-        const { username, password, proxyEndpoint } = await getEcrAuth(
-          ecrClient,
-          config.logger,
-        );
+      const { username, password, proxyEndpoint } = await getEcrAuth(
+        ecrClient,
+        config.logger,
+      );
 
-        config.logger.verbose('Logging in to ECR...');
-        runCommand(
-          `docker login -u ${username} --password-stdin ${proxyEndpoint}`,
-          { input: password },
-        );
+      config.logger.verbose('Logging in to ECR...');
+      await runCommand(
+        `docker login -u ${username} --password-stdin ${proxyEndpoint}`,
+        { input: password, silent: opts?.silent },
+      );
 
-        const targetName = getTargetImageName();
+      const targetName = getTargetImageName();
 
-        config.logger.verbose('Tagging local image with remote tag');
-        runCommand(`docker tag ${config.localImageName} ${targetName}`);
+      config.logger.verbose('Tagging local image with remote tag');
+      await runCommand(`docker tag ${config.localImageName} ${targetName}`, {
+        silent: opts?.silent,
+      });
 
-        config.logger.verbose('Pushing Docker image to ECR...');
-        runCommand(`docker push ${targetName}`);
+      config.logger.verbose('Pushing Docker image to ECR...');
+      await runCommand(`docker push ${targetName}`, { silent: opts?.silent });
 
-        config.logger.verbose(
-          `Docker image pushed successfully to ${targetName}`,
-        );
-      } catch (error) {
-        config.logger.error(`Error pushing Docker image to ECR: ${error}`);
-        process.exit(1);
-      }
+      config.logger.verbose(
+        `Docker image pushed successfully to ${targetName}`,
+      );
     },
     invoke: async (payload) => {
       const ingestedPayload = {
@@ -227,7 +221,7 @@ const HypertestProviderCloudAWS = (
           );
         }
 
-        process.exit(1);
+        throw error;
       }
     },
     updateLambdaImage: async () => {
@@ -242,7 +236,6 @@ const HypertestProviderCloudAWS = (
         config.logger.verbose(
           `Lambda ${settings.functionName} image update has been started, status: ${response.LastUpdateStatus}`,
         );
-
         config.logger.info(
           `Waiting for Lambda ${settings.functionName} to finish updating...`,
         );
@@ -269,79 +262,64 @@ const HypertestProviderCloudAWS = (
           config.logger.error(`Error updating lambda by new image ${error}`);
         }
 
-        process.exit(1);
+        throw error;
       }
     },
     updateManifest: async (invokePayloadContexts, testDirHash) => {
-      try {
-        const imageEcrId = runCommandAndGetOutput(
-          `docker inspect --format="{{index .RepoDigests 0}}" ${config.localImageName}`,
+      const imageEcrId = runCommandAndGetOutput(
+        `docker inspect --format="{{index .RepoDigests 0}}" ${config.localImageName}`,
+      );
+      if (!imageEcrId) {
+        throw new Error(
+          `Failed to find image ${config.localImageName} ECR id. Push the image to the registry before creating the manifest.`,
         );
-        if (!imageEcrId) {
-          config.logger.error(
-            `Failed to find image ${config.localImageName} erc id. Try to push image to registry before creating manifest`,
-          );
-          process.exit(1);
-        }
-
-        const manifest: ImageBuildManifest<unknown> = {
-          imageDigest: `sha256:${imageEcrId.split('@sha256:')[1]}`,
-          testDirHash,
-          invokePayloadContexts,
-        };
-
-        const command = new PutObjectCommand({
-          Bucket: settings.bucketName,
-          Key: config.buildManifestFileName,
-          Body: JSON.stringify(manifest),
-          ContentType: 'application/json',
-        });
-
-        await s3Client.send(command);
-        config.logger.verbose(
-          `File ${config.buildManifestFileName} was successfully uploaded to bucket ${settings.bucketName}.`,
-        );
-      } catch (error) {
-        config.logger.error('Error while updating manifest:', error);
-        process.exit(1);
       }
+
+      const manifest: ImageBuildManifest<unknown> = {
+        imageDigest: `sha256:${imageEcrId.split('@sha256:')[1]}`,
+        testDirHash,
+        invokePayloadContexts,
+      };
+
+      const command = new PutObjectCommand({
+        Bucket: settings.bucketName,
+        Key: config.buildManifestFileName,
+        Body: JSON.stringify(manifest),
+        ContentType: 'application/json',
+      });
+
+      await s3Client.send(command);
+      config.logger.verbose(
+        `File ${config.buildManifestFileName} was successfully uploaded to bucket ${settings.bucketName}.`,
+      );
     },
     uploadRunResult: async (runId, content) => {
-      try {
-        const s3Key = `${runId}/${config.resultsFileName}`;
-        const command = new PutObjectCommand({
-          Bucket: settings.bucketName,
-          Key: s3Key,
-          Body: content,
-          ContentType: 'application/json',
-        });
+      const s3Key = `${runId}/${config.resultsFileName}`;
+      const command = new PutObjectCommand({
+        Bucket: settings.bucketName,
+        Key: s3Key,
+        Body: content,
+        ContentType: 'application/json',
+      });
 
-        await s3Client.send(command);
-        config.logger.verbose(
-          `${config.resultsFileName} was successfully uploaded to bucket ${settings.bucketName} at ${s3Key}.`,
-        );
-      } catch (error) {
-        config.logger.error('Error while uploading run result:', error);
-        process.exit(1);
-      }
+      await s3Client.send(command);
+      config.logger.verbose(
+        `${config.resultsFileName} was successfully uploaded to bucket ${settings.bucketName} at ${s3Key}.`,
+      );
+
+      return { artifactsBaseUrl: `s3://${settings.bucketName}/${runId}/` };
     },
     pullManifest: async () => {
-      try {
-        const manifest = await fetchManifest();
-        const ecrPushedImageDigest = await fetchEcrImageDigest();
+      const manifest = await fetchManifest();
+      const ecrPushedImageDigest = await fetchEcrImageDigest();
 
-        if (manifest.imageDigest !== ecrPushedImageDigest) {
-          config.logger.error(
-            `Manifest drift detected. Deployed cloud function image is incompatible with current manifest. Please try to run "npx hypertest deploy" first to recreate the manifest`,
-          );
-          process.exit(1);
-        }
-
-        return manifest;
-      } catch (error) {
-        config.logger.error('Error while pulling manifest:', error);
-        process.exit(1);
+      if (manifest.imageDigest !== ecrPushedImageDigest) {
+        throw new Error(
+          'Manifest drift detected. Deployed cloud function image is incompatible with current manifest. Please try to run "npx hypertest deploy" first to recreate the manifest.',
+        );
       }
+
+      return manifest;
     },
   };
 };
@@ -410,13 +388,14 @@ const plugin = (
       children: [],
     },
   ],
-  handler: (config) => {
+  handler: (config, opts) => {
     return HypertestProviderCloudAWS(
       {
         lambdaUpdateMaxWaitTime: 600,
         ...options,
       },
       config,
+      opts,
     );
   },
 });

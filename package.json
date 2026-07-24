@@ -8,10 +8,13 @@
   ],
   "license": "Elastic-2.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "docker": "npm run build && docker build . -t hypertest-playwright",
     "build": "npm run build -w packages --if-present",
-    "lint": "npm run lint --workspaces",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces",
+    "test": "npm run test --workspaces --if-present",
     "release": "npm run build && changeset publish"
   },
   "workspaces": ["packages/hypertest-types", "packages/*"],

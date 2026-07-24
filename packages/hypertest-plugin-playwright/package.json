@@ -12,7 +12,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "lint": "biome lint"
+    "lint": "biome check",
+    "lint:fix": "biome check --write"
   },
   "dependencies": {
     "@hypertest-cloud/internal-hypertest-playwright-container": "0.x.x",

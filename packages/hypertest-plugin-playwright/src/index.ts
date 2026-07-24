@@ -64,6 +64,7 @@ const getTestDir = (config: PlaywrightTestConfig) => {
 const PlaywrightRunnerPlugin = (options: {
   config: ResolvedHypertestConfig;
   dryRun?: boolean;
+  silent?: boolean;
 }): TestRunnerPlugin<PlaywrightCloudFunctionContext> => {
   const getPlaywrightConfig = getPlaywrightConfigFactory(options.config.logger);
 
@@ -73,28 +74,22 @@ const PlaywrightRunnerPlugin = (options: {
       const testDir = getTestDir(pwConfig);
       const { localImageName, localBaseImageName } = options.config;
 
-      try {
-        await buildDockerImage({
-          dockerfile: Dockerfile,
-          contextDir: '.',
-          platform: 'linux/amd64',
-          imageTag: localImageName,
-          buildArgs: {
-            // biome-ignore lint/style/useNamingConvention: <explanation>
-            BASE_IMAGE: localBaseImageName,
-            // biome-ignore lint/style/useNamingConvention: <explanation>
-            TEST_DIR: testDir,
-            // biome-ignore lint/style/useNamingConvention: <explanation>
-            PLAYWRIGHT_CONFIG_FILEPATH: CONFIG_FILE_PATH,
-          },
-          env: {},
-        });
-      } catch (error) {
-        options.config.logger.error(
-          `Error while building Docker image: ${error}`,
-        );
-        process.exit(1);
-      }
+      await buildDockerImage({
+        dockerfile: Dockerfile,
+        contextDir: '.',
+        platform: 'linux/amd64',
+        imageTag: localImageName,
+        buildArgs: {
+          // biome-ignore lint/style/useNamingConvention: <explanation>
+          BASE_IMAGE: localBaseImageName,
+          // biome-ignore lint/style/useNamingConvention: <explanation>
+          TEST_DIR: testDir,
+          // biome-ignore lint/style/useNamingConvention: <explanation>
+          PLAYWRIGHT_CONFIG_FILEPATH: CONFIG_FILE_PATH,
+        },
+        env: {},
+        silent: options.silent,
+      });
     },
     getInvokePayloadContext: async () => {
       const pwConfig = await getPlaywrightConfig();
@@ -144,10 +139,11 @@ const plugin = (
   validate: async () => {
     await OptionsSchema.parseAsync(options);
   },
-  handler: (config, { dryRun }) =>
+  handler: (config, { dryRun, silent }) =>
     PlaywrightRunnerPlugin({
       config,
       dryRun,
+      silent,
     }),
 });
 

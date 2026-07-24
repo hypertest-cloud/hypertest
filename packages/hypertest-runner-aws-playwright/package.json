@@ -13,12 +13,15 @@
   "scripts": {
     "build": "tsc",
     "start": "node ./dist/bin.js",
-    "lint": "biome lint"
+    "lint": "biome check",
+    "lint:fix": "biome check --write",
+    "test": "node --import tsx/esm --test --test-reporter=spec \"src/__tests__/**/*.test.ts\" \"src/__tests__/**/*.test.tsx\""
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
     "@types/aws-lambda": "^8.10.147",
     "@types/mime-types": "^3.0.1",
+    "tsx": "^4.19.2",
     "typescript": "^5.4.5"
   },
   "dependencies": {

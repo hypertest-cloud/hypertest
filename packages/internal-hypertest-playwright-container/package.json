@@ -8,7 +8,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "lint": "biome lint"
+    "lint": "biome check",
+    "lint:fix": "biome check --write"
   },
   "exports": "./index.js",
   "devDependencies": {
