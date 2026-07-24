@@ -4,7 +4,8 @@
   "license": "Elastic-2.0",
   "type": "module",
   "scripts": {
-    "lint": "biome lint"
+    "lint": "biome check",
+    "lint:fix": "biome check --write"
   },
   "files": ["Dockerfile", "index.js"],
   "exports": "./index.js",

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start:core": "hypertest deploy",
-    "lint": "biome lint"
+    "lint": "biome check",
+    "lint:fix": "biome check --write"
   },
   "dependencies": {
     "@hypertest/hypertest-core": "0.x.x",

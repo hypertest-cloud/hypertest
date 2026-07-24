@@ -12,7 +12,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node ./src/index.js",
-    "lint": "biome lint",
+    "lint": "biome check",
+    "lint:fix": "biome check --write",
     "test": "node --import tsx/esm --test --test-reporter=spec \"src/__tests__/**/*.test.ts\" \"src/__tests__/**/*.test.tsx\""
   },
   "devDependencies": {
