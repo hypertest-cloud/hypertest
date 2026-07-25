@@ -60,12 +60,12 @@ npx hypertest invoke --quiet
 
 ## Documentation
 
-Full documentation available at [packages/hypertest-docs](./packages/hypertest-docs) including:
+Full documentation available at [packages/docs](./packages/docs) including:
 
-- [Installation](./packages/hypertest-docs/docs/getting-started/installation.md)
-- [Configuration](./packages/hypertest-docs/docs/getting-started/configuration.md)
-- [Usage](./packages/hypertest-docs/docs/getting-started/usage.md)
-- [Architecture](./packages/hypertest-docs/docs/developers/architecture.md)
+- [Installation](./packages/docs/docs/getting-started/installation.md)
+- [Configuration](./packages/docs/docs/getting-started/configuration.md)
+- [Usage](./packages/docs/docs/getting-started/usage.md)
+- [Architecture](./packages/docs/docs/developers/architecture.md)
 
 ## Prerequisites
 
@@ -110,4 +110,4 @@ The ELv2 license grants you free use, modification, and redistribution of the so
 - You may not remove or obscure licensing notices
 - You may not circumvent license key functionality
 
-For more information, see our [License FAQ](./packages/hypertest-docs/docs/license/faq.md).
+For more information, see our [License FAQ](./packages/docs/docs/license/faq.md).

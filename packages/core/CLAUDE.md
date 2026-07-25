@@ -1,10 +1,10 @@
 # CLAUDE.md — hypertest-core
 
-Package-specific guidance for `packages/hypertest-core`. Read the root `CLAUDE.md` first for monorepo-wide context.
+Package-specific guidance for `packages/core`. Read the root `CLAUDE.md` first for monorepo-wide context.
 
 ## Commands
 
-Run from `packages/hypertest-core/` or use `--workspace` from root:
+Run from `packages/core/` or use `--workspace` from root:
 
 ```bash
 npm test                                        # run all ~90 unit tests
@@ -12,8 +12,8 @@ npm run build                                   # compile TypeScript to dist/
 npm run lint                                    # Biome lint + format check
 
 # From repo root:
-npm test --workspace=packages/hypertest-core
-npm run build --workspace=packages/hypertest-core
+npm test --workspace=packages/core
+npm run build --workspace=packages/core
 ```
 
 ## Package Structure

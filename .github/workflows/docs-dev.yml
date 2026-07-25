@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "packages/hypertest-docs/**"
+      - "packages/docs/**"
   workflow_dispatch:
 
 permissions:
@@ -40,13 +40,13 @@ jobs:
         run: npm ci
 
       - name: Build
-        working-directory: packages/hypertest-docs
+        working-directory: packages/docs
         run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: packages/hypertest-docs/docs/.vitepress/dist
+          path: packages/docs/docs/.vitepress/dist
 
   deploy:
     name: Deploy documentation to dev

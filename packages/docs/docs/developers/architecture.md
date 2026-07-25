@@ -159,7 +159,7 @@ hypertest is organized as a monorepo with these packages:
 
 `hypertest-core` emits typed events throughout deploy and invoke so that the CLI, custom reporters, and tests can all react to the same stream without coupling to internal implementation.
 
-The event bus is created by `createEventBus()` in `packages/hypertest-core/src/events.ts` and passed through `setupHypertest({ events })`. The `HypertestEvents` interface exposes two methods:
+The event bus is created by `createEventBus()` in `packages/core/src/events.ts` and passed through `setupHypertest({ events })`. The `HypertestEvents` interface exposes two methods:
 
 ```ts
 interface HypertestEvents {
@@ -180,7 +180,7 @@ interface HypertestEvents {
 | `doctor:check` | A doctor check resolves; carries `title`, `status`, `message`, optional `data` |
 | `doctor:done` | All doctor checks complete |
 
-The full type definitions live in `packages/hypertest-types/src/events.ts`.
+The full type definitions live in `packages/types/src/events.ts`.
 
 ## UI and reporters
 
@@ -191,7 +191,7 @@ The full type definitions live in `packages/hypertest-types/src/events.ts`.
 | stdout is a TTY **and** `--quiet` not passed | `inkReporter` | Rich terminal UI via [Ink](https://github.com/vadimdemedes/ink) |
 | `--quiet` flag or non-TTY stdout | `plainReporter` | One line per event, suitable for CI logs |
 
-Both reporters implement the same `Reporter` interface (`packages/hypertest-core/src/ui/reporters/inkReporter.ts`):
+Both reporters implement the same `Reporter` interface (`packages/core/src/ui/reporters/inkReporter.ts`):
 
 ```ts
 interface Reporter {
@@ -200,11 +200,11 @@ interface Reporter {
 }
 ```
 
-`pickReporter` (`packages/hypertest-core/src/ui/reporters/pickReporter.ts`) selects the correct reporter based on `process.stdout.isTTY` and the `--quiet` flag.
+`pickReporter` (`packages/core/src/ui/reporters/pickReporter.ts`) selects the correct reporter based on `process.stdout.isTTY` and the `--quiet` flag.
 
 ### Ink UI components
 
-The TUI is built from composable Ink components under `packages/hypertest-core/src/ui/`:
+The TUI is built from composable Ink components under `packages/core/src/ui/`:
 
 | Component | Purpose |
 |-----------|---------|
@@ -218,7 +218,7 @@ The TUI is built from composable Ink components under `packages/hypertest-core/s
 | `components/DoctorCheck` | Single doctor check result |
 | `components/StatusIcon` | Status glyphs (`✓` `✕` `◯` `○` `·` `▲`) and spinner |
 
-Colors and icons are defined in `packages/hypertest-core/src/ui/theme.ts`.
+Colors and icons are defined in `packages/core/src/ui/theme.ts`.
 
 ## Dev / demo mode
 
@@ -230,7 +230,7 @@ HYPERTEST_DEV=true npx hypertest deploy   # 5 animated deploy steps
 HYPERTEST_DEV_SPEED=5                     # Speed multiplier (default 10×); lower = slower
 ```
 
-The mock is implemented in `packages/hypertest-core/src/dev/index.ts`. It emits the same events as the real core so the reporter layer is exercised identically.
+The mock is implemented in `packages/core/src/dev/index.ts`. It emits the same events as the real core so the reporter layer is exercised identically.
 
 ## Logging
 

@@ -30,13 +30,13 @@ Before upgrading, verify that AWS has a GA managed runtime for the target versio
 |------|----------|:--------------:|-------|
 | `Dockerfile` | `FROM node:XX-bookworm` (~line 29) | Yes | **Functional** — determines the actual Lambda runtime |
 | `README.md` | Prerequisites section | Yes | Docs only |
-| `packages/hypertest-docs/docs/getting-started/installation.md` | Prerequisites list | Yes | Docs only |
-| `packages/hypertest-docs/docs/getting-started/usage.md` | Example CI workflow `node-version` | Yes | Docs only |
+| `packages/docs/docs/getting-started/installation.md` | Prerequisites list | Yes | Docs only |
+| `packages/docs/docs/getting-started/usage.md` | Example CI workflow `node-version` | Yes | Docs only |
 | `Dockerfile` | `ARG BASE_ALPINE_IMAGE=node:XX-alpine` (line 1) | No | Build stage — update separately if needed |
 | `.github/workflows/ci.yml` | `node-version` | No | CI runner — update separately if needed |
 | `.github/workflows/playground-image-dev.yml` | `node-version` | No | CI runner — update separately if needed |
 | `.github/workflows/docs-dev.yml` | `node-version` | No | CI runner — update separately if needed |
-| `packages/hypertest-runner-aws-playwright/package.json` | `@types/node` | No | Type definitions — update separately if needed |
+| `packages/runner-aws-playwright/package.json` | `@types/node` | No | Type definitions — update separately if needed |
 
 ## Step-by-step process
 
@@ -52,8 +52,8 @@ Keep the `bookworm` (Debian 12) tag. Do not switch to `bookworm-slim` or `alpine
 ### 2. Update user-facing docs
 
 - `README.md` — Prerequisites section
-- `packages/hypertest-docs/docs/getting-started/installation.md` — Node version prerequisite
-- `packages/hypertest-docs/docs/getting-started/usage.md` — Example CI workflow `node-version`
+- `packages/docs/docs/getting-started/installation.md` — Node version prerequisite
+- `packages/docs/docs/getting-started/usage.md` — Example CI workflow `node-version`
 
 ### 3. Sanity-check for stragglers
 
@@ -83,7 +83,7 @@ docker run --rm node:XX-bookworm ls /usr/local/lib/node_modules/npm/bin/npx-cli.
 
 ### CI workflows
 
-Push the branch and trigger the base-image workflow manually — the `Dockerfile` lives at the repo root, outside the `packages/hypertest-runner-aws-playwright/**` path filter that auto-triggers the workflow:
+Push the branch and trigger the base-image workflow manually — the `Dockerfile` lives at the repo root, outside the `packages/runner-aws-playwright/**` path filter that auto-triggers the workflow:
 
 ```bash
 gh workflow run runner-aws-playwright-base-image-dev.yml --ref <your-branch>
@@ -96,7 +96,7 @@ Verify both jobs pass:
 ### End-to-end invoke
 
 ```bash
-cd packages/hypertest-playground
+cd packages/playground
 npx hypertest invoke
 ```
 

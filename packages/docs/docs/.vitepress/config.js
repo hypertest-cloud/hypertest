@@ -88,7 +88,7 @@ export default {
     editLink: {
       text: 'Edit this page on GitHub',
       pattern:
-        'https://github.com/hypertest-cloud/hypertest/tree/main/packages/hypertest-docs/docs/:path',
+        'https://github.com/hypertest-cloud/hypertest/tree/main/packages/docs/docs/:path',
     },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/hypertest-cloud/hypertest' },

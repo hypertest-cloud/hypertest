@@ -16,19 +16,19 @@ hypertest uses [Changesets](https://github.com/changesets/changesets) to manage 
 
 | Package | npm name |
 |---------|----------|
-| `packages/hypertest-core` | `@hypertest-cloud/core` |
-| `packages/hypertest-types` | `@hypertest-cloud/types` |
-| `packages/hypertest-plugin-playwright` | `@hypertest-cloud/plugin-playwright` |
-| `packages/hypertest-provider-cloud-aws` | `@hypertest-cloud/provider-cloud-aws` |
-| `packages/hypertest-runner-aws-playwright` | `@hypertest-cloud/runner-aws-playwright` |
+| `packages/core` | `@hypertest-cloud/core` |
+| `packages/types` | `@hypertest-cloud/types` |
+| `packages/plugin-playwright` | `@hypertest-cloud/plugin-playwright` |
+| `packages/provider-cloud-aws` | `@hypertest-cloud/provider-cloud-aws` |
+| `packages/runner-aws-playwright` | `@hypertest-cloud/runner-aws-playwright` |
 
 The following packages are **not published** (private or internal):
 
 | Package | Reason |
 |---------|--------|
-| `packages/hypertest-docs` | Documentation site only |
-| `packages/hypertest-playground` | Local dev reference project |
-| `packages/internal-hypertest-playwright-container` | Internal Docker build artifact |
+| `packages/docs` | Documentation site only |
+| `packages/playground` | Local dev reference project |
+| `packages/internal-playwright-container` | Internal Docker build artifact |
 
 ## Recording a change
 

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-Run commands from `packages/hypertest-docs/`, not the repo root.
+Run commands from `packages/docs/`, not the repo root.
 
 ```bash
 npm run dev      # Start local dev server with hot reload
@@ -14,7 +14,7 @@ npm run preview  # Preview the built site locally
 
 ## Project Structure
 
-VitePress documentation site for hypertest (cloud-based test distribution system). Part of monorepo at `packages/hypertest-docs`.
+VitePress documentation site for hypertest (cloud-based test distribution system). Part of monorepo at `packages/docs`.
 
 ### Key Locations
 

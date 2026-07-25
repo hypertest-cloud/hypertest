@@ -12,13 +12,13 @@ npm i
 npm run build
 
 # Build specific package
-npm run build --workspace=packages/hypertest-core
+npm run build --workspace=packages/core
 
 # Lint all packages
 npm run lint
 
 # Lint specific package
-npm run lint --workspace=packages/hypertest-core
+npm run lint --workspace=packages/core
 
 # Build Docker image for Playwright tests
 npm run docker
@@ -27,7 +27,7 @@ npm run docker
 npm test
 
 # Run tests for a specific package
-npm test --workspace=packages/hypertest-core
+npm test --workspace=packages/core
 ```
 
 ### CLI Commands (run from playground or user project)
@@ -75,14 +75,14 @@ Two plugin interfaces in `hypertest-types`:
 
 ### Execution Flow
 
-**Deploy** (`packages/hypertest-core/src/index.ts`):
+**Deploy** (`packages/core/src/index.ts`):
 1. Pull base image from ECR
 2. Build target image (base + user tests)
 3. Push to ECR
 4. Build manifest (store invoke payload contexts + test dir hash to cloud via `updateManifest`)
 5. Update Lambda function
 
-**Invoke** (`packages/hypertest-core/src/index.ts`):
+**Invoke** (`packages/core/src/index.ts`):
 1. Generate unique `runId`
 2. Pull manifest from cloud (`pullManifest`) — contains pre-built invoke payload contexts and `testDirHash`
 3. Hash local test dir; compare with manifest hash (drift detection via `driftDetectionPolicy`)
@@ -90,14 +90,14 @@ Two plugin interfaces in `hypertest-types`:
 5. Write results file locally (CWD) and upload to cloud storage at `{runId}/{resultsFileName}` (default: `hypertest.results.json`)
 
 ### Key Files
-- CLI entry: `packages/hypertest-core/src/cli.tsx`
-- Core orchestration: `packages/hypertest-core/src/index.ts`
-- Events system: `packages/hypertest-core/src/events.ts`
-- Type definitions: `packages/hypertest-types/src/index.ts`
-- Run result types: `packages/hypertest-types/src/run-result.ts` (`HypertestRunResult`, `HypertestTestResult`)
-- Event types: `packages/hypertest-types/src/events.ts` (`HypertestEvents`, `HypertestEvent`, `DeployStep`)
-- Lambda handler: `packages/hypertest-runner-aws-playwright/src/index.ts`
-- Playwright report parser: `packages/hypertest-runner-aws-playwright/src/utils/parsePlaywrightReport.ts`
+- CLI entry: `packages/core/src/cli.tsx`
+- Core orchestration: `packages/core/src/index.ts`
+- Events system: `packages/core/src/events.ts`
+- Type definitions: `packages/types/src/index.ts`
+- Run result types: `packages/types/src/run-result.ts` (`HypertestRunResult`, `HypertestTestResult`)
+- Event types: `packages/types/src/events.ts` (`HypertestEvents`, `HypertestEvent`, `DeployStep`)
+- Lambda handler: `packages/runner-aws-playwright/src/index.ts`
+- Playwright report parser: `packages/runner-aws-playwright/src/utils/parsePlaywrightReport.ts`
 
 ### Platform Compatibility (Windows)
 - Test scripts use quoted glob patterns (`"src/__tests__/**/*.test.ts"`) so Node 22 expands them — never bash `$(find ...)` syntax
@@ -126,16 +126,16 @@ export default defineConfig({
 ```
 
 ### Events System
-Core emits typed events via `HypertestEvents` (`packages/hypertest-types/src/events.ts`).
+Core emits typed events via `HypertestEvents` (`packages/types/src/events.ts`).
 Pass custom `events` to `setupHypertest()` to hook into: `run:start`, `run:end`, `test:start`, `test:end`, `deploy:step`, `doctor:check`, `doctor:done`.
-`packages/hypertest-core/src/cli.tsx` consumes these events for terminal output via a reporter selected at runtime: Ink (rich TUI) when stdout is a TTY and `--quiet` is not passed; plain text otherwise. Both implement the `Reporter` interface (`packages/hypertest-core/src/ui/reporters/`).
+`packages/core/src/cli.tsx` consumes these events for terminal output via a reporter selected at runtime: Ink (rich TUI) when stdout is a TTY and `--quiet` is not passed; plain text otherwise. Both implement the `Reporter` interface (`packages/core/src/ui/reporters/`).
 
 ### Two-Stream Output Architecture
 hypertest has two separate output streams that must not be mixed:
 - **Event bus** (`HypertestEvents`): lifecycle signals driving the terminal UI (Ink or plain reporter)
 - **Logger** (`config.logger`, Winston): operational/debug messages routed to stderr
 
-When Ink is active (`silent=true` in `setupHypertest`), `config.logger.silent` is set to `true` automatically — this prevents Winston stderr writes from corrupting Ink's cursor-position tracking. The logger is fully functional in non-TTY and `--quiet` modes. See `packages/hypertest-core/src/index.ts` and `packages/hypertest-core/src/logger.ts`.
+When Ink is active (`silent=true` in `setupHypertest`), `config.logger.silent` is set to `true` automatically — this prevents Winston stderr writes from corrupting Ink's cursor-position tracking. The logger is fully functional in non-TTY and `--quiet` modes. See `packages/core/src/index.ts` and `packages/core/src/logger.ts`.
 
 ### Drift Detection
 On invoke, hypertest hashes local test dir and compares with deployed manifest hash.
@@ -165,7 +165,7 @@ HYPERTEST_DEV_SPEED=5                     # Speed multiplier (default 10×); low
 ## Testing
 
 ```bash
-npm test --workspace=packages/hypertest-core   # ~90 unit tests
+npm test --workspace=packages/core   # ~90 unit tests
 ```
 
 Uses Node's built-in test runner with `tsx/esm` for TypeScript + JSX and `ink-testing-library` for Ink component tests.
