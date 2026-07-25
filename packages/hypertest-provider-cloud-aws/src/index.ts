@@ -345,7 +345,7 @@ type ResolvedHypertestProviderCloudAwsConfig =
 const plugin = (
   options: HypertestProviderCloudAwsConfig,
 ): CloudProviderPluginDefinition => ({
-  name: '',
+  name: '@hypertest-cloud/provider-cloud-aws',
   version: '0.0.1',
   validate: async () => {
     await HypertestProviderCloudAwsConfigSchema.parseAsync(options);
