@@ -45,19 +45,19 @@ npx hypertest doctor              # Validate configuration and cloud provider se
 Hypertest is a cloud-based test distribution system that runs each test file in a separate Lambda function for maximum parallelization. Built as a TypeScript monorepo.
 
 ### Package Structure
-- **hypertest-core**: CLI entry point (`hypertest` binary) and orchestration logic
-- **hypertest-types**: Shared TypeScript interfaces (`TestRunnerPluginDefinition`, `CloudProviderPluginDefinition`)
-- **hypertest-plugin-playwright**: Playwright test framework integration
-- **hypertest-runner-aws-playwright**: Lambda handler code that executes Playwright tests
-- **hypertest-provider-cloud-aws**: AWS cloud provider (ECR, Lambda, S3)
-- **hypertest-playground**: Example implementation for testing
-- **hypertest-docs**: VitePress documentation site
-- **internal-hypertest-playwright-container**: Container utilities for Playwright in Lambda
+- **core**: CLI entry point (`hypertest` binary) and orchestration logic
+- **types**: Shared TypeScript interfaces (`TestRunnerPluginDefinition`, `CloudProviderPluginDefinition`)
+- **plugin-playwright**: Playwright test framework integration
+- **runner-aws-playwright**: Lambda handler code that executes Playwright tests
+- **provider-cloud-aws**: AWS cloud provider (ECR, Lambda, S3)
+- **playground**: Example implementation for testing
+- **docs**: VitePress documentation site
+- **internal-playwright-container**: Container utilities for Playwright in Lambda
 
-Note: `hypertest-types` must build first (see workspace ordering in root `package.json`).
+Note: `types` must build first (see workspace ordering in root `package.json`).
 
 ### Plugin System
-Two plugin interfaces in `hypertest-types`:
+Two plugin interfaces in `types`:
 
 **TestRunnerPlugin** (`test-runner-plugin.ts`):
 - `getInvokePayloadContext()`: Returns invoke payload context (one per test file)

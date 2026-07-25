@@ -1,4 +1,4 @@
-# CLAUDE.md — hypertest-core
+# CLAUDE.md — core
 
 Package-specific guidance for `packages/core`. Read the root `CLAUDE.md` first for monorepo-wide context.
 

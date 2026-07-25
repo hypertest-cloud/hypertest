@@ -60,7 +60,7 @@ See [Runners](/runners/overview) for details.
 │                     Your Machine                            │
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │               hypertest-core                        │   │
+│  │                    core                             │   │
 │  │         (orchestration & CLI)                       │   │
 │  └───────────────────┬─────────────────────────────────┘   │
 │                      │                                      │
@@ -149,15 +149,15 @@ hypertest is organized as a monorepo with these packages:
 
 | Package | Description |
 |---------|-------------|
-| `hypertest-core` | CLI and orchestration logic |
-| `hypertest-types` | Shared TypeScript interfaces |
-| `hypertest-plugin-playwright` | Playwright test framework integration |
-| `hypertest-provider-cloud-aws` | AWS Lambda, ECR, and S3 integration |
-| `hypertest-runner-aws-playwright` | Playwright execution in Lambda |
+| `core` | CLI and orchestration logic |
+| `types` | Shared TypeScript interfaces |
+| `plugin-playwright` | Playwright test framework integration |
+| `provider-cloud-aws` | AWS Lambda, ECR, and S3 integration |
+| `runner-aws-playwright` | Playwright execution in Lambda |
 
 ## Events system
 
-`hypertest-core` emits typed events throughout deploy and invoke so that the CLI, custom reporters, and tests can all react to the same stream without coupling to internal implementation.
+`core` emits typed events throughout deploy and invoke so that the CLI, custom reporters, and tests can all react to the same stream without coupling to internal implementation.
 
 The event bus is created by `createEventBus()` in `packages/core/src/events.ts` and passed through `setupHypertest({ events })`. The `HypertestEvents` interface exposes two methods:
 
@@ -184,7 +184,7 @@ The full type definitions live in `packages/types/src/events.ts`.
 
 ## UI and reporters
 
-`hypertest-core` selects a reporter at startup based on the environment:
+`core` selects a reporter at startup based on the environment:
 
 | Condition | Reporter | Output |
 |-----------|----------|--------|

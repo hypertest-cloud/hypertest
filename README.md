@@ -87,13 +87,13 @@ TODO: Add development instructions
 
 | Package | Description |
 |---------|-------------|
-| `hypertest-core` | CLI and orchestration |
-| `hypertest-types` | Shared TypeScript interfaces |
-| `hypertest-plugin-playwright` | Playwright integration |
-| `hypertest-provider-cloud-aws` | AWS cloud provider |
-| `hypertest-runner-aws-playwright` | Lambda execution handler |
-| `hypertest-playground` | Example implementation |
-| `hypertest-docs` | Documentation site |
+| `core` | CLI and orchestration |
+| `types` | Shared TypeScript interfaces |
+| `plugin-playwright` | Playwright integration |
+| `provider-cloud-aws` | AWS cloud provider |
+| `runner-aws-playwright` | Lambda execution handler |
+| `playground` | Example implementation |
+| `docs` | Documentation site |
 
 ## Community
 
