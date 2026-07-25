@@ -1,0 +1,19 @@
+{
+  "name": "@hypertest-cloud/docs",
+  "version": "0.1.0",
+  "license": "Elastic-2.0",
+  "private": true,
+  "scripts": {
+    "dev": "vitepress dev docs",
+    "build": "vitepress build docs",
+    "preview": "vitepress preview docs",
+    "lint": "biome check",
+    "lint:fix": "biome check --write"
+  },
+  "dependencies": {
+    "vitepress": "^1.6.3"
+  },
+  "devDependencies": {
+    "@babel/parser": "^7.28.0"
+  }
+}

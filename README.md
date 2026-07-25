@@ -16,7 +16,7 @@ Modern test suites can take 10, 30, or even 60+ minutes to complete. Hypertest s
 ### Installation
 
 ```bash
-npm install @hypertest/hypertest-core @hypertest/hypertest-plugin-playwright @hypertest/hypertest-provider-cloud-aws
+npm install @hypertest-cloud/core @hypertest-cloud/plugin-playwright @hypertest-cloud/provider-cloud-aws
 ```
 
 ### Configuration
@@ -24,9 +24,9 @@ npm install @hypertest/hypertest-core @hypertest/hypertest-plugin-playwright @hy
 Create `hypertest.config.js` in your project root:
 
 ```javascript
-import { defineConfig } from '@hypertest/hypertest-core';
-import playwright from '@hypertest/hypertest-plugin-playwright';
-import aws from '@hypertest/hypertest-provider-cloud-aws';
+import { defineConfig } from '@hypertest-cloud/core';
+import playwright from '@hypertest-cloud/plugin-playwright';
+import aws from '@hypertest-cloud/provider-cloud-aws';
 
 export default defineConfig({
   concurrency: 30,
@@ -60,12 +60,12 @@ npx hypertest invoke --quiet
 
 ## Documentation
 
-Full documentation available at [packages/hypertest-docs](./packages/hypertest-docs) including:
+Full documentation available at [packages/docs](./packages/docs) including:
 
-- [Installation](./packages/hypertest-docs/docs/getting-started/installation.md)
-- [Configuration](./packages/hypertest-docs/docs/getting-started/configuration.md)
-- [Usage](./packages/hypertest-docs/docs/getting-started/usage.md)
-- [Architecture](./packages/hypertest-docs/docs/developers/architecture.md)
+- [Installation](./packages/docs/docs/getting-started/installation.md)
+- [Configuration](./packages/docs/docs/getting-started/configuration.md)
+- [Usage](./packages/docs/docs/getting-started/usage.md)
+- [Architecture](./packages/docs/docs/developers/architecture.md)
 
 ## Prerequisites
 
@@ -87,13 +87,13 @@ TODO: Add development instructions
 
 | Package | Description |
 |---------|-------------|
-| `hypertest-core` | CLI and orchestration |
-| `hypertest-types` | Shared TypeScript interfaces |
-| `hypertest-plugin-playwright` | Playwright integration |
-| `hypertest-provider-cloud-aws` | AWS cloud provider |
-| `hypertest-runner-aws-playwright` | Lambda execution handler |
-| `hypertest-playground` | Example implementation |
-| `hypertest-docs` | Documentation site |
+| `core` | CLI and orchestration |
+| `types` | Shared TypeScript interfaces |
+| `plugin-playwright` | Playwright integration |
+| `provider-cloud-aws` | AWS cloud provider |
+| `runner-aws-playwright` | Lambda execution handler |
+| `playground` | Example implementation |
+| `docs` | Documentation site |
 
 ## Community
 
@@ -110,4 +110,4 @@ The ELv2 license grants you free use, modification, and redistribution of the so
 - You may not remove or obscure licensing notices
 - You may not circumvent license key functionality
 
-For more information, see our [License FAQ](./packages/hypertest-docs/docs/license/faq.md).
+For more information, see our [License FAQ](./packages/docs/docs/license/faq.md).

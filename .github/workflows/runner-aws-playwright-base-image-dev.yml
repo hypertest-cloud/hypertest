@@ -3,7 +3,7 @@ name: runner-aws-playwright-base-image-dev
 on:
   push:
     paths:
-      - 'packages/hypertest-runner-aws-playwright/**'
+      - 'packages/runner-aws-playwright/**'
   workflow_dispatch:
 
 env:

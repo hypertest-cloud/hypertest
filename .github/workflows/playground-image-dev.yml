@@ -3,7 +3,7 @@ name: playground-image-dev
 on:
   push:
     paths:
-      - 'packages/hypertest-playground/**'
+      - 'packages/playground/**'
   workflow_call:
     inputs:
       commit-sha:
@@ -36,11 +36,11 @@ jobs:
         run: npm run build
 
       - name: Link core binary
-        run: npm link -w packages/hypertest-core
+        run: npm link -w packages/core
 
       - name: Deploy
         id: deploy
-        working-directory: packages/hypertest-playground
+        working-directory: packages/playground
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

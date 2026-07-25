@@ -33,7 +33,7 @@
   },
   "overrides": [
     {
-      "include": ["packages/hypertest-provider-cloud-aws/src/**"],
+      "include": ["packages/provider-cloud-aws/src/**"],
       "linter": {
         "rules": {
           "style": {

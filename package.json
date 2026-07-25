@@ -1,16 +1,24 @@
 {
   "name": "hypertest",
   "version": "0.1.0",
-  "author": "Marcin Łesek <hello@hypertest.cloud>",
+  "author": "Marcin Łesek <marcin.lesek@lunarsoft.co>",
+  "contributors": [
+    "Błażej Blaut <blaze.blaut@gmail.com>",
+    "Szymon Janota"
+  ],
   "license": "Elastic-2.0",
-  "private": "false",
+  "private": true,
   "type": "module",
   "scripts": {
     "docker": "npm run build && docker build . -t hypertest-playwright",
     "build": "npm run build -w packages --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "lint:fix": "npm run lint:fix --workspaces",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "release": "npm run build && changeset publish"
   },
-  "workspaces": ["packages/hypertest-types", "packages/*"]
+  "workspaces": ["packages/types", "packages/*"],
+  "devDependencies": {
+    "@changesets/cli": "^2.31.0"
+  }
 }

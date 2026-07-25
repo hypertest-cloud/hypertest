@@ -1,0 +1,25 @@
+// @ts-check
+import { defineConfig } from '@hypertest-cloud/core';
+import playwright from '@hypertest-cloud/plugin-playwright';
+import aws from '@hypertest-cloud/provider-cloud-aws';
+
+// biome-ignore lint/style/noDefaultExport: <explanation>
+export default defineConfig({
+  concurrency: 30,
+  imageName: 'hypertest/playground-playwright',
+  localImageName: 'hypertest/playground-playwright',
+  localBaseImageName: 'hypertest/local-base-playwright',
+  driftDetectionPolicy: 'warning',
+  testRunner: playwright({}),
+  loggerOptions: {
+    level: 'verbose',
+  },
+  cloudProvider: aws({
+    baseImage:
+      '491085409730.dkr.ecr.eu-central-1.amazonaws.com/hypertest/base-playwright:latest',
+    region: 'eu-central-1',
+    ecrRegistry: '491085409730.dkr.ecr.eu-central-1.amazonaws.com',
+    functionName: 'hypertest-playground-playwright',
+    bucketName: 'hypertest-playground-playwright-artifacts',
+  }),
+});

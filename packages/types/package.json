@@ -1,0 +1,28 @@
+{
+  "name": "@hypertest-cloud/types",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "license": "Elastic-2.0",
+  "private": false,
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node ./src/index.js",
+    "lint": "biome check",
+    "lint:fix": "biome check --write"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.8.3",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "type-fest": "^4.40.1",
+    "winston": "^3.19.0",
+    "zod": "^3.24.2"
+  }
+}
