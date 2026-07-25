@@ -27,7 +27,7 @@ const INITIAL_STATE: DeployState = { steps: INITIAL_STEPS, status: null };
 
 type DeployStepEvent = Extract<HypertestEvent, { type: 'deploy:step' }>;
 
-function applyDeployStep(
+export function applyDeployStep(
   prev: DeployState,
   event: DeployStepEvent,
 ): DeployState {
