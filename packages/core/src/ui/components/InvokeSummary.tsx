@@ -1,5 +1,5 @@
-import { Box, Text } from 'ink';
 import type { HypertestRunResult } from '@hypertest-cloud/types';
+import { Box, Text } from 'ink';
 import { formatDuration } from '../theme.js';
 
 // biome-ignore lint/suspicious/noControlCharactersInRegex: ESC byte required to strip ANSI sequences
@@ -49,10 +49,14 @@ export const InvokeSummary = ({
               </Box>
               {t.error && (
                 <Box marginLeft={3} flexDirection="column">
-                  <Text color="#475063" wrap="wrap">{stripAnsi(t.error.message)}</Text>
+                  <Text color="#475063" wrap="wrap">
+                    {stripAnsi(t.error.message)}
+                  </Text>
                   {t.error.stackTrace && (
                     <Text color="#475063" dimColor={true} wrap="wrap">
-                      {stripAnsi(t.error.stackTrace.split('\n').slice(0, 4).join('\n'))}
+                      {stripAnsi(
+                        t.error.stackTrace.split('\n').slice(0, 4).join('\n'),
+                      )}
                     </Text>
                   )}
                 </Box>

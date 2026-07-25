@@ -3,9 +3,12 @@ import { StatusIcon } from './StatusIcon.js';
 
 type CheckStatus = 'ok' | 'warn' | 'error';
 
-const STATUS_MAP: Record<CheckStatus, { iconStatus: 'pass' | 'warn' | 'fail'; color: string }> = {
-  ok:    { iconStatus: 'pass', color: '#ffffff' },
-  warn:  { iconStatus: 'warn', color: '#f5a524' },
+const STATUS_MAP: Record<
+  CheckStatus,
+  { iconStatus: 'pass' | 'warn' | 'fail'; color: string }
+> = {
+  ok: { iconStatus: 'pass', color: '#ffffff' },
+  warn: { iconStatus: 'warn', color: '#f5a524' },
   error: { iconStatus: 'fail', color: '#f43d5e' },
 };
 

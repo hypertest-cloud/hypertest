@@ -1,8 +1,8 @@
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { glob } from 'glob';
 import mime from 'mime-types';
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
 
 interface UploadResult {
   success: boolean;

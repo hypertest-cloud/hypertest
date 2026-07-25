@@ -17,25 +17,86 @@ interface MockTest {
 }
 
 const MOCK_TESTS: MockTest[] = [
-  { name: 'todo-app.spec.ts › should add todo items',              filePath: 'todo-app.spec.ts',  durationMs: 2317, status: 'success' },
-  { name: 'todo-app.spec.ts › should clear input after adding',    filePath: 'todo-app.spec.ts',  durationMs: 1876, status: 'success' },
-  { name: 'todo-app.spec.ts › should mark items as complete',      filePath: 'todo-app.spec.ts',  durationMs: 3100, status: 'success' },
-  { name: 'todo-app.spec.ts › should mark all items as complete',  filePath: 'todo-app.spec.ts',  durationMs: 2800, status: 'success' },
-  { name: 'edit-todo.spec.ts › should allow me to edit a todo',    filePath: 'edit-todo.spec.ts', durationMs: 2500, status: 'success' },
-  { name: 'edit-todo.spec.ts › should save edits on blur',         filePath: 'edit-todo.spec.ts', durationMs: 1900, status: 'success' },
-  { name: 'edit-todo.spec.ts › should not save empty input',       filePath: 'edit-todo.spec.ts', durationMs: 4200, status: 'skipped' },
-  { name: 'filters.spec.ts › should display active items',         filePath: 'filters.spec.ts',   durationMs: 1500, status: 'success' },
-  { name: 'filters.spec.ts › should display completed items',      filePath: 'filters.spec.ts',   durationMs: 1700, status: 'success' },
-  { name: 'filters.spec.ts › should respect the back button',      filePath: 'filters.spec.ts',   durationMs: 3400, status: 'success' },
-  { name: 'counter.spec.ts › should increment on click',           filePath: 'counter.spec.ts',   durationMs: 5100, status: 'success' },
-  { name: 'counter.spec.ts › should reset to zero',                filePath: 'counter.spec.ts',   durationMs: 2200, status: 'success' },
+  {
+    name: 'todo-app.spec.ts › should add todo items',
+    filePath: 'todo-app.spec.ts',
+    durationMs: 2317,
+    status: 'success',
+  },
+  {
+    name: 'todo-app.spec.ts › should clear input after adding',
+    filePath: 'todo-app.spec.ts',
+    durationMs: 1876,
+    status: 'success',
+  },
+  {
+    name: 'todo-app.spec.ts › should mark items as complete',
+    filePath: 'todo-app.spec.ts',
+    durationMs: 3100,
+    status: 'success',
+  },
+  {
+    name: 'todo-app.spec.ts › should mark all items as complete',
+    filePath: 'todo-app.spec.ts',
+    durationMs: 2800,
+    status: 'success',
+  },
+  {
+    name: 'edit-todo.spec.ts › should allow me to edit a todo',
+    filePath: 'edit-todo.spec.ts',
+    durationMs: 2500,
+    status: 'success',
+  },
+  {
+    name: 'edit-todo.spec.ts › should save edits on blur',
+    filePath: 'edit-todo.spec.ts',
+    durationMs: 1900,
+    status: 'success',
+  },
+  {
+    name: 'edit-todo.spec.ts › should not save empty input',
+    filePath: 'edit-todo.spec.ts',
+    durationMs: 4200,
+    status: 'skipped',
+  },
+  {
+    name: 'filters.spec.ts › should display active items',
+    filePath: 'filters.spec.ts',
+    durationMs: 1500,
+    status: 'success',
+  },
+  {
+    name: 'filters.spec.ts › should display completed items',
+    filePath: 'filters.spec.ts',
+    durationMs: 1700,
+    status: 'success',
+  },
+  {
+    name: 'filters.spec.ts › should respect the back button',
+    filePath: 'filters.spec.ts',
+    durationMs: 3400,
+    status: 'success',
+  },
+  {
+    name: 'counter.spec.ts › should increment on click',
+    filePath: 'counter.spec.ts',
+    durationMs: 5100,
+    status: 'success',
+  },
+  {
+    name: 'counter.spec.ts › should reset to zero',
+    filePath: 'counter.spec.ts',
+    durationMs: 2200,
+    status: 'success',
+  },
   {
     name: 'failing.spec.ts › assertion failure example',
     filePath: 'failing.spec.ts',
     durationMs: 17217,
     status: 'failed',
     error: {
-      message: "Error: expect(locator).toHaveText(expected) failed\n\nExpected: \"Buy milk\"\nReceived: \"\"",
+      message:
+        'Error: expect(locator).toHaveText(expected) failed\n\nExpected: "Buy milk"\nReceived: ""',
       stackTrace: '  at /tests/playwright/tests/failing.spec.ts:9:50',
     },
   },
@@ -45,7 +106,8 @@ const MOCK_TESTS: MockTest[] = [
     durationMs: 5312,
     status: 'failed',
     error: {
-      message: 'Error: Locator.click: Timeout 5000ms exceeded\nWaiting for locator(\'button[type=submit]\')',
+      message:
+        "Error: Locator.click: Timeout 5000ms exceeded\nWaiting for locator('button[type=submit]')",
       stackTrace: '  at /tests/playwright/tests/failing.spec.ts:24:14',
     },
   },
@@ -62,10 +124,10 @@ interface HypertestCore {
 }
 
 const DEPLOY_STEPS: [DeployStep, number][] = [
-  ['pullBase',     1200],
-  ['build',        8000],
-  ['push',         4500],
-  ['manifest',      600],
+  ['pullBase', 1200],
+  ['build', 8000],
+  ['push', 4500],
+  ['manifest', 600],
   ['updateLambda', 5000],
 ];
 
@@ -116,7 +178,10 @@ export const createDevCore = (events: HypertestEvents): HypertestCore => ({
 
     const runEndDate = new Date();
     const counts = testResults.reduce(
-      (acc, r) => { acc[r.status]++; return acc; },
+      (acc, r) => {
+        acc[r.status]++;
+        return acc;
+      },
       { success: 0, skipped: 0, failed: 0 },
     );
 

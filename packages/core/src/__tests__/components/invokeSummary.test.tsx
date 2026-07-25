@@ -1,12 +1,17 @@
-import { test, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { render, cleanup } from 'ink-testing-library';
-import type { HypertestRunResult, HypertestTestResult } from '@hypertest-cloud/types';
+import { afterEach, test } from 'node:test';
+import type {
+  HypertestRunResult,
+  HypertestTestResult,
+} from '@hypertest-cloud/types';
+import { cleanup, render } from 'ink-testing-library';
 import { InvokeSummary } from '../../ui/components/InvokeSummary.js';
 
 afterEach(() => cleanup());
 
-const makeTestResult = (overrides: Partial<HypertestTestResult> = {}): HypertestTestResult => ({
+const makeTestResult = (
+  overrides: Partial<HypertestTestResult> = {},
+): HypertestTestResult => ({
   testId: 'tid-1',
   name: 'test name',
   filePath: 'tests/foo.spec.ts',
@@ -17,7 +22,9 @@ const makeTestResult = (overrides: Partial<HypertestTestResult> = {}): Hypertest
   ...overrides,
 });
 
-const makeRunResult = (overrides: Partial<HypertestRunResult> = {}): HypertestRunResult => ({
+const makeRunResult = (
+  overrides: Partial<HypertestRunResult> = {},
+): HypertestRunResult => ({
   runId: 'run-abc12345',
   startDate: '2024-01-01T00:00:00Z',
   endDate: '2024-01-01T00:00:32Z',
@@ -37,10 +44,13 @@ test('all passed: no FAILURES section', () => {
     ],
   });
   const { lastFrame } = render(
-    <InvokeSummary result={result} localPath="./hypertest.results.json" />
+    <InvokeSummary result={result} localPath="./hypertest.results.json" />,
   );
   const frame = lastFrame() ?? '';
-  assert.ok(!frame.includes('FAILURES'), `expected no FAILURES section: ${frame}`);
+  assert.ok(
+    !frame.includes('FAILURES'),
+    `expected no FAILURES section: ${frame}`,
+  );
   assert.ok(frame.includes('3 passed'), `frame: ${frame}`);
 });
 
@@ -56,7 +66,7 @@ test('some failed: FAILURES section with test name and error message', () => {
     testResults: [makeTestResult({ testId: 'p1' }), failedTest],
   });
   const { lastFrame } = render(
-    <InvokeSummary result={result} localPath="./hypertest.results.json" />
+    <InvokeSummary result={result} localPath="./hypertest.results.json" />,
   );
   const frame = lastFrame() ?? '';
   assert.ok(frame.includes('FAILURES'), `frame: ${frame}`);
@@ -65,7 +75,8 @@ test('some failed: FAILURES section with test name and error message', () => {
 });
 
 test('failed with stackTrace: shows first 4 lines', () => {
-  const stack = 'Error: fail\n  at a.ts:1\n  at b.ts:2\n  at c.ts:3\n  at d.ts:4\n  at e.ts:5';
+  const stack =
+    'Error: fail\n  at a.ts:1\n  at b.ts:2\n  at c.ts:3\n  at d.ts:4\n  at e.ts:5';
   const failedTest = makeTestResult({
     testId: 'f1',
     status: 'failed',
@@ -77,12 +88,15 @@ test('failed with stackTrace: shows first 4 lines', () => {
     testResults: [failedTest],
   });
   const { lastFrame } = render(
-    <InvokeSummary result={result} localPath="./hypertest.results.json" />
+    <InvokeSummary result={result} localPath="./hypertest.results.json" />,
   );
   const frame = lastFrame() ?? '';
   assert.ok(frame.includes('at a.ts:1'), `frame: ${frame}`);
   assert.ok(frame.includes('at c.ts:3'), `frame: ${frame}`); // 4th line of stackTrace (slice(0,4))
-  assert.ok(!frame.includes('at d.ts:4'), `should truncate after 4 lines: ${frame}`);
+  assert.ok(
+    !frame.includes('at d.ts:4'),
+    `should truncate after 4 lines: ${frame}`,
+  );
 });
 
 test('artifactsBaseUrl present: shows URL in ARTIFACTS', () => {
@@ -92,7 +106,7 @@ test('artifactsBaseUrl present: shows URL in ARTIFACTS', () => {
       result={result}
       localPath="./hypertest.results.json"
       artifactsBaseUrl="s3://my-bucket/run-abc/"
-    />
+    />,
   );
   const frame = lastFrame() ?? '';
   assert.ok(frame.includes('ARTIFACTS'), `frame: ${frame}`);
@@ -102,7 +116,7 @@ test('artifactsBaseUrl present: shows URL in ARTIFACTS', () => {
 test('artifactsBaseUrl absent: shows run ID fallback', () => {
   const result = makeRunResult({ runId: 'run-abc12345', testResults: [] });
   const { lastFrame } = render(
-    <InvokeSummary result={result} localPath="./hypertest.results.json" />
+    <InvokeSummary result={result} localPath="./hypertest.results.json" />,
   );
   const frame = lastFrame() ?? '';
   assert.ok(frame.includes('run run-abc12345'), `frame: ${frame}`);
@@ -111,7 +125,7 @@ test('artifactsBaseUrl absent: shows run ID fallback', () => {
 test('shows RESULTS path', () => {
   const result = makeRunResult({ testResults: [] });
   const { lastFrame } = render(
-    <InvokeSummary result={result} localPath="./hypertest.results.json" />
+    <InvokeSummary result={result} localPath="./hypertest.results.json" />,
   );
   const frame = lastFrame() ?? '';
   assert.ok(frame.includes('./hypertest.results.json'), `frame: ${frame}`);
@@ -120,7 +134,7 @@ test('shows RESULTS path', () => {
 test('shows formatted DURATION', () => {
   const result = makeRunResult({ duration: 32000, testResults: [] });
   const { lastFrame } = render(
-    <InvokeSummary result={result} localPath="./hypertest.results.json" />
+    <InvokeSummary result={result} localPath="./hypertest.results.json" />,
   );
   const frame = lastFrame() ?? '';
   assert.ok(frame.includes('32.0s'), `frame: ${frame}`);

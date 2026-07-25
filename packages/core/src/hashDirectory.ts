@@ -1,6 +1,6 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import crypto from 'node:crypto';
 
 /**
  * Recursively gets files from a directory based on allowed extensions.

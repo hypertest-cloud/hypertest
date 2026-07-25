@@ -1,4 +1,4 @@
-import type { Tagged, GetTagMetadata } from 'type-fest';
+import type { GetTagMetadata, Tagged } from 'type-fest';
 
 export type AnyDockerfile = Dockerfile<{
   buildArgs: Record<string, string>;

@@ -1,10 +1,14 @@
+import type {
+  HypertestEvent,
+  HypertestEvents,
+  HypertestTestResult,
+} from '@hypertest-cloud/types';
 import { Box, Static, Text } from 'ink';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import type { HypertestEvent, HypertestEvents, HypertestTestResult } from '@hypertest-cloud/types';
-import { Wordmark } from '../components/Wordmark.js';
+import { InvokeSummary } from '../components/InvokeSummary.js';
 import { Rule } from '../components/Rule.js';
 import { TestRow } from '../components/TestRow.js';
-import { InvokeSummary } from '../components/InvokeSummary.js';
+import { Wordmark } from '../components/Wordmark.js';
 import { formatDuration } from '../theme.js';
 
 interface InvokeAppProps {
@@ -75,8 +79,20 @@ export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
       if (event.type === 'run:start') {
         setState((prev) => ({
           ...prev,
-          run: { runId: event.runId, testCount: event.testCount, concurrency: event.concurrency, startMs: Date.now() },
-          staticItems: [...prev.staticItems, { type: 'header', runId: event.runId, concurrency: event.concurrency }],
+          run: {
+            runId: event.runId,
+            testCount: event.testCount,
+            concurrency: event.concurrency,
+            startMs: Date.now(),
+          },
+          staticItems: [
+            ...prev.staticItems,
+            {
+              type: 'header',
+              runId: event.runId,
+              concurrency: event.concurrency,
+            },
+          ],
         }));
       } else if (event.type === 'test:start') {
         setState((prev) => {
@@ -92,7 +108,10 @@ export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
             ...prev,
             running,
             doneCount: prev.doneCount + 1,
-            staticItems: [...prev.staticItems, { type: 'test', testId: event.testId, result: event.result }],
+            staticItems: [
+              ...prev.staticItems,
+              { type: 'test', testId: event.testId, result: event.result },
+            ],
           };
         });
       } else if (event.type === 'run:end') {
@@ -103,29 +122,31 @@ export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
   }, [events]);
 
   useEffect(() => {
-    if (!state.run || state.runEnd) { return; }
+    if (!state.run || state.runEnd) {
+      return;
+    }
     const { startMs } = state.run;
     const id = setInterval(() => setElapsed(Date.now() - startMs), 100);
     return () => clearInterval(id);
   }, [state.run, state.runEnd]);
 
   useEffect(() => {
-    if (state.runEnd) { onExit?.(); }
+    if (state.runEnd) {
+      onExit?.();
+    }
   }, [state.runEnd, onExit]);
 
   const { run, running, doneCount, runEnd, staticItems } = state;
   const queued = run ? run.testCount - doneCount - running.size : 0;
 
-  const MAX_VISIBLE_RUNNING = 8;
+  const maxVisibleRunning = 8;
   const runningArr = [...running];
-  const visibleRunning = runningArr.slice(0, MAX_VISIBLE_RUNNING);
+  const visibleRunning = runningArr.slice(0, maxVisibleRunning);
   const hiddenRunning = running.size - visibleRunning.length;
 
   return (
     <Box flexDirection="column" gap={0}>
-      <Static items={staticItems}>
-        {renderStaticItem}
-      </Static>
+      <Static items={staticItems}>{renderStaticItem}</Static>
 
       {!runEnd && (
         <>
@@ -158,7 +179,11 @@ export const InvokeApp = ({ events, onExit }: InvokeAppProps) => {
       {runEnd && (
         <>
           <Text> </Text>
-          <InvokeSummary result={runEnd.result} localPath={runEnd.localPath} artifactsBaseUrl={runEnd.artifactsBaseUrl} />
+          <InvokeSummary
+            result={runEnd.result}
+            localPath={runEnd.localPath}
+            artifactsBaseUrl={runEnd.artifactsBaseUrl}
+          />
         </>
       )}
     </Box>

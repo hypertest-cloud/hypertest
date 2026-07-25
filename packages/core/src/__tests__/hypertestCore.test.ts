@@ -1,14 +1,14 @@
+import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, test } from 'node:test';
-import assert from 'node:assert/strict';
-import type { Logger } from 'winston';
 import type {
   CloudProviderPlugin,
   ResolvedHypertestConfig,
   TestRunnerPlugin,
 } from '@hypertest-cloud/types';
+import type { Logger } from 'winston';
 import { createEventBus } from '../events.js';
 import { HypertestCore } from '../index.js';
 
@@ -50,8 +50,17 @@ const makeCloudProvider = (): CloudProviderPlugin => ({
   pushImage: async () => {},
   updateLambdaImage: async () => {},
   updateManifest: async () => {},
-  invoke: async () => ({ success: true, name: 'test', filePath: 'test.spec.ts', duration: 100 }),
-  pullManifest: async () => ({ imageDigest: 'sha256:abc', testDirHash: 'hash', invokePayloadContexts: [] }),
+  invoke: async () => ({
+    success: true,
+    name: 'test',
+    filePath: 'test.spec.ts',
+    duration: 100,
+  }),
+  pullManifest: async () => ({
+    imageDigest: 'sha256:abc',
+    testDirHash: 'hash',
+    invokePayloadContexts: [],
+  }),
   uploadRunResult: async () => ({}),
 });
 
@@ -72,11 +81,26 @@ test('deploy() calls logger.info for all 5 step messages', async () => {
 
   await core.deploy();
 
-  assert.ok(calls.some(m => m.includes('Pulling base image')), `missing 'Pulling base image' in: ${calls}`);
-  assert.ok(calls.some(m => m.includes('Building container image')), `missing 'Building container image' in: ${calls}`);
-  assert.ok(calls.some(m => m.includes('Pushing image to the cloud')), `missing 'Pushing image to the cloud' in: ${calls}`);
-  assert.ok(calls.some(m => m.includes('Building and storing manifest')), `missing 'Building and storing manifest' in: ${calls}`);
-  assert.ok(calls.some(m => m.includes('Updating lambda image')), `missing 'Updating lambda image' in: ${calls}`);
+  assert.ok(
+    calls.some((m) => m.includes('Pulling base image')),
+    `missing 'Pulling base image' in: ${calls}`,
+  );
+  assert.ok(
+    calls.some((m) => m.includes('Building container image')),
+    `missing 'Building container image' in: ${calls}`,
+  );
+  assert.ok(
+    calls.some((m) => m.includes('Pushing image to the cloud')),
+    `missing 'Pushing image to the cloud' in: ${calls}`,
+  );
+  assert.ok(
+    calls.some((m) => m.includes('Building and storing manifest')),
+    `missing 'Building and storing manifest' in: ${calls}`,
+  );
+  assert.ok(
+    calls.some((m) => m.includes('Updating lambda image')),
+    `missing 'Updating lambda image' in: ${calls}`,
+  );
 });
 
 test('deploy() completes without throwing when logger.silent is true', async () => {

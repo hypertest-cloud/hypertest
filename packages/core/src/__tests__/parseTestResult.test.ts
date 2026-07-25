@@ -1,7 +1,7 @@
-import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseTestResult } from '../index.js';
+import { test } from 'node:test';
 import type { TestInvokeResponse } from '@hypertest-cloud/types';
+import { parseTestResult } from '../index.js';
 
 const start = new Date('2024-01-01T10:00:00Z');
 const end = new Date('2024-01-01T10:00:02Z'); // 2000ms later
@@ -43,7 +43,10 @@ test('failed response maps to failed status with error and stackTrace', () => {
   const result = parseTestResult('tid-3', resp, start, end);
   assert.equal(result.status, 'failed');
   assert.equal(result.error?.message, 'Expected X to equal Y');
-  assert.equal(result.error?.stackTrace, 'Error: Expected X\n  at tests/baz.spec.ts:10:5');
+  assert.equal(
+    result.error?.stackTrace,
+    'Error: Expected X\n  at tests/baz.spec.ts:10:5',
+  );
   assert.equal(result.duration, 2000); // computed from dates, not response
 });
 
@@ -59,7 +62,12 @@ test('failed response without optional fields uses unknown fallbacks', () => {
 });
 
 test('testId is propagated to result', () => {
-  const resp: TestInvokeResponse = { success: true, name: 'n', filePath: 'f', duration: 100 };
+  const resp: TestInvokeResponse = {
+    success: true,
+    name: 'n',
+    filePath: 'f',
+    duration: 100,
+  };
   const result = parseTestResult('my-unique-id', resp, start, end);
   assert.equal(result.testId, 'my-unique-id');
 });

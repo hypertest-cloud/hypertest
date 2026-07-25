@@ -1,12 +1,14 @@
-import { test, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { render, cleanup } from 'ink-testing-library';
+import { afterEach, test } from 'node:test';
 import type { HypertestTestResult } from '@hypertest-cloud/types';
+import { cleanup, render } from 'ink-testing-library';
 import { TestRow } from '../../ui/components/TestRow.js';
 
 afterEach(() => cleanup());
 
-const makeResult = (overrides: Partial<HypertestTestResult> = {}): HypertestTestResult => ({
+const makeResult = (
+  overrides: Partial<HypertestTestResult> = {},
+): HypertestTestResult => ({
   testId: 'test-id-001',
   name: 'my test name',
   filePath: 'tests/foo.spec.ts',
@@ -19,7 +21,7 @@ const makeResult = (overrides: Partial<HypertestTestResult> = {}): HypertestTest
 
 test('running row shows running text and truncated testId', () => {
   const { lastFrame } = render(
-    <TestRow status="running" testId="abcdef1234567890" />
+    <TestRow status="running" testId="abcdef1234567890" />,
   );
   const frame = lastFrame() ?? '';
   assert.ok(frame.includes('running'), `frame: ${frame}`);
@@ -28,7 +30,10 @@ test('running row shows running text and truncated testId', () => {
 
 test('done success row shows check mark and name', () => {
   const { lastFrame } = render(
-    <TestRow status="done" result={makeResult({ status: 'success', name: 'passing test' })} />
+    <TestRow
+      status="done"
+      result={makeResult({ status: 'success', name: 'passing test' })}
+    />,
   );
   const frame = lastFrame() ?? '';
   assert.ok(frame.includes('✓'), `frame: ${frame}`);
@@ -37,7 +42,14 @@ test('done success row shows check mark and name', () => {
 
 test('done failed row shows cross mark and name', () => {
   const { lastFrame } = render(
-    <TestRow status="done" result={makeResult({ status: 'failed', name: 'failing test', duration: 3000 })} />
+    <TestRow
+      status="done"
+      result={makeResult({
+        status: 'failed',
+        name: 'failing test',
+        duration: 3000,
+      })}
+    />,
   );
   const frame = lastFrame() ?? '';
   assert.ok(frame.includes('✕'), `frame: ${frame}`);
@@ -46,7 +58,10 @@ test('done failed row shows cross mark and name', () => {
 
 test('done skipped row shows skip glyph and name', () => {
   const { lastFrame } = render(
-    <TestRow status="done" result={makeResult({ status: 'skipped', name: 'skipped test' })} />
+    <TestRow
+      status="done"
+      result={makeResult({ status: 'skipped', name: 'skipped test' })}
+    />,
   );
   const frame = lastFrame() ?? '';
   assert.ok(frame.includes('◯'), `frame: ${frame}`);
@@ -55,7 +70,10 @@ test('done skipped row shows skip glyph and name', () => {
 
 test('done row shows formatted duration', () => {
   const { lastFrame } = render(
-    <TestRow status="done" result={makeResult({ status: 'success', duration: 1500 })} />
+    <TestRow
+      status="done"
+      result={makeResult({ status: 'success', duration: 1500 })}
+    />,
   );
   const frame = lastFrame() ?? '';
   assert.ok(frame.includes('1.5s'), `frame: ${frame}`);

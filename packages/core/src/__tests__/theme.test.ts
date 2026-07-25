@@ -1,5 +1,5 @@
-import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { test } from 'node:test';
 import { formatDuration, icon } from '../ui/theme.js';
 
 test('formatDuration: 0ms → 0.0s', () => {
@@ -23,7 +23,15 @@ test('formatDuration: 90000ms → 1.5m', () => {
 });
 
 test('icon map has all 7 expected keys', () => {
-  const expected = ['pass', 'fail', 'skip', 'queued', 'pending', 'warn', 'arrow'] as const;
+  const expected = [
+    'pass',
+    'fail',
+    'skip',
+    'queued',
+    'pending',
+    'warn',
+    'arrow',
+  ] as const;
   for (const key of expected) {
     assert.ok(key in icon, `icon.${key} missing`);
     assert.equal(typeof icon[key], 'string');

@@ -1,6 +1,6 @@
-import { test, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { render, cleanup } from 'ink-testing-library';
+import { afterEach, test } from 'node:test';
+import { cleanup, render } from 'ink-testing-library';
 import { StatusIcon } from '../../ui/components/StatusIcon.js';
 
 afterEach(() => cleanup());

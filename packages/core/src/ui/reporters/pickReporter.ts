@@ -1,5 +1,9 @@
 import type { HypertestEvents } from '@hypertest-cloud/types';
-import { createInkReporter, type Command, type Reporter } from './inkReporter.js';
+import {
+  type Command,
+  type Reporter,
+  createInkReporter,
+} from './inkReporter.js';
 import { createPlainReporter } from './plainReporter.js';
 
 export const pickReporter = (
