@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { runDeployWithCoreSetupGuard } from '../runDeployWithCoreSetupGuard.js';
 
-const noop = async () => {};
+const noop = async () => {
+  /* noop */
+};
 const mockCore = () => ({ deploy: noop });
 
 test('abort is called when setupCoreHandler (setup) throws', async () => {
@@ -10,7 +12,7 @@ test('abort is called when setupCoreHandler (setup) throws', async () => {
   await assert.rejects(
     () =>
       runDeployWithCoreSetupGuard({
-        setupCoreHandler: async () => {
+        setupCoreHandler: () => {
           throw new Error('setup failed');
         },
         onSetupFailure: () => {
@@ -28,7 +30,7 @@ test('abort is NOT called when core.deploy() throws after setup succeeds', async
     () =>
       runDeployWithCoreSetupGuard({
         setupCoreHandler: async () => ({
-          deploy: async () => {
+          deploy: () => {
             throw new Error('deploy failed');
           },
         }),
@@ -46,10 +48,12 @@ test('error is re-thrown so caller can set process.exitCode', async () => {
   await assert.rejects(
     () =>
       runDeployWithCoreSetupGuard({
-        setupCoreHandler: async () => {
+        setupCoreHandler: () => {
           throw err;
         },
-        onSetupFailure: () => {},
+        onSetupFailure: () => {
+          /* noop */
+        },
       }),
     (caught: unknown) => caught === err,
   );
@@ -59,7 +63,9 @@ test('resolves without error on successful deploy', async () => {
   await assert.doesNotReject(() =>
     runDeployWithCoreSetupGuard({
       setupCoreHandler: () => Promise.resolve(mockCore()),
-      onSetupFailure: () => {},
+      onSetupFailure: () => {
+        /* noop */
+      },
     }),
   );
 });

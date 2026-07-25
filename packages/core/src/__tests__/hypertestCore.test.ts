@@ -46,10 +46,18 @@ const makeConfig = (logger: Logger): ResolvedHypertestConfig => ({
 });
 
 const makeCloudProvider = (): CloudProviderPlugin => ({
-  pullBaseImage: async () => {},
-  pushImage: async () => {},
-  updateLambdaImage: async () => {},
-  updateManifest: async () => {},
+  pullBaseImage: async () => {
+    /* noop */
+  },
+  pushImage: async () => {
+    /* noop */
+  },
+  updateLambdaImage: async () => {
+    /* noop */
+  },
+  updateManifest: async () => {
+    /* noop */
+  },
   invoke: async () => ({
     success: true,
     name: 'test',
@@ -67,7 +75,9 @@ const makeCloudProvider = (): CloudProviderPlugin => ({
 const makeTestRunner = (testDir: string): TestRunnerPlugin<unknown> => ({
   getInvokePayloadContext: async () => [],
   getTestDir: async () => testDir,
-  buildImage: async () => {},
+  buildImage: async () => {
+    /* noop */
+  },
 });
 
 test('deploy() calls logger.info for all 5 step messages', async () => {
