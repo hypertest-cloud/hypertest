@@ -16,7 +16,7 @@ Modern test suites can take 10, 30, or even 60+ minutes to complete. Hypertest s
 ### Installation
 
 ```bash
-npm install @hypertest/hypertest-core @hypertest/hypertest-plugin-playwright @hypertest/hypertest-provider-cloud-aws
+npm install @hypertest-cloud/core @hypertest-cloud/plugin-playwright @hypertest-cloud/provider-cloud-aws
 ```
 
 ### Configuration
@@ -24,9 +24,9 @@ npm install @hypertest/hypertest-core @hypertest/hypertest-plugin-playwright @hy
 Create `hypertest.config.js` in your project root:
 
 ```javascript
-import { defineConfig } from '@hypertest-cloud/hypertest-core';
-import playwright from '@hypertest-cloud/hypertest-plugin-playwright';
-import aws from '@hypertest-cloud/hypertest-provider-cloud-aws';
+import { defineConfig } from '@hypertest-cloud/core';
+import playwright from '@hypertest-cloud/plugin-playwright';
+import aws from '@hypertest-cloud/provider-cloud-aws';
 
 export default defineConfig({
   concurrency: 30,

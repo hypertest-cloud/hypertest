@@ -1,6 +1,6 @@
 import { Box, Static, Text } from 'ink';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import type { HypertestEvent, HypertestEvents, HypertestTestResult } from '@hypertest/hypertest-types';
+import type { HypertestEvent, HypertestEvents, HypertestTestResult } from '@hypertest-cloud/types';
 import { Wordmark } from '../components/Wordmark.js';
 import { Rule } from '../components/Rule.js';
 import { TestRow } from '../components/TestRow.js';

@@ -8,7 +8,7 @@ import type {
   CloudProviderPlugin,
   ResolvedHypertestConfig,
   TestRunnerPlugin,
-} from '@hypertest/hypertest-types';
+} from '@hypertest-cloud/types';
 import { createEventBus } from '../events.js';
 import { HypertestCore } from '../index.js';
 

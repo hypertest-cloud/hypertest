@@ -75,7 +75,7 @@ Understanding how these components work together:
 
 | Runner | Package | Description |
 |--------|---------|-------------|
-| AWS Playwright | `@hypertest/hypertest-runner-aws-playwright` | Playwright execution on AWS Lambda |
+| AWS Playwright | `@hypertest-cloud/runner-aws-playwright` | Playwright execution on AWS Lambda |
 
 More runners for other cloud and framework combinations are coming soon.
 

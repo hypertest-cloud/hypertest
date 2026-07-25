@@ -4,8 +4,8 @@ prev:
   text: 'Manifest'
   link: '/developers/manifest'
 next:
-  text: 'License Overview'
-  link: '/license/overview'
+  text: 'Releasing'
+  link: '/developers/releasing'
 ---
 
 # Node.js Version Upgrade

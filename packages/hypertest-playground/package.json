@@ -1,5 +1,5 @@
 {
-  "name": "@hypertest-cloud/hypertest-playground",
+  "name": "@hypertest-cloud/playground",
   "version": "0.0.1",
   "license": "Elastic-2.0",
   "private": true,
@@ -10,9 +10,9 @@
     "lint:fix": "biome check --write"
   },
   "dependencies": {
-    "@hypertest-cloud/hypertest-core": "0.x.x",
-    "@hypertest-cloud/hypertest-plugin-playwright": "0.x.x",
-    "@hypertest-cloud/hypertest-runner-aws-playwright": "0.x.x",
+    "@hypertest-cloud/core": "0.x.x",
+    "@hypertest-cloud/plugin-playwright": "0.x.x",
+    "@hypertest-cloud/runner-aws-playwright": "0.x.x",
     "dotenv": "^16.5.0"
   },
   "devDependencies": {

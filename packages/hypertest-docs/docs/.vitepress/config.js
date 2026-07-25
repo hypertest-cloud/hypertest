@@ -65,6 +65,10 @@ export default {
             text: 'Dev Mode',
             link: '/developers/dev-mode',
           },
+          {
+            text: 'Releasing',
+            link: '/developers/releasing',
+          },
         ],
       },
       {

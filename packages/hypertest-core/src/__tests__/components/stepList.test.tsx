@@ -1,7 +1,7 @@
 import { test, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { render, cleanup } from 'ink-testing-library';
-import type { DeployStep } from '@hypertest/hypertest-types';
+import type { DeployStep } from '@hypertest-cloud/types';
 import { StepList } from '../../ui/components/StepList.js';
 import type { StepState } from '../../ui/components/StepList.js';
 

@@ -4,8 +4,8 @@ import type {
   ResolvedHypertestConfig,
   TestRunnerPlugin,
   TestRunnerPluginDefinition,
-} from '@hypertest-cloud/hypertest-types';
-import { Dockerfile } from '@hypertest-cloud/internal-hypertest-playwright-container';
+} from '@hypertest-cloud/types';
+import { Dockerfile } from '@hypertest-cloud/internal-playwright-container';
 import type { PlaywrightTestConfig } from '@playwright/test';
 import type winston from 'winston';
 import { z } from 'zod';
@@ -134,7 +134,7 @@ type Options = z.infer<typeof OptionsSchema>;
 const plugin = (
   options: Options,
 ): TestRunnerPluginDefinition<PlaywrightCloudFunctionContext> => ({
-  name: '@hypertest-cloud/hypertest-plugin-playwright',
+  name: '@hypertest-cloud/plugin-playwright',
   version: '0.0.1',
   validate: async () => {
     await OptionsSchema.parseAsync(options);

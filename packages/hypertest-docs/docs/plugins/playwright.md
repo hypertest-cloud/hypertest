@@ -17,15 +17,15 @@ The Playwright plugin enables hypertest to distribute your [Playwright](https://
 ::: code-group
 
 ```bash [npm]
-npm install @hypertest/hypertest-plugin-playwright
+npm install @hypertest-cloud/plugin-playwright
 ```
 
 ```bash [yarn]
-yarn add @hypertest/hypertest-plugin-playwright
+yarn add @hypertest-cloud/plugin-playwright
 ```
 
 ```bash [pnpm]
-pnpm add @hypertest/hypertest-plugin-playwright
+pnpm add @hypertest-cloud/plugin-playwright
 ```
 
 :::
@@ -35,9 +35,9 @@ pnpm add @hypertest/hypertest-plugin-playwright
 Add the plugin to your `hypertest.config.js`:
 
 ```javascript
-import { defineConfig } from '@hypertest-cloud/hypertest-core';
-import playwright from '@hypertest-cloud/hypertest-plugin-playwright';
-import aws from '@hypertest-cloud/hypertest-provider-cloud-aws';
+import { defineConfig } from '@hypertest-cloud/core';
+import playwright from '@hypertest-cloud/plugin-playwright';
+import aws from '@hypertest-cloud/provider-cloud-aws';
 
 export default defineConfig({
   testRunner: playwright({}),

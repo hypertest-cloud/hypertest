@@ -17,15 +17,15 @@ The AWS provider enables hypertest to run your tests on [AWS Lambda](https://aws
 ::: code-group
 
 ```bash [npm]
-npm install @hypertest/hypertest-provider-cloud-aws
+npm install @hypertest-cloud/provider-cloud-aws
 ```
 
 ```bash [yarn]
-yarn add @hypertest/hypertest-provider-cloud-aws
+yarn add @hypertest-cloud/provider-cloud-aws
 ```
 
 ```bash [pnpm]
-pnpm add @hypertest/hypertest-provider-cloud-aws
+pnpm add @hypertest-cloud/provider-cloud-aws
 ```
 
 :::
@@ -35,9 +35,9 @@ pnpm add @hypertest/hypertest-provider-cloud-aws
 Add the provider to your `hypertest.config.js`:
 
 ```javascript
-import { defineConfig } from '@hypertest-cloud/hypertest-core';
-import playwright from '@hypertest-cloud/hypertest-plugin-playwright';
-import aws from '@hypertest-cloud/hypertest-provider-cloud-aws';
+import { defineConfig } from '@hypertest-cloud/core';
+import playwright from '@hypertest-cloud/plugin-playwright';
+import aws from '@hypertest-cloud/provider-cloud-aws';
 
 export default defineConfig({
   concurrency: 30,

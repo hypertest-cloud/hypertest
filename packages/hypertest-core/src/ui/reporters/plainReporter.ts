@@ -1,7 +1,7 @@
 import type {
   HypertestEvent,
   HypertestEvents,
-} from '@hypertest/hypertest-types';
+} from '@hypertest-cloud/types';
 import type { Reporter } from './inkReporter.js';
 
 const write = (line: string) => process.stdout.write(`${line}\n`);

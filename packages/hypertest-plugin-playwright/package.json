@@ -1,5 +1,5 @@
 {
-  "name": "@hypertest-cloud/hypertest-plugin-playwright",
+  "name": "@hypertest-cloud/plugin-playwright",
   "version": "0.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,8 +16,8 @@
     "lint:fix": "biome check --write"
   },
   "dependencies": {
-    "@hypertest-cloud/internal-hypertest-playwright-container": "0.x.x",
-    "@hypertest-cloud/hypertest-types": "0.x.x",
+    "@hypertest-cloud/internal-playwright-container": "0.x.x",
+    "@hypertest-cloud/types": "0.x.x",
     "@playwright/test": "^1.51.1",
     "escape-string-regexp": "^5.0.0",
     "execa": "^9.5.2",

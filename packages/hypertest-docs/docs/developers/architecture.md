@@ -10,7 +10,7 @@ next:
 
 # Architecture
 
-hypertest is built from several exchangeable components. Each component is responsible for a different layer of abstraction and can be replaced with another implementation of the same type. Components are configured in `hypertest.config.js` and orchestrated by the `@hypertest/hypertest-core` package.
+hypertest is built from several exchangeable components. Each component is responsible for a different layer of abstraction and can be replaced with another implementation of the same type. Components are configured in `hypertest.config.js` and orchestrated by the `@hypertest-cloud/core` package.
 
 ## Component types
 
@@ -18,9 +18,9 @@ hypertest uses three main component types:
 
 | Component | Purpose | Example |
 |-----------|---------|---------|
-| **Test Runner Plugin** | Test framework integration | `@hypertest/hypertest-plugin-playwright` |
-| **Cloud Provider** | Cloud infrastructure management | `@hypertest/hypertest-provider-cloud-aws` |
-| **Runner** | Test execution in cloud functions | `@hypertest/hypertest-runner-aws-playwright` |
+| **Test Runner Plugin** | Test framework integration | `@hypertest-cloud/plugin-playwright` |
+| **Cloud Provider** | Cloud infrastructure management | `@hypertest-cloud/provider-cloud-aws` |
+| **Runner** | Test execution in cloud functions | `@hypertest-cloud/runner-aws-playwright` |
 
 ### Test runner plugin
 

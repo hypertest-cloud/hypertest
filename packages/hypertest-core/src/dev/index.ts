@@ -5,7 +5,7 @@ import type {
   HypertestEvents,
   HypertestRunResult,
   HypertestTestResult,
-} from '@hypertest/hypertest-types';
+} from '@hypertest-cloud/types';
 import { promiseMap } from '../utils.js';
 
 interface MockTest {

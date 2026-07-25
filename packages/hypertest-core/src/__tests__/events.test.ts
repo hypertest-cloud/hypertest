@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import type { HypertestEvent } from '@hypertest/hypertest-types';
+import type { HypertestEvent } from '@hypertest-cloud/types';
 import { createEventBus } from '../events.js';
 
 const sampleEvent: HypertestEvent = {

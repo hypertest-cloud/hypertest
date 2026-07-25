@@ -120,3 +120,7 @@ setupHypertest({
 ### Dev mode
 
 `HYPERTEST_DEV=true` swaps real providers for mocks in `src/dev/index.ts`. Emits identical events as real providers — the reporter layer is exercised identically. `HYPERTEST_DEV_SPEED` controls animation speed (default 10×).
+
+## Known TODOs
+
+- **`package.json` direct dep on `@hypertest-cloud/plugin-playwright`**: kept as a direct dependency temporarily because packages are not yet published to npm (workspace resolution requires it). Once packages are published, move this to a `peerDependency` — core is runner-agnostic and should not mandate playwright for users who bring a different runner plugin.

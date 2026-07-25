@@ -33,8 +33,8 @@ When you run hypertest commands, the cloud provider handles infrastructure opera
 Cloud providers are configured in your `hypertest.config.js` file via the `cloudProvider` option:
 
 ```javascript
-import { defineConfig } from '@hypertest-cloud/hypertest-core';
-import aws from '@hypertest-cloud/hypertest-provider-cloud-aws';
+import { defineConfig } from '@hypertest-cloud/core';
+import aws from '@hypertest-cloud/provider-cloud-aws';
 
 export default defineConfig({
   cloudProvider: aws({
@@ -53,7 +53,7 @@ Each provider requires its own configuration options specific to that cloud plat
 
 | Provider | Package | Description |
 |----------|---------|-------------|
-| AWS | `@hypertest/hypertest-provider-cloud-aws` | AWS Lambda with ECR and S3 |
+| AWS | `@hypertest-cloud/provider-cloud-aws` | AWS Lambda with ECR and S3 |
 
 More cloud providers are coming soon.
 

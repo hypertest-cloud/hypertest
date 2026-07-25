@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import 'dotenv/config';
 import { Command } from '@commander-js/extra-typings';
-import { type Check, CheckError } from '@hypertest/hypertest-types';
-import type { HypertestEvents } from '@hypertest/hypertest-types';
+import { type Check, CheckError } from '@hypertest-cloud/types';
+import type { HypertestEvents } from '@hypertest-cloud/types';
 import { render } from 'ink';
 import { ZodError } from 'zod';
 import { loadConfig } from './config.js';

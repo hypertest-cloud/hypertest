@@ -1,7 +1,7 @@
 import type {
   HypertestEvent,
   HypertestEvents,
-} from '@hypertest/hypertest-types';
+} from '@hypertest-cloud/types';
 import { Box, Text } from 'ink';
 import { useLayoutEffect, useState } from 'react';
 import { DoctorCheck } from '../components/DoctorCheck.js';

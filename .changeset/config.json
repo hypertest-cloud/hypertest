@@ -8,7 +8,7 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
-    "@hypertest-cloud/hypertest-docs",
-    "@hypertest-cloud/hypertest-playground"
+    "@hypertest-cloud/docs",
+    "@hypertest-cloud/playground"
   ]
 }

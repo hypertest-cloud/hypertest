@@ -5,7 +5,7 @@ import {
   ConfigSchema,
   type ResolvedHypertestConfig,
   type TestRunnerPluginDefinition,
-} from '@hypertest-cloud/hypertest-types';
+} from '@hypertest-cloud/types';
 import type winston from 'winston';
 import { z } from 'zod';
 import { initializeLogger } from './logger.js';

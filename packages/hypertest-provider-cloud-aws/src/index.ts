@@ -28,7 +28,7 @@ import {
   ImageBuildManifestSchema,
   type ResolvedHypertestConfig,
   TestInvokeResponseSchema,
-} from '@hypertest-cloud/hypertest-types';
+} from '@hypertest-cloud/types';
 import type winston from 'winston';
 import { z } from 'zod';
 import { isDockerRunning } from './isDockerRunning.js';

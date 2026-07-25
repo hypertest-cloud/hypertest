@@ -1,4 +1,4 @@
-import type { TestInvokeResponse } from '@hypertest-cloud/hypertest-types';
+import type { TestInvokeResponse } from '@hypertest-cloud/types';
 
 interface TestResult {
   status: string;

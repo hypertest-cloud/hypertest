@@ -1,5 +1,5 @@
 import { Box, Text } from 'ink';
-import type { HypertestTestResult } from '@hypertest/hypertest-types';
+import type { HypertestTestResult } from '@hypertest-cloud/types';
 import { formatDuration } from '../theme.js';
 import { StatusIcon } from './StatusIcon.js';
 

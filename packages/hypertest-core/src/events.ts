@@ -1,5 +1,5 @@
 import { EventEmitter } from 'node:events';
-import type { HypertestEvent, HypertestEvents } from '@hypertest/hypertest-types';
+import type { HypertestEvent, HypertestEvents } from '@hypertest-cloud/types';
 
 const EVENT_KEY = 'event';
 

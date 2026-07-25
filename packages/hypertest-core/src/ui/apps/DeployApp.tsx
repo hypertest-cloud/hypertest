@@ -1,4 +1,4 @@
-import type { DeployStep, HypertestEvents } from '@hypertest/hypertest-types';
+import type { DeployStep, HypertestEvents } from '@hypertest-cloud/types';
 import { Box, Text } from 'ink';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Rule } from '../components/Rule.js';

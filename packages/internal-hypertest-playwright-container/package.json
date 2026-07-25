@@ -1,7 +1,7 @@
 {
-  "name": "@hypertest-cloud/internal-hypertest-playwright-container",
+  "name": "@hypertest-cloud/internal-playwright-container",
   "version": "0.0.1",
-  "main": "dist/index.js",
+  "main": "index.js",
   "files": ["Dockerfile", "index.js"],
   "types": "index.d.ts",
   "license": "Elastic-2.0",
@@ -13,6 +13,6 @@
   },
   "exports": "./index.js",
   "devDependencies": {
-    "@hypertest-cloud/hypertest-types": "0.x.x"
+    "@hypertest-cloud/types": "0.x.x"
   }
 }

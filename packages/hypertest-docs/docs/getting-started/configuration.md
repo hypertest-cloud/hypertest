@@ -17,9 +17,9 @@ After installing hypertest, you need to configure it for your project and cloud 
 Create a `hypertest.config.js` file in your project root:
 
 ```javascript
-import { defineConfig } from '@hypertest-cloud/hypertest-core';
-import playwright from '@hypertest-cloud/hypertest-plugin-playwright';
-import aws from '@hypertest-cloud/hypertest-provider-cloud-aws';
+import { defineConfig } from '@hypertest-cloud/core';
+import playwright from '@hypertest-cloud/plugin-playwright';
+import aws from '@hypertest-cloud/provider-cloud-aws';
 
 export default defineConfig({
   // Number of cloud functions to run in parallel

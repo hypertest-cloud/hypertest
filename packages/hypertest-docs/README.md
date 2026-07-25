@@ -1,4 +1,4 @@
-# @hypertest/hypertest-docs
+# @hypertest-cloud/docs
 
 VitePress documentation site for Hypertest - a cloud-based test distribution system.
 

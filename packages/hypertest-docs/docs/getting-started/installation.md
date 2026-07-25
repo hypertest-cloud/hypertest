@@ -28,15 +28,15 @@ Install the main hypertest package.
 ::: code-group
 
 ```bash [npm]
-npm install @hypertest/hypertest-core
+npm install @hypertest-cloud/core
 ```
 
 ```bash [yarn]
-yarn add @hypertest/hypertest-core
+yarn add @hypertest-cloud/core
 ```
 
 ```bash [pnpm]
-pnpm add @hypertest/hypertest-core
+pnpm add @hypertest-cloud/core
 ```
 
 :::
@@ -50,15 +50,15 @@ Install plugin for your test framework.
 ::: code-group
 
 ```bash [npm]
-npm install @hypertest/hypertest-plugin-playwright
+npm install @hypertest-cloud/plugin-playwright
 ```
 
 ```bash [yarn]
-yarn add @hypertest/hypertest-plugin-playwright
+yarn add @hypertest-cloud/plugin-playwright
 ```
 
 ```bash [pnpm]
-pnpm add @hypertest/hypertest-plugin-playwright
+pnpm add @hypertest-cloud/plugin-playwright
 ```
 
 :::
@@ -72,15 +72,15 @@ Install the cloud provider of cloud you want to use.
 ::: code-group
 
 ```bash [npm]
-npm install @hypertest/hypertest-provider-cloud-aws
+npm install @hypertest-cloud/provider-cloud-aws
 ```
 
 ```bash [yarn]
-yarn add @hypertest/hypertest-provider-cloud-aws
+yarn add @hypertest-cloud/provider-cloud-aws
 ```
 
 ```bash [pnpm]
-pnpm add @hypertest/hypertest-provider-cloud-aws
+pnpm add @hypertest-cloud/provider-cloud-aws
 ```
 
 :::
@@ -92,15 +92,15 @@ Install all packages at once for the standard Playwright + AWS setup:
 ::: code-group
 
 ```bash [npm]
-npm install @hypertest/hypertest-core @hypertest/hypertest-plugin-playwright @hypertest/hypertest-provider-cloud-aws
+npm install @hypertest-cloud/core @hypertest-cloud/plugin-playwright @hypertest-cloud/provider-cloud-aws
 ```
 
 ```bash [yarn]
-yarn add @hypertest/hypertest-core @hypertest/hypertest-plugin-playwright @hypertest/hypertest-provider-cloud-aws
+yarn add @hypertest-cloud/core @hypertest-cloud/plugin-playwright @hypertest-cloud/provider-cloud-aws
 ```
 
 ```bash [pnpm]
-pnpm add @hypertest/hypertest-core @hypertest/hypertest-plugin-playwright @hypertest/hypertest-provider-cloud-aws
+pnpm add @hypertest-cloud/core @hypertest-cloud/plugin-playwright @hypertest-cloud/provider-cloud-aws
 ```
 
 :::

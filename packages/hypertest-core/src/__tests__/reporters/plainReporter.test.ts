@@ -3,7 +3,7 @@ import { afterEach, beforeEach, test } from 'node:test';
 import type {
   HypertestRunResult,
   HypertestTestResult,
-} from '@hypertest/hypertest-types';
+} from '@hypertest-cloud/types';
 import { createEventBus } from '../../events.js';
 import { createPlainReporter } from '../../ui/reporters/plainReporter.js';
 

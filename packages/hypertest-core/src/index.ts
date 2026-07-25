@@ -11,7 +11,7 @@ import type {
   ResolvedHypertestConfig,
   TestInvokeResponse,
   TestRunnerPlugin,
-} from '@hypertest-cloud/hypertest-types';
+} from '@hypertest-cloud/types';
 import { loadConfig } from './config.js';
 import { createDevCore } from './dev/index.js';
 import { createEventBus } from './events.js';

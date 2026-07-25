@@ -1,5 +1,5 @@
 {
-  "name": "@hypertest-cloud/hypertest-core",
+  "name": "@hypertest-cloud/core",
   "version": "0.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,8 +29,8 @@
   },
   "dependencies": {
     "@commander-js/extra-typings": "^13.1.0",
-    "@hypertest-cloud/hypertest-plugin-playwright": "0.x.x",
-    "@hypertest-cloud/hypertest-types": "0.x.x",
+    "@hypertest-cloud/plugin-playwright": "0.x.x",
+    "@hypertest-cloud/types": "0.x.x",
     "commander": "^13.1.0",
     "dotenv": "^16.4.7",
     "chalk": "^5.4.1",

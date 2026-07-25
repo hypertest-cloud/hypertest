@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { parseTestResult } from '../index.js';
-import type { TestInvokeResponse } from '@hypertest/hypertest-types';
+import type { TestInvokeResponse } from '@hypertest-cloud/types';
 
 const start = new Date('2024-01-01T10:00:00Z');
 const end = new Date('2024-01-01T10:00:02Z'); // 2000ms later

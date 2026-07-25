@@ -1,5 +1,5 @@
 import { Box, Text } from 'ink';
-import type { HypertestRunResult } from '@hypertest/hypertest-types';
+import type { HypertestRunResult } from '@hypertest-cloud/types';
 import { formatDuration } from '../theme.js';
 
 // biome-ignore lint/suspicious/noControlCharactersInRegex: ESC byte required to strip ANSI sequences

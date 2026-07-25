@@ -3,7 +3,7 @@ process.env.HOME = '/tmp';
 import { execSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import fs from 'node:fs/promises';
-import type { TestInvokeResponse } from '@hypertest-cloud/hypertest-types';
+import type { TestInvokeResponse } from '@hypertest-cloud/types';
 import chromium from '@sparticuz/chromium';
 import type { Context } from 'aws-lambda';
 import { parsePlaywrightReport } from './utils/parsePlaywrightReport.js';

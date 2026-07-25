@@ -1,7 +1,7 @@
 import { test, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { render, cleanup } from 'ink-testing-library';
-import type { HypertestTestResult } from '@hypertest/hypertest-types';
+import type { HypertestTestResult } from '@hypertest-cloud/types';
 import { TestRow } from '../../ui/components/TestRow.js';
 
 afterEach(() => cleanup());
