@@ -20,13 +20,15 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      - name: Install
-        # TODO: switch back to `npm ci` once npm is upgraded to 11.3.0+ locally and in CI.
+      - name: Upgrade npm
         # npm ≤10 generates platform-specific lockfiles on macOS, omitting linux entries for
-        # optional native binaries (biome, rollup) — npm ci then can't install them.
-        # Fix shipped in npm 11.3.0 (https://github.com/npm/cli/pull/8184, closes issue #4828).
-        # Steps: on upgraded npm, run `npm install` to regenerate the
-        # lockfile with all platform entries, then restore `npm ci` here.
+        # optional native binaries (biome, rollup). npm 11.3.0 fixes this (issue #4828,
+        # https://github.com/npm/cli/pull/8184). Once all devs upgrade locally and regenerate
+        # the lockfile, this step and the TODO below can be removed.
+        run: npm install -g npm@11
+
+      - name: Install
+        # TODO: restore `npm ci` after upgrading npm locally to 11+ and regenerating the lockfile.
         run: npm install
 
       - name: Build
