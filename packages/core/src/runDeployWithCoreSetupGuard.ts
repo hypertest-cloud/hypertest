@@ -20,7 +20,9 @@ export const runDeployWithCoreSetupGuard = async ({
     deployStarted = true;
     await core.deploy();
   } catch (err) {
-    if (!deployStarted) onSetupFailure();
+    if (!deployStarted) {
+      onSetupFailure();
+    }
     throw err;
   }
 };

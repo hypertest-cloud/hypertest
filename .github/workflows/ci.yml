@@ -21,7 +21,13 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install
-        run: npm ci
+        # TODO: restore `npm ci` after upgrading npm locally to 11+ and regenerating the lockfile.
+        # npm ≤10 generates platform-specific lockfiles on macOS, omitting linux entries for
+        # optional native binaries (biome, rollup) — npm ci then can't install them.
+        # Fix shipped in npm 11.3.0 (https://github.com/npm/cli/pull/8184, closes issue #4828).
+        # The missing @biomejs/cli-linux-x64 entry is patched directly in package-lock.json
+        # until the lockfile is regenerated with npm 11.
+        run: npm install
 
       - name: Build
         run: npm run build

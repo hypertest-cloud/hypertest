@@ -1,8 +1,4 @@
-import type {
-  AnyDockerfile,
-  BuildArgsOf,
-  EnvOf,
-} from '@hypertest-cloud/types';
+import type { AnyDockerfile, BuildArgsOf, EnvOf } from '@hypertest-cloud/types';
 import { execa } from 'execa';
 
 export type DockerBuildOptions<

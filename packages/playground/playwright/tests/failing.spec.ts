@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test.describe('Those tests will fail', () => {
   test('assertion failure example', async ({ page }) => {

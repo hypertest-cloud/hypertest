@@ -1,4 +1,8 @@
-import type { DeployStep, HypertestEvents } from '@hypertest-cloud/types';
+import type {
+  DeployStep,
+  HypertestEvent,
+  HypertestEvents,
+} from '@hypertest-cloud/types';
 import { Box, Text } from 'ink';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Rule } from '../components/Rule.js';
@@ -21,6 +25,32 @@ interface DeployState {
 
 const INITIAL_STATE: DeployState = { steps: INITIAL_STEPS, status: null };
 
+type DeployStepEvent = Extract<HypertestEvent, { type: 'deploy:step' }>;
+
+export function applyDeployStep(
+  prev: DeployState,
+  event: DeployStepEvent,
+): DeployState {
+  const steps = { ...prev.steps };
+  if (event.status === 'start') {
+    steps[event.step] = { status: 'running' };
+  } else if (event.status === 'end') {
+    steps[event.step] = { status: 'done', durationMs: event.durationMs ?? 0 };
+  } else {
+    steps[event.step] = {
+      status: 'error',
+      error: event.error ?? 'unknown error',
+    };
+  }
+  let status = prev.status;
+  if (event.step === 'updateLambda' && event.status === 'end') {
+    status = 'success';
+  } else if (event.status === 'error') {
+    status = 'error';
+  }
+  return { steps, status };
+}
+
 interface DeployAppProps {
   events: HypertestEvents;
   onExit?: () => void;
@@ -37,29 +67,7 @@ export const DeployApp = ({ events, onExit }: DeployAppProps) => {
         if (event.status === 'start' && deployStartMs.current === null) {
           deployStartMs.current = Date.now();
         }
-        setState((prev) => {
-          const steps = { ...prev.steps };
-          if (event.status === 'start') {
-            steps[event.step] = { status: 'running' };
-          } else if (event.status === 'end') {
-            steps[event.step] = {
-              status: 'done',
-              durationMs: event.durationMs ?? 0,
-            };
-          } else {
-            steps[event.step] = {
-              status: 'error',
-              error: event.error ?? 'unknown error',
-            };
-          }
-          let status = prev.status;
-          if (event.step === 'updateLambda' && event.status === 'end') {
-            status = 'success';
-          } else if (event.status === 'error') {
-            status = 'error';
-          }
-          return { steps, status };
-        });
+        setState((prev) => applyDeployStep(prev, event));
       }
     });
     return unsubscribe;

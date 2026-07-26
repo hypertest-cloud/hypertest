@@ -1,10 +1,10 @@
-import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
-import { collectInitAnswers, writeInitConfig } from '../init/init.js';
+import path from 'node:path';
+import { afterEach, beforeEach, test } from 'node:test';
 import type { TemplateProperties } from '../init/getConfigFromTemplate.js';
+import { collectInitAnswers, writeInitConfig } from '../init/init.js';
 
 const DEFAULTS: Record<TemplateProperties, unknown> = {
   concurrency: 30,
@@ -17,7 +17,8 @@ const DEFAULTS: Record<TemplateProperties, unknown> = {
   // biome-ignore lint/style/useNamingConvention: keys must match TemplateProperties type
   awsCloudProvider_ecrRegistry: '123456789.dkr.ecr.eu-central-1.amazonaws.com',
   // biome-ignore lint/style/useNamingConvention: keys must match TemplateProperties type
-  awsCloudProvider_baseImage: '123456789.dkr.ecr.eu-central-1.amazonaws.com/hypertest/base-playwright:latest',
+  awsCloudProvider_baseImage:
+    '123456789.dkr.ecr.eu-central-1.amazonaws.com/hypertest/base-playwright:latest',
   // biome-ignore lint/style/useNamingConvention: keys must match TemplateProperties type
   awsCloudProvider_functionName: 'hypertest-playwright',
   // biome-ignore lint/style/useNamingConvention: keys must match TemplateProperties type
@@ -36,12 +37,18 @@ beforeEach(async () => {
 
 afterEach(async () => {
   process.chdir(origCwd);
-  Object.defineProperty(process.stdin, 'isTTY', { value: origIsTty, configurable: true });
+  Object.defineProperty(process.stdin, 'isTTY', {
+    value: origIsTty,
+    configurable: true,
+  });
   await fs.rm(tmpDir, { recursive: true, force: true });
 });
 
 test('collectInitAnswers non-TTY: returns defaults without prompting', async () => {
-  Object.defineProperty(process.stdin, 'isTTY', { value: false, configurable: true });
+  Object.defineProperty(process.stdin, 'isTTY', {
+    value: false,
+    configurable: true,
+  });
   const result = await collectInitAnswers();
   assert.equal(result.concurrency, 30);
   assert.equal(result.imageName, 'my-app/hypertest-playwright');
@@ -49,7 +56,10 @@ test('collectInitAnswers non-TTY: returns defaults without prompting', async () 
 });
 
 test('collectInitAnswers non-TTY: all 10 keys present', async () => {
-  Object.defineProperty(process.stdin, 'isTTY', { value: false, configurable: true });
+  Object.defineProperty(process.stdin, 'isTTY', {
+    value: false,
+    configurable: true,
+  });
   const result = await collectInitAnswers();
   assert.equal(Object.keys(result).length, 10);
   for (const key of Object.keys(DEFAULTS)) {
@@ -70,15 +80,33 @@ test('writeInitConfig: writes file to cwd/hypertest.config.js and returns its pa
 test('writeInitConfig: content includes concurrency and imageName values', async () => {
   process.chdir(tmpDir);
   await writeInitConfig(DEFAULTS);
-  const content = await fs.readFile(path.resolve(tmpDir, 'hypertest.config.js'), 'utf-8');
-  assert.ok(content.includes('30'), `expected concurrency 30 in config: ${content}`);
-  assert.ok(content.includes('my-app/hypertest-playwright'), `expected imageName in config: ${content}`);
+  const content = await fs.readFile(
+    path.resolve(tmpDir, 'hypertest.config.js'),
+    'utf-8',
+  );
+  assert.ok(
+    content.includes('30'),
+    `expected concurrency 30 in config: ${content}`,
+  );
+  assert.ok(
+    content.includes('my-app/hypertest-playwright'),
+    `expected imageName in config: ${content}`,
+  );
 });
 
 test('writeInitConfig: content includes AWS region and bucket name', async () => {
   process.chdir(tmpDir);
   await writeInitConfig(DEFAULTS);
-  const content = await fs.readFile(path.resolve(tmpDir, 'hypertest.config.js'), 'utf-8');
-  assert.ok(content.includes('eu-central-1'), `expected region in config: ${content}`);
-  assert.ok(content.includes('hypertest-artifacts'), `expected bucketName in config: ${content}`);
+  const content = await fs.readFile(
+    path.resolve(tmpDir, 'hypertest.config.js'),
+    'utf-8',
+  );
+  assert.ok(
+    content.includes('eu-central-1'),
+    `expected region in config: ${content}`,
+  );
+  assert.ok(
+    content.includes('hypertest-artifacts'),
+    `expected bucketName in config: ${content}`,
+  );
 });

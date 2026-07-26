@@ -1,6 +1,6 @@
-import { test, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { render, cleanup } from 'ink-testing-library';
+import { afterEach, test } from 'node:test';
+import { cleanup, render } from 'ink-testing-library';
 import { Rule } from '../../ui/components/Rule.js';
 
 afterEach(() => cleanup());

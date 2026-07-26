@@ -44,9 +44,7 @@ export const runCommand = (
   });
 };
 
-export const runCommandAndGetOutput = (
-  cmd: string,
-): string => {
+export const runCommandAndGetOutput = (cmd: string): string => {
   const output = execSync(cmd, {
     stdio: 'pipe',
     cwd: process.cwd(),

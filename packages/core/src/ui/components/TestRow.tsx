@@ -1,5 +1,5 @@
-import { Box, Text } from 'ink';
 import type { HypertestTestResult } from '@hypertest-cloud/types';
+import { Box, Text } from 'ink';
 import { formatDuration } from '../theme.js';
 import { StatusIcon } from './StatusIcon.js';
 
@@ -33,13 +33,17 @@ export const TestRow = (props: TestRowProps) => {
 
   const { result } = props;
   const iconStatus =
-    result.status === 'success' ? 'pass' :
-    result.status === 'failed'  ? 'fail' :
-                                   'skip';
+    result.status === 'success'
+      ? 'pass'
+      : result.status === 'failed'
+        ? 'fail'
+        : 'skip';
   const nameColor =
-    result.status === 'success' ? '#ffffff' :
-    result.status === 'failed'  ? '#f43d5e' :
-                                   '#f5a524';
+    result.status === 'success'
+      ? '#ffffff'
+      : result.status === 'failed'
+        ? '#f43d5e'
+        : '#f5a524';
   const durationColor = result.status === 'success' ? '#97a3b6' : '#475063';
 
   return (
