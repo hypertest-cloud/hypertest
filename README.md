@@ -4,7 +4,7 @@ Revolutionize your testing with our **plug-and-play TypeScript library**. Effort
 
 ## Why Hypertest?
 
-Modern test suites can take 10, 30, or even 60+ minutes to complete. Hypertest solves this by running each test file in a separate cloud function, transforming sequential execution into massive parallelization.
+Modern test suites can take 10, 30, or even 60+ minutes to complete. Hypertest runs every individual test in its own cloud function, so the whole suite finishes in the time of its slowest single test.
 
 - **Massive speed improvements** — Reduce test suite time to your longest individual test
 - **Near-zero cost** — Pay only for compute time, scales to zero when idle
